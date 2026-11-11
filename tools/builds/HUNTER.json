@@ -1,0 +1,44 @@
+{
+  "builds": [
+    {
+      "id": "levelling",
+      "name": "Easy levelling",
+      "icon": "spark",
+      "suits": "A bow or gun and a pet that fights beside you. You shoot from range while the pet holds the enemy, so most fights are easy and safe.",
+      "gear": "Agility first, then Stamina and Intellect. Use the hardest-hitting bow, gun or crossbow you can find.",
+      "why": {
+        "Lethal Attacks": "More critical strikes with all your attacks, and it opens the next row.",
+        "Careful Aim": "Your Intellect also adds to your Attack Power, and it opens Mortal Shots.",
+        "Efficiency": "Shots and Stings cost less Mana, so you can shoot for longer.",
+        "Improved Arcane Shot": "Arcane Shot is ready again sooner, so you press it more often.",
+        "Rapid Killing": "Rapid Fire is ready again sooner, and kills make your next shot hit harder.",
+        "Mortal Shots": "Your critical strikes with ranged attacks hit much harder.",
+        "Trueshot Aura": "Party members nearby get more ranged Attack Power, and it opens Sniper Shot.",
+        "Ranged Weapon Specialization": "More damage every time you shoot with your bow or gun.",
+        "Sniper Shot": "A long-range shot that also lets your next shots reach further.",
+        "Deadly Aspects": "Your Aspect of the Hawk can make your shots come faster for a short time.",
+        "Endurance Training": "Your pet has more Health and Armor, so it lasts longer in fights.",
+        "Unleashed Fury": "Your pet does more damage, so fights end sooner.",
+        "Ferocity": "Your pet lands more critical strikes."
+      },
+      "order": [
+        ["Lethal Attacks", 5],
+        ["Careful Aim", 5], ["Efficiency", 5],
+        ["Improved Arcane Shot", 5], ["Rapid Killing", 2],
+        ["Mortal Shots", 5], ["Trueshot Aura", 1],
+        ["Ranged Weapon Specialization", 2], ["Sniper Shot", 1],
+        ["Deadly Aspects", 5], ["Endurance Training", 5],
+        ["Unleashed Fury", 5], ["Ferocity", 5]
+      ],
+      "fight": [
+        [null, "Call Pet, put Hunter's Mark on the enemy, then shoot with Auto Shot."],
+        [null, "Add Serpent Sting, then press Arcane Shot every time it is ready."],
+        [null, "Turn on Aspect of the Hawk before you fight and leave it on."],
+        ["Sniper Shot", "Press Sniper Shot to hit from far away when you pull an enemy."],
+        [null, "Wing Clip (level 12) slows an enemy that reaches you. Step back, then shoot."],
+        [null, "Mend Pet (level 12) heals your pet after a fight. Feed Pet when your pet is hungry."],
+        [null, "Losing a fight? Use Concussive Shot to slow the enemy, then run."]
+      ]
+    }
+  ]
+}

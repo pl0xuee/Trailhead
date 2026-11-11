@@ -1,0 +1,24 @@
+# Packager settings for CurseForge and Wago. The addon lives in the Trailhead/ folder.
+# Not verified against the packager itself: if it refuses a repository whose .toc is in a
+# subfolder, upload the zip that tools/package.sh builds instead.
+package-as: Trailhead
+
+move-folders:
+  Trailhead/Trailhead: Trailhead
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
+# Everything that is not the addon. THIRD-PARTY-LICENSES.txt and LICENSE.txt sit inside
+# Trailhead/ and are therefore kept.
+ignore:
+  - tests
+  - tools
+  - docs
+  - dist
+  - README.md
+  - CHANGELOG.md
+  - LICENSE
+  - .gitignore
+  - .github

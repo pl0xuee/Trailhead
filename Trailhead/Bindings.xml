@@ -1,0 +1,5 @@
+<Bindings>
+	<Binding name="TRAILHEAD_TOGGLE" header="TRAILHEAD" category="ADDONS">
+		Trailhead:ToggleWindow()
+	</Binding>
+</Bindings>

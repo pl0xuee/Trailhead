@@ -1,0 +1,111 @@
+{
+  "builds": [
+    {
+      "id": "levelling",
+      "name": "Easy levelling",
+      "icon": "moon",
+      "suits": "Mostly Shadow spells: you hurt enemies from a distance with damage that keeps ticking while you cast the next spell. Shadowform comes in your 40s.",
+      "gear": "Intellect first, then Spirit and Stamina. Use a staff or a wand, and gear that adds Spell Damage.",
+      "why": {
+        "Wand Specialization": "Your wand does more damage, so it is free damage when your mana runs out.",
+        "Shadow Focus": "Your Shadow spells miss less often.",
+        "Blackout": "Your Shadow damage spells sometimes stun the enemy for a moment.",
+        "Improved Mind Blast": "Mind Blast is ready again much sooner, so you can use it more.",
+        "Improved Shadow Word: Pain": "Shadow Word: Pain lasts longer, so you cast it less often.",
+        "Mind Flay": "A spell you hold down that hurts the enemy and slows how fast it moves.",
+        "Improved Mind Flay": "Each tick of Mind Flay hits harder than the one before it.",
+        "Vampiric Embrace": "Heals your party from your Shadow damage, and it opens Shadowform.",
+        "Shadow Weaving": "Each Shadow spell makes the enemy take more Shadow damage from you.",
+        "Darkness": "All your Shadow damage goes up.",
+        "Shadowform": "Your Shadow spells hurt more and cost half the Mana, and you take less Physical damage.",
+        "Twin Disciplines": "Your instant spells do more damage and healing.",
+        "Mental Strength": "More Intellect, which means a bigger pool of mana.",
+        "Meditation": "Part of your mana regeneration keeps going while you cast.",
+        "Inner Focus": "A button that makes your next spell free and more likely to crit.",
+        "Dark Inspiration": "Mind Blast and a full Mind Flay raise your and your party's Spirit for a while."
+      },
+      "order": [
+        ["Wand Specialization", 2],
+        ["Shadow Focus", 5],
+        ["Blackout", 5],
+        ["Improved Mind Blast", 5],
+        ["Improved Shadow Word: Pain", 2],
+        ["Mind Flay", 1],
+        ["Improved Mind Flay", 2],
+        ["Vampiric Embrace", 1],
+        ["Shadow Weaving", 3],
+        ["Dark Inspiration", 5],
+        ["Darkness", 1],
+        ["Shadowform", 1],
+        ["Darkness", 4],
+        ["Twin Disciplines", 5],
+        ["Mental Strength", 5],
+        ["Meditation", 3],
+        ["Inner Focus", 1]
+      ],
+      "fight": [
+        [null, "Put Shadow Word: Pain on the enemy first, then use Mind Blast whenever it is ready."],
+        [null, "Use Smite to fill the gaps. Put Power Word: Shield on yourself before a hard fight."],
+        [null, "Hurt after a fight? Rest and let your health and mana fill up before the next one."],
+        ["Mind Flay", "Hold Mind Flay between Mind Blasts. It also slows the enemy so it reaches you later."],
+        ["Shadowform", "Turn on Shadowform before you pull, so every Shadow spell costs less mana."],
+        ["Inner Focus", "Out of mana in a long fight? Press Inner Focus so your next spell is free."],
+        [null, "Losing a fight? Put Power Word: Shield on yourself and back away."]
+      ]
+    },
+    {
+      "id": "healer",
+      "name": "Dungeon healer",
+      "icon": "wing",
+      "suits": "You keep your party alive in a dungeon, mostly with Holy healing. Renew heals over time, and Power Word: Shield stops a hit before it lands.",
+      "gear": "Intellect first, then Spirit and Stamina. Use a staff, a wand, or a held item that adds healing.",
+      "why": {
+        "Improved Renew": "Renew heals more on every target.",
+        "Twilight Focus": "Spells are less likely to be slowed down when you get hit.",
+        "Spell Warding": "You take less damage from enemy spells.",
+        "Divine Fury": "Heal and Greater Heal cast faster, so hurt allies get help sooner.",
+        "Blessed Recovery": "After a big hit on you, you heal yourself for a while.",
+        "Improved Healing": "Heal, Greater Heal and Prayer of Mending cost less mana.",
+        "Holy Binding": "Flash Heal on a friend also heals you.",
+        "Litany of Light": "Mana comes back when you mix different heals.",
+        "Spirit of Redemption": "If you die you can still heal for a short time, and it opens Prayer of Mending.",
+        "Spiritual Guidance": "Your Spirit makes your healing stronger.",
+        "Prayer of Mending": "A heal that jumps from one ally to the next as they take damage.",
+        "Twin Disciplines": "Your instant spells, such as Renew, heal for more.",
+        "Mental Strength": "More Intellect, which means a bigger pool of mana.",
+        "Mental Agility": "Renew and your other instant spells cost less mana.",
+        "Improved Power Word: Shield": "Your Power Word: Shield soaks up more damage.",
+        "Meditation": "Part of your mana regeneration keeps going while you cast.",
+        "Inner Focus": "A button that makes your next heal free and more likely to crit."
+      },
+      "order": [
+        ["Improved Renew", 3],
+        ["Twilight Focus", 3],
+        ["Divine Fury", 5],
+        ["Spell Warding", 5],
+        ["Blessed Recovery", 3],
+        ["Improved Healing", 3],
+        ["Holy Binding", 1],
+        ["Litany of Light", 2],
+        ["Spirit of Redemption", 1],
+        ["Spiritual Guidance", 4],
+        ["Prayer of Mending", 1],
+        ["Twin Disciplines", 5],
+        ["Mental Strength", 5],
+        ["Mental Agility", 3],
+        ["Improved Power Word: Shield", 3],
+        ["Inner Focus", 1],
+        ["Meditation", 3]
+      ],
+      "fight": [
+        [null, "Watch your party's health bars. Heal whoever is lowest."],
+        [null, "Put Renew on anyone who keeps taking damage. Power Word: Shield stops a hit before it lands."],
+        [null, "Use Lesser Heal to top people up, and Heal (level 16) for bigger heals. Skip it if no one is hurt."],
+        ["Divine Fury", "Use Heal on the player taking hits. It is quicker to cast now."],
+        ["Prayer of Mending", "Put Prayer of Mending on the tank. It jumps by itself as they take damage."],
+        ["Inner Focus", "A big hit and your mana is low? Press Inner Focus, then cast a heal for free."],
+        [null, "Mana low? Stop and drink, or ask the party to wait for you."]
+      ]
+    }
+  ]
+}

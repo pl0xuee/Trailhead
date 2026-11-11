@@ -1,0 +1,607 @@
+# Warcraft Tavern WoW Forever guides (class and profession trainer tables), copied as facts.
+# kind class|pet|demon|portal|prof, class or profession, faction, NPC, zone, x,y percent, place, extra (1 = starting-area trainer, or skill tier)
+class	DRUID	Alliance	Denatharion	Darnassus	34.8,7.7	Cenarion Enclave	
+class	DRUID	Alliance	Fylerian Nightwing	Darnassus	33.6,8.6	Cenarion Enclave	
+class	DRUID	Alliance	Mathrengyl Bearwalker	Darnassus	35.2,8.3	Cenarion Enclave	
+class	DRUID	Alliance	Golhine the Hooded	Felwood	62.0,24.4	Talonbranch Glade	
+class	DRUID	Alliance	Loganaar	Moonglade	52.5,40.6	Nighthaven	
+class	DRUID	Alliance	Kal	Teldrassil	56.0,61.6	Dolanaar	
+class	DRUID	Alliance	Mardant Strongoak	Teldrassil	58.6,40.3	Shadowglen	1
+class	DRUID	Alliance	Alfina Nightgaze	Dalaran	11.7,56.7	The Sky Enclave	
+class	DRUID	Alliance	Maldryn	Stormwind	34.4,65.2	The Park	
+class	DRUID	Alliance	Sheldras Moontree	Stormwind	36.0,67.3	The Park	
+class	DRUID	Alliance	Theridran	Stormwind	36.0,64.3	The Park	
+class	DRUID	Alliance	Xyton Silverwind	Zephras Isle	41.7,23.4	Thendal Village	1
+class	DRUID	Alliance	Naeluna Swiftmend	Zephras Isle	45.2,44.3	Shen’dar Village	
+class	DRUID	Alliance	Lotheluum Starbreeze	Zephras Isle	64.0,75.1	Valanaar	
+class	DRUID	Horde	Jannos Lighthoof	Feralas	76.0,42.2	Camp Mojache	
+class	DRUID	Horde	Loganaar	Moonglade	52.5,40.6	Nighthaven	
+class	DRUID	Horde	Gennia Runetotem	Mulgore	48.4,59.6	Bloodhoof Village	
+class	DRUID	Horde	Gart Mistrunner	Mulgore	45.0,76.0	Red Cloud Mesa	1
+class	DRUID	Horde	Hana Lighthoof	Mulgore	33.4,22.2	Camp Gev’rek	
+class	DRUID	Horde	Kym Wildmane	Thunder Bluff	77.0,29.9	Elder Rise	
+class	DRUID	Horde	Sheal Runetotem	Thunder Bluff	76.7,27.4	Elder Rise	
+class	DRUID	Horde	Turak Runetotem	Thunder Bluff	76.4,27.6	Elder Rise	
+class	DRUID	Horde	Xyton Silverwind	Zephras Isle	41.7,23.4	Thendal Village	1
+class	DRUID	Horde	Naeluna Swiftmend	Zephras Isle	45.2,44.3	Shen’dar Village	
+class	DRUID	Horde	Lotheluum Starbreeze	Zephras Isle	64.0,75.1	Valanaar	
+class	HUNTER	Alliance	Danlaar Nightstride	Ashenvale	50.0,67.8	Silverwind Refuge	
+class	HUNTER	Alliance	Alenndaar Lapidaar	Ashenvale	18.0,59.8	Bolyun’s Camp	
+class	HUNTER	Alliance	Dorion	Darnassus	42.2,7.6	Cenarion Enclave	
+class	HUNTER	Alliance	Jeen'ra Nightrunner	Darnassus	39.6,5.8	Cenarion Enclave	
+class	HUNTER	Alliance	Jocaste	Darnassus	40.2,9.8	Cenarion Enclave	
+class	HUNTER	Alliance	Kaerbrus	Felwood	61.8,23.6	Talonbranch Glade	
+class	HUNTER	Alliance	Ayanna Everstride	Teldrassil	58.6,40.5	Shadowglen	1
+class	HUNTER	Alliance	Dazalar	Teldrassil	56.7,59.6	Dolanaar	
+class	HUNTER	Alliance	Thorgas Grimson	Dun Morogh	29.1,67.6	Coldridge Valley	1
+class	HUNTER	Alliance	Grif Wildheart	Dun Morogh	45.8,53.0	Kharanos	
+class	HUNTER	Alliance	Daera Brightspear	Ironforge	71.6,88.8	Hall of Arms	
+class	HUNTER	Alliance	Olmin Burningbeard	Ironforge	70.6,83.8	Hall of Arms	
+class	HUNTER	Alliance	Regnus Thundergranite	Ironforge	69.8,83.6	Hall of Arms	
+class	HUNTER	Alliance	Dargh Trueaim	Loch Modan	82.4,62.4	The Farstrider Lodge	
+class	HUNTER	Alliance	Einris Brightspear	Stormwind	67.4,36.4	Dwarven District	
+class	HUNTER	Alliance	Thorfin Stoneshield	Stormwind	68.0,35.8	Dwarven District	
+class	HUNTER	Alliance	Ulfir Ironbeard	Stormwind	67.6,35.9	Dwarven District	
+class	HUNTER	Alliance	Tai'ree Farsight	Zephras Isle	42.5,23.7	Thendal Village	1
+class	HUNTER	Alliance	Elayaa Easewind	Zephras Isle	45.2,44.3	Shen’dar Village	
+class	HUNTER	Alliance	Quel'ana Quickgale	Zephras Isle	59.6,72.7	Valanaar	
+class	HUNTER	Horde	Jen'shan	Durotar	42.8,69.1	Valley of Trials	1
+class	HUNTER	Horde	Thotar	Durotar	51.8,43.6	Razor Hill	
+class	HUNTER	Horde	Lanka Farshot	Mulgore	44.2,75.8	Red Cloud Mesa	1
+class	HUNTER	Horde	Thotar	Mulgore	51.8,43.6	Bloodhoof Village	
+class	HUNTER	Horde	Yaw Sharpmane	Mulgore	46.8,59.6	Bloodhoof Village	
+class	HUNTER	Horde	Ormak Grimshot	Orgrimmar	66.2,18.5	Valley of Honor	
+class	HUNTER	Horde	Sian'dur	Orgrimmar	67.8,18.4	Valley of Honor	
+class	HUNTER	Horde	Xor'juul	Orgrimmar	67.0,20.0	Valley of Honor	
+class	HUNTER	Horde	Holt Thunderhorn	Thunder Bluff	57.6,88.6	Hunter’s Rise	
+class	HUNTER	Horde	Kary Thunderhorn	Thunder Bluff	58.2,87.8	Hunter’s Rise	
+class	HUNTER	Horde	Urek Thunderhorn	Thunder Bluff	59.1,86.2	Hunter’s Rise	
+class	HUNTER	Horde	Kragg	Stranglethorn Vale	31.3,28.6	Grom’gol Base Camp	
+class	HUNTER	Horde	Orgromm	Swamp of Sorrows	47.2,53.2	Stonard	
+class	HUNTER	Horde	Tai'ree Farsight	Zephras Isle	42.5,23.7	Thendal Village	1
+class	HUNTER	Horde	Elayaa Easewind	Zephras Isle	45.2,44.3	Shen’dar Village	
+class	HUNTER	Horde	Quel'ana Quickgale	Zephras Isle	59.6,72.7	Valanaar	
+pet	HUNTER	Alliance	Bolyun	Ashenvale	18.0,60.0	Bolyun’s Camp	
+pet	HUNTER	Alliance	Caelyb	Ashenvale	49.8,67.0	Silverwind Refuge	
+pet	HUNTER	Alliance	Silvaria	Darnassus	42.2,8.8	Cenarion Enclave	
+pet	HUNTER	Alliance	Nalesette Wildbringer	Felwood	62.2,24.2	Talonbranch Glade	
+pet	HUNTER	Alliance	Keldas	Teldrassil	56.8,59.7	Dolanaar	
+pet	HUNTER	Alliance	Peria Lamenur	Dun Morogh	46.6,54.0	Kharanos	
+pet	HUNTER	Alliance	Belia Thundergranite	Ironforge	70.8,85.6	Hall of Arms	
+pet	HUNTER	Alliance	Claude Erksine	Loch Modan	82.2,62.8	The Farstrider Lodge	
+pet	HUNTER	Alliance	Karrina Mekenda	Stormwind	67.4,36.7	Dwarven District	
+pet	HUNTER	Alliance	Quel'dora Quickgale	Zephras Isle	59.6,72.6	Valanaar	
+pet	HUNTER	Horde	Harruk	Durotar	52.0,43.6	Razor Hill	
+pet	HUNTER	Horde	Reban Freerunner	Mulgore	46.8,59.7	Bloodhoof Village	
+pet	HUNTER	Horde	Xao'tsu	Orgrimmar	66.4,15.3	Valley of Honor	
+pet	HUNTER	Horde	Hesuwa Thunderhorn	Thunder Bluff	54.5,83.4	Hunter’s Rise	
+pet	HUNTER	Horde	Zudd	Stranglethorn Vale	31.2,28.8	Grom’gol Base Camp	
+pet	HUNTER	Horde	Grokar	Swamp of Sorrows	47.2,53.0	Stonard	
+pet	HUNTER	Horde	Quel'dora Quickgale	Zephras Isle	59.6,72.5	Valanaar	
+class	MAGE	Alliance	Jessa Weaver	Dalaran	17.7,69.5	The Violet Gate	
+class	MAGE	Alliance	Marryk Nurribit	Dun Morogh	28.7,66.4	Coldridge Valley	1
+class	MAGE	Alliance	Magis Sparkmantle	Dun Morogh	47.4,52.0	Kharanos	
+class	MAGE	Alliance	Khelden Bremen	Elwynn Forest	49.7,39.5	Northshire	1
+class	MAGE	Alliance	Zaldimar Wefhellt	Elwynn Forest	43.3,66.2	Goldshire	
+class	MAGE	Alliance	Bink	Ironforge	27.0,8.2	Mystic Ward	
+class	MAGE	Alliance	Dink	Ironforge	26.8,8.6	Mystic Ward	
+class	MAGE	Alliance	Juli Stormkettle	Ironforge	26.2,7.6	Mystic Ward	
+class	MAGE	Alliance	Nittlebur Sparkfizzle	Ironforge	27.0,6.8	Mystic Ward	
+class	MAGE	Alliance	Elsharin	Stormwind	48.3,87.4	Mage Quarter	
+class	MAGE	Alliance	Jennea Cannon	Stormwind	49.5,86.0	Mage Quarter	
+class	MAGE	Alliance	Dorii Brightwhisper	Zephras Isle	41.6,23.7	Thendal Village	1
+class	MAGE	Alliance	Shenaan Spellwind	Zephras Isle	45.1,45.8	Shen’dar Village	
+class	MAGE	Alliance	Anathamaas Aetherwind	Zephras Isle	65.9,80.4	Valanaar	
+class	MAGE	Horde	Mai'ah	Durotar	42.6,68.9	Valley of Trials	1
+class	MAGE	Horde	Un'Thuwa	Durotar	56.2,75.0	Sen’jin Village	
+class	MAGE	Horde	Deino	Orgrimmar	38.6,86.0	Valley of Spirits	
+class	MAGE	Horde	Enyo	Orgrimmar	38.8,85.4	Valley of Spirits	
+class	MAGE	Horde	Pephredo	Orgrimmar	38.6,85.6	Valley of Spirits	
+class	MAGE	Horde	Uthel'nay	Orgrimmar	39.0,86.0	Valley of Spirits	
+class	MAGE	Horde	Archmage Shymm	Thunder Bluff	22.6,15.8	Spirit Rise	
+class	MAGE	Horde	Thurston Xane	Thunder Bluff	25.8,21.8	Spirit Rise	
+class	MAGE	Horde	Ursyn Ghull	Thunder Bluff	25.6,15.6	Spirit Rise	
+class	MAGE	Horde	Isabella	Tirisfal Glades	31.0,66.2	Deathknell	1
+class	MAGE	Horde	Cain Firesong	Tirisfal Glades	61.9,52.3	Brill	
+class	MAGE	Horde	Anastasia Hartwell	Undercity	85.0,10.2	Magic Quarter	
+class	MAGE	Horde	Kaelystia Hatebringer	Undercity	85.2,15.6	Magic Quarter	
+class	MAGE	Horde	Pierce Shackleton	Undercity	85.6,14.6	Magic Quarter	
+class	MAGE	Horde	Dorii Brightwhisper	Zephras Isle	41.6,23.7	Thendal Village	1
+class	MAGE	Horde	Shenaan Spellwind	Zephras Isle	45.1,45.8	Shen’dar Village	
+class	MAGE	Horde	Anathamaas Aetherwind	Zephras Isle	65.9,80.4	Valanaar	
+portal	MAGE	Alliance	Elissa Dumas	Darnassus	40.6,82.0	Temple of the Moon	
+portal	MAGE	Alliance	Milstaff Stormeye	Ironforge	26.0,8.6	Mystic Ward	
+portal	MAGE	Alliance	Larimaine Purdue	Stormwind	50.3,86.0	Mage Quarter	
+portal	MAGE	Horde	Thuul	Orgrimmar	38.6,85.8	Valley of Spirits	
+portal	MAGE	Horde	Birgitte Cranston	Thunder Bluff	22.4,16.4	Spirit Rise	
+portal	MAGE	Horde	Lexington Mortaim	Undercity	84.6,16.8	Magic Quarter	
+class	PALADIN	Alliance	Brother Karman	Dustwallow Marsh	67.4,47.4	Theramore	
+class	PALADIN	Alliance	Bromos Grummner	Dun Morogh	28.8,68.2	Coldridge Valley	1
+class	PALADIN	Alliance	Azar Stronghammer	Dun Morogh	47.5,52.0	Thunderbrew Distillery	
+class	PALADIN	Alliance	Brother Sammuel	Elwynn Forest	50.4,42.0	Northshire	1
+class	PALADIN	Alliance	Brother Wilhelm	Elwynn Forest	41.2,66.1	Goldshire	
+class	PALADIN	Alliance	Beldruk Doombrow	Ironforge	24.8,6.2	Mystic Ward	
+class	PALADIN	Alliance	Brandur Ironhammer	Ironforge	24.2,6.8	Mystic Ward	
+class	PALADIN	Alliance	Valgar Highforge	Ironforge	23.6,5.0	Mystic Ward	
+class	PALADIN	Alliance	Arthur the Faithful	Stormwind	49.5,49.5	Cathedral of Light	
+class	PALADIN	Alliance	Katherine the Pure	Stormwind	48.7,49.3	Cathedral of Light	
+class	PALADIN	Alliance	Lord Grayson Shadowbreaker	Stormwind	48.6,50.0	Cathedral of Light	
+class	PALADIN	Horde	Aramis Hammerhand	Tirisfal Glades	31.1,66.3	Deathknell	1
+class	PALADIN	Horde	Shari Stilwell	Tirisfal Glades	60.3,52.6	Brill	
+class	PALADIN	Horde	Hilda the Breaker	Tirisfal Glades	21.9,47.2	Bandarion Keep	
+class	PRIEST	Alliance	Jandria	Darnassus	38.4,82.5	Temple of the Moon	
+class	PRIEST	Alliance	Lariia	Darnassus	40.3,88.6	Temple of the Moon	
+class	PRIEST	Alliance	Astarii Starseeker	Darnassus	38.9,81.4	Temple of the Moon	
+class	PRIEST	Alliance	Priestess Alathea	Darnassus	38.9,81.0	Temple of the Moon	
+class	PRIEST	Alliance	Shanda	Teldrassil	59.2,40.5	Shadowglen	1
+class	PRIEST	Alliance	Laurna Morninglight	Teldrassil	55.5,56.8	Dolanaar	
+class	PRIEST	Alliance	Branstock Khalder	Dun Morogh	28.6,66.4	Coldridge Valley	1
+class	PRIEST	Alliance	Maxan Anvol	Dun Morogh	47.4,52.1	Kharanos	
+class	PRIEST	Alliance	Priestess Anetta	Elwynn Forest	49.7,39.5	Northshire	1
+class	PRIEST	Alliance	Priestess Josetta	Elwynn Forest	43.5,65.9	Goldshire	
+class	PRIEST	Alliance	Braenna Flintcrag	Ironforge	25.4,8.4	Mystic Ward	
+class	PRIEST	Alliance	High Priest Rohan	Ironforge	25.6,9.0	Mystic Ward	
+class	PRIEST	Alliance	Theodrus Frostbeard	Ironforge	24.0,10.2	Mystic Ward	
+class	PRIEST	Alliance	Toldren Deepiron	Ironforge	25.6,10.2	Mystic Ward	
+class	PRIEST	Alliance	Brother Benjamin	Stormwind	50.8,44.8	Cathedral of Light	
+class	PRIEST	Alliance	Brother Joshua	Stormwind	49.6,45.2	Cathedral of Light	
+class	PRIEST	Alliance	High Priestess Laurena	Stormwind	49.6,44.7	Cathedral of Light	
+class	PRIEST	Alliance	Nara Meideros	Stormwind	35.8,63.3	The Park	
+class	PRIEST	Horde	Ken'jai	Durotar	42.4,68.8	Valley of Trials	1
+class	PRIEST	Horde	Tai'jin	Durotar	54.2,43.0	Razor Hill	
+class	PRIEST	Horde	Ur'kyo	Orgrimmar	35.7,87.5	Valley of Spirits	
+class	PRIEST	Horde	X'yera	Orgrimmar	35.8,87.6	Valley of Spirits	
+class	PRIEST	Horde	Father Cobb	Thunder Bluff	25.8,22.0	Spirit Rise	
+class	PRIEST	Horde	Malakai Cross	Thunder Bluff	24.8,22.6	Spirit Rise	
+class	PRIEST	Horde	Miles Welsh	Thunder Bluff	25.6,15.6	Spirit Rise	
+class	PRIEST	Horde	Dark Cleric Duesten	Tirisfal Glades	31.0,66.0	Deathknell	1
+class	PRIEST	Horde	Dark Cleric Beryl	Tirisfal Glades	61.6,52.1	Brill	
+class	PRIEST	Horde	Aelthalyste	Undercity	49.6,17.2	War Quarter	
+class	PRIEST	Horde	Father Lankester	Undercity	49.6,15.6	War Quarter	
+class	PRIEST	Horde	Father Lazarus	Undercity	47.6,19.2	War Quarter	
+class	ROGUE	Alliance	Anishar	Darnassus	38.8,21.2	Cenarion Enclave	
+class	ROGUE	Alliance	Erion Shadewhisper	Darnassus	35.2,25.2	Cenarion Enclave	
+class	ROGUE	Alliance	Syurna	Darnassus	36.8,21.8	Cenarion Enclave	
+class	ROGUE	Alliance	Frahun Shadewhisper	Teldrassil	59.6,38.7	Shadowglen	1
+class	ROGUE	Alliance	Jannok Breezesong	Teldrassil	56.3,60.0	Dolanaar	
+class	ROGUE	Alliance	Solm Hargrin	Dun Morogh	28.4,67.6	Coldridge Valley	1
+class	ROGUE	Alliance	Hogral Bakkan	Dun Morogh	47.6,52.6	Kharanos	
+class	ROGUE	Alliance	Jorik Kerridan	Elwynn Forest	50.3,40.0	Northshire	1
+class	ROGUE	Alliance	Keryn Sylvius	Elwynn Forest	43.8,65.9	Goldshire	
+class	ROGUE	Alliance	Fenthwick	Ironforge	52.0,13.6	Forlorn Cavern	
+class	ROGUE	Alliance	Hulfdan Blackbeard	Ironforge	51.6,14.8	Forlorn Cavern	
+class	ROGUE	Alliance	Ormyr Flinteye	Ironforge	52.6,14.8	Forlorn Cavern	
+class	ROGUE	Alliance	Lord Tony Romano	Stormwind	80.3,68.6	Old Town	
+class	ROGUE	Alliance	Osborne the Night Man	Stormwind	77.3,65.3	Old Town	
+class	ROGUE	Alliance	Ian Strom	Stranglethorn Vale	26.8,77.2	Booty Bay	
+class	ROGUE	Alliance	Akeri Duskblade	Zephras Isle	43.7,24.3	Thendal Village	1
+class	ROGUE	Alliance	Miriaan Mistblade	Zephras Isle	43.2,43.3	Shen’dar Village	
+class	ROGUE	Alliance	Eltheen Nightbreeze	Zephras Isle	59.9,72.5	Valanaar	
+class	ROGUE	Horde	Rwag	Durotar	41.2,68.0	Valley of Trials	1
+class	ROGUE	Horde	Kaplak	Durotar	51.9,43.7	Razor Hill	
+class	ROGUE	Horde	Gest	Orgrimmar	42.8,51.6	Cleft of Shadow	
+class	ROGUE	Horde	Ormok	Orgrimmar	44.0,54.6	Cleft of Shadow	
+class	ROGUE	Horde	Shenthul	Orgrimmar	43.0,53.6	Cleft of Shadow	
+class	ROGUE	Horde	Ian Strom	Stranglethorn Vale	26.8,77.2	Booty Bay	
+class	ROGUE	Horde	David Trias	Tirisfal Glades	32.6,65.6	Deathknell	
+class	ROGUE	Horde	Marion Call	Tirisfal Glades	61.7,52.0	Brill	
+class	ROGUE	Horde	Carolyn Ward	Undercity	83.8,71.6	Rogues’ Quarter	
+class	ROGUE	Horde	Gregory Charles	Undercity	85.2,72.2	Rogues’ Quarter	
+class	ROGUE	Horde	Miles Dexter	Undercity	85.0,71.2	Rogues’ Quarter	
+class	ROGUE	Horde	Akeri Duskblade	Zephras Isle	43.7,24.3	Thendal Village	1
+class	ROGUE	Horde	Miriaan Mistblade	Zephras Isle	43.2,43.3	Shen’dar Village	
+class	ROGUE	Horde	Eltheen Nightbreeze	Zephras Isle	59.9,72.5	Valanaar	
+class	SHAMAN	Alliance	Teo Hammerstorm	Dun Morogh	28.9,66.2	Coldridge Valley	1
+class	SHAMAN	Alliance	Ingrid Dunwald	Dun Morogh	47.5,52.0	Kharanos	
+class	SHAMAN	Alliance	Eldrun Stormbreaker	Ironforge	47.3,13.5	Forlorn Cavern	
+class	SHAMAN	Horde	Shikrik	Durotar	42.4,68.8	Valley of Trials	1
+class	SHAMAN	Horde	Swart	Durotar	54.3,42.4	Razor Hill	
+class	SHAMAN	Horde	Meela Dawnstrider	Mulgore	45.0,76.0	Red Cloud Mesa	1
+class	SHAMAN	Horde	Narm Skychaser	Mulgore	48.4,59.2	Bloodhoof Village	
+class	SHAMAN	Horde	Palah Thunderhoof	Mulgore	33.6,22.4	Camp Gev’rek	
+class	SHAMAN	Horde	Kardris Dreamseeker	Orgrimmar	39.0,36.7	Valley of Wisdom	
+class	SHAMAN	Horde	Sagorne Creststrider	Orgrimmar	38.8,36.6	Valley of Wisdom	
+class	SHAMAN	Horde	Sian'tsu	Orgrimmar	37.8,36.6	Valley of Wisdom	
+class	SHAMAN	Horde	Beram Skychaser	Thunder Bluff	22.8,19.4	Spirit Rise	
+class	SHAMAN	Horde	Siln Skychaser	Thunder Bluff	23.6,20.6	Spirit Rise	
+class	SHAMAN	Horde	Tigor Skychaser	Thunder Bluff	24.0,20.0	Spirit Rise	
+class	SHAMAN	Horde	Haromm	Swamp of Sorrows	48.0,57.8	Stonard	
+class	SHAMAN	Horde	Windshaper Boro	Zephras Isle	42.8,23.7	Thendal Village	1
+class	SHAMAN	Horde	Aarnor Galestrike	Zephras Isle	43.5,44.8	Shen’dar Village	
+class	SHAMAN	Horde	Sessaria Skystride	Zephras Isle	58.3,78.6	Valanaar	
+class	WARLOCK	Alliance	Alamar Grimm	Dun Morogh	28.6,66.2	Coldridge Valley	1
+class	WARLOCK	Alliance	Gimrizz Shadowcog	Dun Morogh	47.2,53.6	Kharanos	
+class	WARLOCK	Alliance	Drusilla La Salle	Elwynn Forest	49.9,42.7	Northshire	1
+class	WARLOCK	Alliance	Maximillian Crowe	Elwynn Forest	44.4,66.0	Goldshire	
+class	WARLOCK	Alliance	Alexander Calder	Ironforge	50.8,6.4	Forlorn Cavern	
+class	WARLOCK	Alliance	Briarthorn	Ironforge	50.2,7.4	Forlorn Cavern	
+class	WARLOCK	Alliance	Thistleheart	Ironforge	50.8,6.6	Forlorn Cavern	
+class	WARLOCK	Alliance	Demisette Cloyce	Stormwind	39.4,85.1	Mage Quarter	
+class	WARLOCK	Alliance	Sandahl	Stormwind	39.7,85.6	Mage Quarter	
+class	WARLOCK	Alliance	Ursula Deline	Stormwind	39.9,84.3	Mage Quarter	
+class	WARLOCK	Horde	Nartok	Durotar	40.6,68.4	Valley of Trials	1
+class	WARLOCK	Horde	Dhugru Gorelust	Durotar	54.3,41.2	Razor Hill	
+class	WARLOCK	Horde	Grol'dar	Orgrimmar	48.3,46.4	Cleft of Shadow	
+class	WARLOCK	Horde	Mirket	Orgrimmar	48.6,47.0	Cleft of Shadow	
+class	WARLOCK	Horde	Zevrost	Orgrimmar	48.3,46.4	Cleft of Shadow	
+class	WARLOCK	Horde	Kartosh	Swamp of Sorrows	48.6,55.6	Stonard	
+class	WARLOCK	Horde	Maximillion	Tirisfal Glades	31.0,66.2	Deathknell	1
+class	WARLOCK	Horde	Rupert Boch	Tirisfal Glades	61.6,52.5	Brill	
+class	WARLOCK	Horde	Kaal Soulreaper	Undercity	86.0,15.6	Magic Quarter	
+class	WARLOCK	Horde	Luther Pickman	Undercity	86.2,15.2	Magic Quarter	
+class	WARLOCK	Horde	Richard Kerwin	Undercity	88.6,16.0	Magic Quarter	
+demon	WARLOCK	Alliance	Wren Darkspring	Dun Morogh	28.7,66.2	Coldridge Valley	1
+demon	WARLOCK	Alliance	Dannie Fizzwizzle	Dun Morogh	47.1,53.7	Kharanos	
+demon	WARLOCK	Alliance	Dane Winslow	Elwynn Forest	50.0,42.7	Northshire	1
+demon	WARLOCK	Alliance	Cylina Darkheart	Elwynn Forest	44.5,66.0	Goldshire	
+demon	WARLOCK	Alliance	Jubahl Corpseseeker	Ironforge	53.2,7.6	Forlorn Cavern	
+demon	WARLOCK	Alliance	Spackle Thornberry	Stormwind	39.8,84.6	Mage Quarter	
+demon	WARLOCK	Horde	Hraug	Durotar	40.6,68.4	Valley of Trials	1
+demon	WARLOCK	Horde	Kitha	Durotar	54.6,41.6	Razor Hill	
+demon	WARLOCK	Horde	Kurgul	Orgrimmar	47.8,47.3	Cleft of Shadow	
+demon	WARLOCK	Horde	Kayla Smithe	Tirisfal Glades	30.9,66.3	Deathknell	1
+demon	WARLOCK	Horde	Gina Lang	Tirisfal Glades	61.6,52.5	Brill	
+demon	WARLOCK	Horde	Martha Strain	Undercity	85.8,15.8	Magic Quarter	
+class	WARRIOR	Alliance	Arias'ta Bladesinger	Darnassus	58.4,34.9	Warrior’s Terrace	
+class	WARRIOR	Alliance	Darnath Bladesinger	Darnassus	58.4,35.6	Warrior’s Terrace	
+class	WARRIOR	Alliance	Sildanair	Darnassus	62.1,42.6	Warrior’s Terrace	
+class	WARRIOR	Alliance	Captain Evencane	Dustwallow Marsh	67.8,48.2	Theramore	
+class	WARRIOR	Alliance	Alyissia	Teldrassil	59.6,38.6	Shadowglen	1
+class	WARRIOR	Alliance	Kyra Windblade	Teldrassil	56.2,59.2	Dolanaar	
+class	WARRIOR	Alliance	Thran Khorman	Dun Morogh	28.8,67.1	Coldridge Valley	1
+class	WARRIOR	Alliance	Granis Swiftaxe	Dun Morogh	47.2,52.6	Kharanos	
+class	WARRIOR	Alliance	Llane Beshere	Elwynn Forest	50.3,42.2	Northshire	1
+class	WARRIOR	Alliance	Lyria Du Lac	Elwynn Forest	41.1,65.9	Goldshire	
+class	WARRIOR	Alliance	Bilban Tosslespanner	Ironforge	66.8,87.6	Hall of Arms	
+class	WARRIOR	Alliance	Kelstrum Stonebreaker	Ironforge	67.2,88.4	Hall of Arms	
+class	WARRIOR	Alliance	Kelv Sternhammer	Ironforge	71.2,91.6	Hall of Arms	
+class	WARRIOR	Alliance	Ander Germaine	Stormwind	80.2,61.6	Old Town	
+class	WARRIOR	Alliance	Ilsa Corbin	Stormwind	80.5,59.6	Old Town	
+class	WARRIOR	Alliance	Wu Shen	Stormwind	80.6,59.5	Old Town	
+class	WARRIOR	Alliance	Blademaster Ren	Zephras Isle	43.6,24.2	Thendal Village	1
+class	WARRIOR	Alliance	Corsan Earthrazer	Zephras Isle	45.0,45.1	Shen’dar Village	
+class	WARRIOR	Alliance	Seena Skybreaker	Zephras Isle	59.8,72.7	Valanaar	
+class	WARRIOR	Horde	Frang	Durotar	42.8,69.4	Valley of Trials	1
+class	WARRIOR	Horde	Tarshaw Jaggedscar	Durotar	54.1,42.4	Razor Hill	
+class	WARRIOR	Horde	Harutt Thunderhorn	Mulgore	44.0,76.0	Red Cloud Mesa	1
+class	WARRIOR	Horde	Krang Stonehoof	Mulgore	49.6,60.6	Bloodhoof Village	
+class	WARRIOR	Horde	Grezz Ragefist	Orgrimmar	79.6,31.6	Valley of Honor	
+class	WARRIOR	Horde	Sorek	Orgrimmar	80.4,31.4	Valley of Honor	
+class	WARRIOR	Horde	Zel'mak	Orgrimmar	80.2,29.6	Valley of Honor	
+class	WARRIOR	Horde	Ker Ragetotem	Thunder Bluff	57.8,85.4	Hunter’s Rise	
+class	WARRIOR	Horde	Sark Ragetotem	Thunder Bluff	57.6,88.6	Hunter’s Rise	
+class	WARRIOR	Horde	Torm Ragetotem	Thunder Bluff	57.6,87.6	Hunter’s Rise	
+class	WARRIOR	Horde	Malosh	Swamp of Sorrows	44.8,57.4	Stonard	
+class	WARRIOR	Horde	Dannal Stern	Tirisfal Glades	32.6,65.6	Deathknell	1
+class	WARRIOR	Horde	Austil de Mon	Tirisfal Glades	61.8,52.5	Brill	
+class	WARRIOR	Horde	Angela Curthas	Undercity	48.2,15.6	War Quarter	
+class	WARRIOR	Horde	Baltus Fowler	Undercity	47.6,16.8	War Quarter	
+class	WARRIOR	Horde	Christoph Walker	Undercity	47.8,14.8	War Quarter	
+class	WARRIOR	Horde	Blademaster Ren	Zephras Isle	43.6,24.2	Thendal Village	1
+class	WARRIOR	Horde	Corsan Earthrazer	Zephras Isle	45.0,45.1	Shen’dar Village	
+class	WARRIOR	Horde	Seena Skybreaker	Zephras Isle	59.8,72.7	Valanaar	
+prof	Alchemy	Alliance	Alchemist Mallory	Elwynn Forest	39.8,48.4	Outside Stormwind	Apprentice
+prof	Alchemy	Alliance	Cyndra Kindwhisper	Teldrassil	57.6,60.7	Dolanaar	Apprentice
+prof	Alchemy	Alliance	Ghak Healtouch	Loch Modan	37.0,49.3	Thelsamar	Apprentice
+prof	Alchemy	Alliance	Iaadaria Bitterwind	Zephras Isle	66.3,79.5	Valanaar	Apprentice
+prof	Alchemy	Alliance	Milla Fairancora	Darnassus	55.4,22.9	Craftsmen’s Terrace	Apprentice
+prof	Alchemy	Alliance	Nyassa Swiftdraught	Zephras Isle	43.7,43.4	Shen’dar Village	Apprentice
+prof	Alchemy	Alliance	Tel'Athir	Stormwind City	55.5,85.4	Mage Quarter	Apprentice
+prof	Alchemy	Alliance	Valiena Swiftgale	Zephras Isle	59.3,76.2	Valanaar	Apprentice
+prof	Alchemy	Alliance	Vosur Brakthel	Ironforge	67.0,54.2	Tinker Town	Apprentice
+prof	Alchemy	Alliance	Alchemist Narett	Dustwallow Marsh	64.0,47.6	Theramore Isle	Journeyman
+prof	Alchemy	Alliance	Jaxin Chong	Stranglethorn Vale	28.0,78.0	Booty Bay	Journeyman
+prof	Alchemy	Alliance	Kylanna	Ashenvale	50.8,67.1	Silverwind Refuge	Journeyman
+prof	Alchemy	Alliance	Lilyssia Nightbreeze	Stormwind City	55.5,85.4	Mage Quarter	Journeyman
+prof	Alchemy	Alliance	Tally Berryfizz	Ironforge	67.2,54.2	Tinker Town	Journeyman
+prof	Alchemy	Alliance	Ainethil	Darnassus	55.5,23.1	Craftsmen’s Terrace	Expert
+prof	Alchemy	Alliance	Linzy Blackbolt	Alterac Mountains	18.7,62.4	Dalaran	Expert
+prof	Alchemy	Alliance	Patricia Egan	Alterac Mountains	18.7,62.4	Dalaran	Expert
+prof	Alchemy	Alliance	Sylvanna Forestmoon	Darnassus	56.1,24.3	Craftsmen’s Terrace	Expert
+prof	Alchemy	Alliance	Kylanna Windwhisper	Feralas	32.6,43.7	Feathermoon Stronghold	Artisan
+prof	Alchemy	Alliance	Master Mycologist Shurome	Felwood	51.5,81.9	Emerald Sanctuary	Artisan
+prof	Alchemy	Horde	Carolai Anise	Tirisfal Glades	59.5,52.3	Brill	Apprentice
+prof	Alchemy	Horde	Doctor Martin Felben	Undercity	46.5,74.6	The Apothecarium	Apprentice
+prof	Alchemy	Horde	Kray	Thunder Bluff	47.1,34.6	Middle Rise	Apprentice
+prof	Alchemy	Horde	Miao'zan	Durotar	55.5,74.0	Sen’jin Village	Apprentice
+prof	Alchemy	Horde	Nyassa Swiftdraught	Zephras Isle	43.7,43.4	Shen’dar Village	Apprentice
+prof	Alchemy	Horde	Valiena Swiftgale	Zephras Isle	59.3,76.2	Valanaar	Apprentice
+prof	Alchemy	Horde	Whuut	Orgrimmar	55.5,33.4	The Drag	Apprentice
+prof	Alchemy	Horde	Bena Winterhoof	Thunder Bluff	46.6,33.2	Middle Rise	Journeyman
+prof	Alchemy	Horde	Doctor Marsh	Undercity	51.6,75.4	The Apothecarium	Journeyman
+prof	Alchemy	Horde	Jaxin Chong	Stranglethorn Vale	28.0,78.0	Booty Bay	Journeyman
+prof	Alchemy	Horde	Serge Hinott	Hillsbrad Foothills	61.5,19.2	Tarren Mill	Journeyman
+prof	Alchemy	Horde	Yelmak	Orgrimmar	56.4,33.8	The Drag	Journeyman
+prof	Alchemy	Horde	Doctor Herbert Halsey	Undercity	48.3,72.3	The Apothecarium	Expert
+prof	Alchemy	Horde	Master Mycologist Shurome	Felwood	51.5,81.9	Emerald Sanctuary	Artisan
+prof	Alchemy	Horde	Rogvar	Swamp of Sorrows	48.3,55.5	Stonard	Artisan
+prof	Blacksmithing	Alliance	Aedi Thriceforged	Zephras Isle	44.8,44.3	Shen’dar Village	Apprentice
+prof	Blacksmithing	Alliance	Alphonse Dumas	Riverglades	64.4,82.0	Farholde Keep	Apprentice
+prof	Blacksmithing	Alliance	Dane Lindgren	Stormwind City	63.8,37.2	Dwarven District	Apprentice
+prof	Blacksmithing	Alliance	Delfrum Flintbeard	Darkshore	38.2,41.0	Auberdine	Apprentice
+prof	Blacksmithing	Alliance	Gelman Stonehand	Stormwind City	59.1,37.7	Dwarven Quarter	Apprentice
+prof	Blacksmithing	Alliance	Groum Stonebeard	Ironforge	52.2,41.4	The Great Forge	Apprentice
+prof	Blacksmithing	Alliance	Smith Argus	Elwynn Forest	41.7,65.6	Goldshire	Apprentice
+prof	Blacksmithing	Alliance	Tognus Flintfire	Dun Morogh	45.2,52.1	Kharanos	Apprentice
+prof	Blacksmithing	Alliance	Clarise Gnarltree	Duskwood	74.0,48.1	Darkshire	Journeyman
+prof	Blacksmithing	Alliance	Daeann Steelwind	Zephras Isle	65.4,80.0	Valanaar	Journeyman
+prof	Blacksmithing	Alliance	Rotgath Stonebeard	Ironforge	51.2,43.2	The Great Forge	Journeyman
+prof	Blacksmithing	Alliance	Therum Deepforge	Stormwind City	63.4,37.0	Dwarven Quarter	Journeyman
+prof	Blacksmithing	Alliance	Alard Schmied	Alterac Mountains	19.7,63.2	Dalaran	Expert
+prof	Blacksmithing	Alliance	Bengus Deepforge	Ironforge	51.6,42.4	The Great Forge	Expert
+prof	Blacksmithing	Alliance	Brikk Keencraft	Stranglethorn Vale	29.0,75.5	Booty Bay	Artisan
+prof	Blacksmithing	Horde	Aedi Thriceforged	Zephras Isle	44.8,44.3	Shen’dar Village	Apprentice
+prof	Blacksmithing	Horde	Basil Frye	Undercity	61.0,28.4	The War Quarter	Apprentice
+prof	Blacksmithing	Horde	Dwukk	Durotar	52.1,40.6	Razor Hill	Apprentice
+prof	Blacksmithing	Horde	Guillaume Sorouy	Silverpine Forest	43.2,41.0	The Sepulcher	Apprentice
+prof	Blacksmithing	Horde	Gur'dok	Riverglades	60.2,46.1	Rog’mar	Apprentice
+prof	Blacksmithing	Horde	Thrag Stonehoof	Thunder Bluff	39.9,56.5	Middle Rise	Apprentice
+prof	Blacksmithing	Horde	Ug'thok	Orgrimmar	80.6,23.8	Valley of Honor	Apprentice
+prof	Blacksmithing	Horde	Angus Hammerhand	Tirisfal Glades	21.2,45.8	Bandarion Keep	Journeyman
+prof	Blacksmithing	Horde	Daeann Steelwind	Zephras Isle	65.4,80.0	Valanaar	Journeyman
+prof	Blacksmithing	Horde	James Van Brunt	Undercity	61.6,30.2	The War Quarter	Journeyman
+prof	Blacksmithing	Horde	Karn Stonehoof	Thunder Bluff	39.7,55.5	Middle Rise	Journeyman
+prof	Blacksmithing	Horde	Snarl	Orgrimmar	79.8,23.4	Valley of Honor	Journeyman
+prof	Blacksmithing	Horde	Traugh	The Barrens	51.2,28.8	Crossroads	Journeyman
+prof	Blacksmithing	Horde	Saru Steelfury	Orgrimmar	82.4,23.5	Valley of Honor	Expert
+prof	Blacksmithing	Horde	Brikk Keencraft	Stranglethorn Vale	29.0,75.5	Booty Bay	Artisan
+prof	Enchanting	Alliance	Alanna Raveneye	Teldrassil	36.8,34.2	The Oracle Glade	Apprentice
+prof	Enchanting	Alliance	Betty Quin	Stormwind City	53.2,74.0	Mage Quarter	Apprentice
+prof	Enchanting	Alliance	Eaysaa Brightgust	Zephras Isle	59.2,76.3	Valanaar	Apprentice
+prof	Enchanting	Alliance	Lalina Summermoon	Darnassus	59.6,12.4	Craftsmen’s Terrace	Apprentice
+prof	Enchanting	Alliance	Nasalanna Windsinger	Zephras Isle	43.2,43.3	Shen’dar Village	Apprentice
+prof	Enchanting	Alliance	Thonys Pillarstone	Ironforge	60.6,44.8	The Great Forge	Apprentice
+prof	Enchanting	Alliance	Gimble Thistlefuzz	Ironforge	60.2,45.6	The Great Forge	Journeyman
+prof	Enchanting	Alliance	Lucan Cordell	Stormwind City	52.9,74.3	Mage Quarter	Journeyman
+prof	Enchanting	Alliance	Taladan	Darnassus	58.6,13.6	Craftsmen’s Terrace	Journeyman
+prof	Enchanting	Alliance	Xylinnia Starshine	Feralas	31.6,44.2	Feathermoon Stronghold	Journeyman
+prof	Enchanting	Alliance	Kitta Firewind	Elwynn Forest	64.9,70.7	Tower of Azora	Expert
+prof	Enchanting	Alliance	Melanie Sable	Riverglades	66.2,83.3	Farholde Keep	Expert
+prof	Enchanting	Alliance	Vanessa Sellers	Alterac Mountains	16.8,62.4	Dalaran	Expert
+prof	Enchanting	Horde	Eaysaa Brightgust	Zephras Isle	59.2,76.3	Valanaar	Apprentice
+prof	Enchanting	Horde	Jhag	Orgrimmar	53.6,38.2	The Drag	Apprentice
+prof	Enchanting	Horde	Malcomb Wynn	Undercity	62.6,60.6	The Apothecarium	Apprentice
+prof	Enchanting	Horde	Mot Dawnstrider	Thunder Bluff	45.0,38.1	Middle Rise	Apprentice
+prof	Enchanting	Horde	Nasalanna Windsinger	Zephras Isle	43.2,43.3	Shen’dar Village	Apprentice
+prof	Enchanting	Horde	Pa'zula	Durotar	56.7,73.7	Sen’jin Village	Apprentice
+prof	Enchanting	Horde	Vance Undergloom	Tirisfal Glades	61.7,51.7	Brill	Apprentice
+prof	Enchanting	Horde	Godan	Orgrimmar	53.6,38.3	The Drag	Journeyman
+prof	Enchanting	Horde	Lavinia Crowe	Undercity	62.5,61.3	The Apothecarium	Journeyman
+prof	Enchanting	Horde	Teg Dawnstrider	Thunder Bluff	45.2,38.5	Middle Rise	Journeyman
+prof	Enchanting	Horde	Hgarth	Stonetalon Mountains	49.2,57.2	Sun Rock Retreat	Expert
+prof	Engineering	Alliance	Bronk Guzzlegear	Dun Morogh	50.3,50.4	Kharanos	Apprentice
+prof	Engineering	Alliance	Deek Fizzlebizz	Loch Modan	45.6,13.7	Stonewrought Dam	Apprentice
+prof	Engineering	Alliance	Jemma Quikswitch	Ironforge	68.0,44.5	Tinker Town	Apprentice
+prof	Engineering	Alliance	Jenna Lemkenilli	Darkshore	38.1,41.0	Auberdine	Apprentice
+prof	Engineering	Alliance	Sprite Jumpsprocket	Stormwind City	62.0,30.7	Dwarven Quarter	Apprentice
+prof	Engineering	Alliance	Strange Hermit	Zephras Isle	54.0,38.9	Shadowgale Forest	Apprentice
+prof	Engineering	Alliance	Tinkerwiz	The Barrens	62.6,32.6	Ratchet	Apprentice
+prof	Engineering	Alliance	Finbus Geargrind	Duskwood	77.5,48.6	Darkshire	Journeyman
+prof	Engineering	Alliance	Lilliam Sparkspindle	Stormwind City	62.0,30.6	Dwarven District	Journeyman
+prof	Engineering	Alliance	Trixie Quikswitch	Ironforge	68.2,44.2	Tinker Town	Journeyman
+prof	Engineering	Alliance	Springspindle Fizzlegear	Ironforge	68.8,45.2	Tinker Town	Expert
+prof	Engineering	Alliance	Buzzek Bracketswing	Tanaris	52.2,27.6	Gadgetzan	Artisan
+prof	Engineering	Horde	Graham Van Talen	Undercity	75.6,74.7	The Rogues’ Quarter	Apprentice
+prof	Engineering	Horde	Mukdrak	Durotar	52.2,40.9	Razor Hill	Apprentice
+prof	Engineering	Horde	Strange Hermit	Zephras Isle	54.0,38.9	Shadowgale Forest	Apprentice
+prof	Engineering	Horde	Thund	Orgrimmar	75.4,24.6	Valley of Honor	Apprentice
+prof	Engineering	Horde	Tinkerwiz	The Barrens	62.6,32.6	Ratchet	Apprentice
+prof	Engineering	Horde	Twizwick Sprocketgrind	Mulgore	58.6,39.4	The Venture Co. Mine	Apprentice
+prof	Engineering	Horde	Franklin Lloyd	Undercity	76.5,75.0	The Rogues’ Quarter	Journeyman
+prof	Engineering	Horde	Nogg	Orgrimmar	75.8,25.2	Valley of Honor	Journeyman
+prof	Engineering	Horde	Roxxik	Orgrimmar	76.0,25.0	Valley of Honor	Expert
+prof	Engineering	Horde	Buzzek Bracketswing	Tanaris	52.2,27.6	Gadgetzan	Artisan
+prof	Herbalism	Alliance	Eleyna Duskbreeze	Teldrassil	59.8,41.3	Shadowglen	Apprentice
+prof	Herbalism	Alliance	Emrys Flintbeard	Dun Morogh	28.8,66.7	Coldridge Valley	Apprentice
+prof	Herbalism	Alliance	Nancy Songflower	Elwynn Forest	52.4,43.8	Northshire	Apprentice
+prof	Herbalism	Alliance	Alma Jainrose	Redridge Mountains	16.8,46.8	Lakeshire	Artisan
+prof	Herbalism	Alliance	Brant Jasperbloom	Dustwallow Marsh	64.1,47.5	Theramore Isle	Artisan
+prof	Herbalism	Alliance	Cylania Rootstalker	Ashenvale	50.6,67.0	Silverwind Refuge	Artisan
+prof	Herbalism	Alliance	Edward Egan	Alterac Mountains	18.4,63.4	Dalaran	Artisan
+prof	Herbalism	Alliance	Firodren Mooncaller	Darnassus	47.9,68.6	Temple Gardens	Artisan
+prof	Herbalism	Alliance	Flora Silverwind	Stranglethorn Vale	27.6,77.8	Booty Bay	Artisan
+prof	Herbalism	Alliance	Halassa Fernbreeze	Zephras Isle	43.1,43.5	Shen’dar Village	Artisan
+prof	Herbalism	Alliance	Herbalist Pomeroy	Elwynn Forest	39.9,48.3	Outside Stormwind	Artisan
+prof	Herbalism	Alliance	Kali Healtouch	Loch Modan	36.6,48.4	Thelsamar	Artisan
+prof	Herbalism	Alliance	Malorne Bladeleaf	Teldrassil	57.7,60.6	Dolanaar	Artisan
+prof	Herbalism	Alliance	Malvor	Moonglade	45.6,46.8	Nighthaven	Artisan
+prof	Herbalism	Alliance	Reyna Stonebranch	Ironforge	55.6,58.0	Great Forge	Artisan
+prof	Herbalism	Alliance	Shylamiir	Stormwind City	31.4,62.9	The Park	Artisan
+prof	Herbalism	Alliance	Syriel Nightrain	Zephras Isle	57.9,75.5	Valanaar	Artisan
+prof	Herbalism	Alliance	Tannysa	Stormwind City	54.5,83.9	Mage Quarter	Artisan
+prof	Herbalism	Alliance	Telurinon Moonshadow	Wetlands	8.0,55.9	Menethil Harbor	Artisan
+prof	Herbalism	Horde	Florence Nightshade	Tirisfal Glades	32.4,65.2	Deathknell	Apprentice
+prof	Herbalism	Horde	Garan Sunstrider	Mulgore	44.2,77.8	Red Cloud Mesa	Apprentice
+prof	Herbalism	Horde	Zor'la	Durotar	42.7,67.4	Valley of Trials	Apprentice
+prof	Herbalism	Horde	Angrun	Stranglethorn Vale	32.2,27.6	Grom’gol Base Camp	Artisan
+prof	Herbalism	Horde	Aranae Venomblood	Hillsbrad Foothills	61.8,19.7	Tarren Mill	Artisan
+prof	Herbalism	Horde	Faruza	Tirisfal Glades	59.9,52.1	Brill	Artisan
+prof	Herbalism	Horde	Flora Silverwind	Stranglethorn Vale	27.6,77.8	Booty Bay	Artisan
+prof	Herbalism	Horde	Halassa Fernbreeze	Zephras Isle	43.1,43.5	Shen’dar Village	Artisan
+prof	Herbalism	Horde	Jandi	Orgrimmar	55.6,40.0	The Drag	Artisan
+prof	Herbalism	Horde	Komin Winterhoof	Thunder Bluff	49.7,39.6	Middle Rise	Artisan
+prof	Herbalism	Horde	Malvor	Moonglade	45.6,46.8	Nighthaven	Artisan
+prof	Herbalism	Horde	Martha Alliestar	Undercity	54.8,50.1	The Apothecarium	Artisan
+prof	Herbalism	Horde	Mishiki	Durotar	55.4,75.1	Sen’jin Village	Artisan
+prof	Herbalism	Horde	Ruw	Feralas	76.0,43.4	Camp Mojache	Artisan
+prof	Herbalism	Horde	Syriel Nightrain	Zephras Isle	57.9,75.5	Valanaar	Artisan
+prof	Leatherworking	Alliance	Adele Fielder	Elwynn Forest	46.4,62.1	Goldshire	Apprentice
+prof	Leatherworking	Alliance	Darianna	Darnassus	64.6,21.0	Craftsmen’s Terrace	Apprentice
+prof	Leatherworking	Alliance	Gretta Finespindle	Ironforge	39.6,33.8	The Great Forge	Apprentice
+prof	Leatherworking	Alliance	Indari Sunseam	Zephras Isle	44.6,44.6	Shen’dar Village	Apprentice
+prof	Leatherworking	Alliance	Nadyia Maneweaver	Teldrassil	41.9,49.6	Outside Darnassus	Apprentice
+prof	Leatherworking	Alliance	Randal Worth	Stormwind City	71.9,62.6	Old Town	Apprentice
+prof	Leatherworking	Alliance	Waldor	The Barrens	46.0,35.8	Wailing Caverns	Apprentice
+prof	Leatherworking	Alliance	Aayndia Floralwind	Ashenvale	35.9,52.1	Astranaar	Journeyman
+prof	Leatherworking	Alliance	Emerii Tallgust	Zephras Isle	63.8,80.7	Valanaar	Journeyman
+prof	Leatherworking	Alliance	Faldron	Darnassus	64.4,21.6	Craftsmen’s Terrace	Journeyman
+prof	Leatherworking	Alliance	Fimble Finespindle	Ironforge	39.8,33.5	The Great Forge	Journeyman
+prof	Leatherworking	Alliance	Simon Tanner	Stormwind City	71.9,62.7	Old Town	Journeyman
+prof	Leatherworking	Alliance	Telonis	Darnassus	64.6,21.5	Craftsmen’s Terrace	Expert
+prof	Leatherworking	Alliance	Drakk Stonehand	The Hinterlands	13.4,43.4	Aerie Peak	Artisan
+prof	Leatherworking	Horde	Chaw Stronghide	Mulgore	45.0,61.4	Bloodhoof Village	Apprentice
+prof	Leatherworking	Horde	Dan Golthas	Undercity	71.3,59.8	The Rogues’ Quarter	Apprentice
+prof	Leatherworking	Horde	Indari Sunseam	Zephras Isle	44.6,44.6	Shen’dar Village	Apprentice
+prof	Leatherworking	Horde	Kamari	Orgrimmar	63.1,45.1	The Drag	Apprentice
+prof	Leatherworking	Horde	Mak	Thunder Bluff	42.4,43.1	Middle Rise	Apprentice
+prof	Leatherworking	Horde	Shelene Rhobart	Tirisfal Glades	65.4,60.1	Camp near Undercity	Apprentice
+prof	Leatherworking	Horde	Waldor	The Barrens	46.0,35.8	Wailing Caverns	Apprentice
+prof	Leatherworking	Horde	Arthur Moore	Undercity	70.6,58.5	The Rogues’ Quarter	Journeyman
+prof	Leatherworking	Horde	Brawn	Stranglethorn Vale	31.4,28.8	Grom’gol Base Camp	Journeyman
+prof	Leatherworking	Horde	Emerii Tallgust	Zephras Isle	63.8,80.7	Valanaar	Journeyman
+prof	Leatherworking	Horde	Karolek	Orgrimmar	62.6,44.8	The Drag	Journeyman
+prof	Leatherworking	Horde	Krulmoo Fullmoon	The Barrens	44.9,59.5	Camp Taurajo	Journeyman
+prof	Leatherworking	Horde	Narv Hidecrafter	Desolace	55.2,56.3	Ghost Walker Post	Journeyman
+prof	Leatherworking	Horde	Tarn	Thunder Bluff	42.5,43.0	Middle Rise	Journeyman
+prof	Leatherworking	Horde	Una	Thunder Bluff	41.7,42.7	Middle Rise	Expert
+prof	Leatherworking	Horde	Hahrana Ironhide	Feralas	74.4,43.1	Camp Mojache	Artisan
+prof	Mining	Alliance	Fanorran Stilloak	Teldrassil	58.2,41.3	Shadowglen	Apprentice
+prof	Mining	Alliance	Kelsey Fargo	Elwynn Forest	47.1,32.3	Northshire	Apprentice
+prof	Mining	Alliance	Sally Swiftwrench	Dun Morogh	28.7,67.8	Coldridge Valley	Apprentice
+prof	Mining	Alliance	Brock Stoneseeker	Loch Modan	37.2,46.9	Thelsamar	Artisan
+prof	Mining	Alliance	Dank Drizzlecut	Dun Morogh	69.1,55.5	Gol’Bolar Quarry	Artisan
+prof	Mining	Alliance	Gelman Stonehand	Stormwind City	59.1,37.7	Dwarven District	Artisan
+prof	Mining	Alliance	Geofram Bouldertoe	Ironforge	50.3,28.0	The Great Forge	Artisan
+prof	Mining	Alliance	Grungle	Riverglades	77.7,51.9	Powderfuse Port	Artisan
+prof	Mining	Alliance	Halavuul Cragwind	Zephras Isle	65.4,80.4	Valanaar	Artisan
+prof	Mining	Alliance	Kurdram Stonehammer	Darkshore	38.2,41.0	Auberdine	Artisan
+prof	Mining	Alliance	Matt Johnson	Duskwood	74.0,49.6	Darkshire	Artisan
+prof	Mining	Alliance	Messana Crestwind	Zephras Isle	44.7,44.5	Shen’dar Village	Artisan
+prof	Mining	Alliance	Pikkle	Tanaris	51.0,28.0	Gadgetzan	Artisan
+prof	Mining	Alliance	Yarr Hammerstone	Dun Morogh	50.0,50.4	Kharanos	Artisan
+prof	Mining	Horde	Norzsh	Durotar	40.5,68.0	Valley of Trials	Apprentice
+prof	Mining	Horde	Vartha Rockmane	Mulgore	44.2,78.2	Red Cloud Mesa	Apprentice
+prof	Mining	Horde	Walter Mason	Tirisfal Glades	32.3,65.7	Deathknell	Apprentice
+prof	Mining	Horde	Brek Stonehoof	Thunder Bluff	34.5,57.5	Middle Rise	Artisan
+prof	Mining	Horde	Brom Killian	Undercity	55.9,36.0	The War Quarter	Artisan
+prof	Mining	Horde	Grungle	Riverglades	77.7,51.9	Powderfuse Port	Artisan
+prof	Mining	Horde	Halavuul Cragwind	Zephras Isle	65.4,80.4	Valanaar	Artisan
+prof	Mining	Horde	Johan Focht	Silverpine Forest	43.3,40.6	The Sepulcher	Artisan
+prof	Mining	Horde	Krunn	Durotar	51.8,40.7	Razor Hill	Artisan
+prof	Mining	Horde	Makaru	Orgrimmar	73.0,27.0	Valey of Honor	Artisan
+prof	Mining	Horde	Messana Crestwind	Zephras Isle	44.7,44.5	Shen’dar Village	Artisan
+prof	Mining	Horde	Pikkle	Tanaris	51.0,28.0	Gadgetzan	Artisan
+prof	Skinning	Alliance	Brighid Stormflayer	Dun Morogh	29.2,67.7	Coldridge Valley	Apprentice
+prof	Skinning	Alliance	Riley Peltskinner	Elwynn Forest	47.0,39.8	Northshire	Apprentice
+prof	Skinning	Alliance	Terunne Bearshaper	Teldrassil	59.4,38.7	Shadowglen	Apprentice
+prof	Skinning	Alliance	Balthus Stoneflayer	Ironforge	39.6,32.8	The Great Forge	Artisan
+prof	Skinning	Alliance	Eladriel	Darnassus	64.2,21.7	Craftsmen’s Terrace	Artisan
+prof	Skinning	Alliance	Helene Peltskinner	Elwynn Forest	46.3,62.2	Goldshire	Artisan
+prof	Skinning	Alliance	Ishlee Breezewhisper	Zephras Isle	59.6,75.9	Valanaar	Artisan
+prof	Skinning	Alliance	Jayla	Ashenvale	50.1,67.2	Silverwind Refuge	Artisan
+prof	Skinning	Alliance	Maris Granger	Stormwind City	72.3,62.3	Old Town	Artisan
+prof	Skinning	Alliance	Mendalass Tattermend	Zephras Isle	43.2,43.4	Shen’dar Village	Artisan
+prof	Skinning	Alliance	Radnaal Maneweaver	Teldrassil	42.1,50.0	Outside Darnassus	Artisan
+prof	Skinning	Alliance	Wilma Ranthal	Redridge Mountains	83.6,71.1	Shalewind Canyon	Artisan
+prof	Skinning	Horde	Kagil	Durotar	40.8,68.0	Valley of Trials	Apprentice
+prof	Skinning	Horde	Margaret Weaver	Tirisfal Glades	32.6,65.7	Deathknell	Apprentice
+prof	Skinning	Horde	Nawka Wildsong	Mulgore	44.8,76.8	Red Cloud Mesa	Apprentice
+prof	Skinning	Horde	Dranh	The Barrens	45.1,59.0	Camp Taurajo	Artisan
+prof	Skinning	Horde	Ishlee Breezewhisper	Zephras Isle	59.6,75.9	Valanaar	Artisan
+prof	Skinning	Horde	Killian Hagey	Undercity	71.0,59.5	Rogues’ Quarter	Artisan
+prof	Skinning	Horde	Kulleg Stonehorn	Feralas	74.4,43.0	Camp Mojache	Artisan
+prof	Skinning	Horde	Malux	Desolace	23.2,69.8	Shadowprey Village	Artisan
+prof	Skinning	Horde	Mendalass Tattermend	Zephras Isle	43.2,43.4	Shen’dar Village	Artisan
+prof	Skinning	Horde	Mooranta	Thunder Bluff	44.7,43.3	Middle Rise	Artisan
+prof	Skinning	Horde	Rand Rhobart	Tirisfal Glades	65.6,60.1	Camp near Undercity	Artisan
+prof	Skinning	Horde	Thuwd	Orgrimmar	63.1,45.3	The Drag	Artisan
+prof	Skinning	Horde	Yonn Deepcut	Mulgore	45.0,61.4	Bloodhoof Village	Artisan
+prof	Tailoring	Alliance	Eldrin	Elwynn Forest	79.2,69.1	Eastvale Logging Camp	Apprentice
+prof	Tailoring	Alliance	Grondal Moonbreeze	Darkshore	38.2,40.6	Auberdine	Apprentice
+prof	Tailoring	Alliance	Trianna	Darnassus	63.6,21.7	Craftsmen’s Terrace	Apprentice
+prof	Tailoring	Alliance	Uthrar Threx	Ironforge	43.9,28.9	The Great Forge	Apprentice
+prof	Tailoring	Alliance	Grarnik Goodstitch	Stranglethorn Vale	28.6,76.8	Booty Bay	Journeyman
+prof	Tailoring	Alliance	Jormund Stonebrow	Ironforge	44.0,30.4	The Great Forge	Journeyman
+prof	Tailoring	Alliance	Me'lynn	Darnassus	62.6,22.6	Craftsmen’s Terrace	Journeyman
+prof	Tailoring	Alliance	Othesia Evengale	Zephras Isle	64.4,81.1	Valanaar	Journeyman
+prof	Tailoring	Alliance	Sellandus	Stormwind City	52.3,83.4	Mage Quarter	Journeyman
+prof	Tailoring	Alliance	Taleen Shimmerthread	Zephras Isle	44.8,44.3	Shen’dar Village	Journeyman
+prof	Tailoring	Alliance	Charles Worth	Alterac Mountains	17.9,60.7	Dalaran	Expert
+prof	Tailoring	Alliance	Georgio Bolero	Stormwind City	53.3,81.7	Mage Quarter	Expert
+prof	Tailoring	Alliance	Lawrence Schneider	Stormwind City	53.5,81.8	Mage Quarter	Expert
+prof	Tailoring	Alliance	Timothy Worthington	Dustwallow Marsh	66.2,51.6	Theramore Isle	Artisan
+prof	Tailoring	Horde	Bowen Brisboise	Tirisfal Glades	52.6,55.5	Brill	Apprentice
+prof	Tailoring	Horde	Kil'hala	The Barrens	52.2,31.8	Crossroads	Apprentice
+prof	Tailoring	Horde	Snang	Orgrimmar	62.8,49.5	The Drag	Apprentice
+prof	Tailoring	Horde	Vhan	Thunder Bluff	44.0,44.6	Middle Rise	Apprentice
+prof	Tailoring	Horde	Victor Ward	Undercity	70.7,29.6	The Magic Quarter	Apprentice
+prof	Tailoring	Horde	Grarnik Goodstitch	Stranglethorn Vale	28.6,76.8	Booty Bay	Journeyman
+prof	Tailoring	Horde	Magar	Orgrimmar	63.7,50.0	The Drag	Journeyman
+prof	Tailoring	Horde	Mahani	The Barrens	44.8,59.5	Camp Taurajo	Journeyman
+prof	Tailoring	Horde	Othesia Evengale	Zephras Isle	64.4,81.1	Valanaar	Journeyman
+prof	Tailoring	Horde	Rhiannon Davis	Undercity	70.4,29.6	The Magic Quarter	Journeyman
+prof	Tailoring	Horde	Taleen Shimmerthread	Zephras Isle	44.8,44.3	Shen’dar Village	Journeyman
+prof	Tailoring	Horde	Tepa	Thunder Bluff	43.9,44.8	Middle Rise	Journeyman
+prof	Tailoring	Horde	Josef Gregorian	Undercity	70.8,30.6	The Magic Quarter	Expert
+prof	Tailoring	Horde	Daryl Stack	Hillsbrad Foothills	63.6,20.8	Tarren Mill	Artisan
+prof	Cooking	Alliance	Alegorn	Darnassus	48.9,21.3	Craftsmen’s Terrace	Journeyman
+prof	Cooking	Alliance	Cook Ghilm	Dun Morogh	68.4,54.5	Gol’Bolar Quarry	Journeyman
+prof	Cooking	Alliance	Crystal Boughman	Redridge	17.7,43.6	Lakeshire	Journeyman
+prof	Cooking	Alliance	Daryl Riknussun	Ironforge	60.4,38.1	The Great Forge	Journeyman
+prof	Cooking	Alliance	Gremlock Pilsnor	Dun Morogh	47.6,52.4	Kharanos	Journeyman
+prof	Cooking	Alliance	Hnaz Blunderflame	Mount Hyjal	15.6,50.2	Elderwild	Journeyman
+prof	Cooking	Alliance	Katherine Lee	Alterac Mountains	12.5,65.7	Dalaran	Journeyman
+prof	Cooking	Alliance	Nyalah Brightfire	Zephras Isle	60.6,72.7	Valanaar	Journeyman
+prof	Cooking	Alliance	Stephen Ryback	Stormwind City	78.3,53.1	Old Town	Journeyman
+prof	Cooking	Alliance	Tomas	Elwynn Forest	44.3,66.0	Goldshire	Journeyman
+prof	Cooking	Alliance	Zarrin	Teldrassil	57.1,61.2	Dolanaar	Journeyman
+prof	Cooking	Alliance	Zerril Softbreeze	Zephras Isle	43.8,43.9	Shen’dar Village	Journeyman
+prof	Cooking	Horde	Aska Mistrunner	Thunder Bluff	51.0,52.3	Middle Rise	Journeyman
+prof	Cooking	Horde	Cook Torka	Durotar	51.1,42.5	Razor Hill	Journeyman
+prof	Cooking	Horde	Duhng	The Barrens	55.2,31.8	Crossroads	Journeyman
+prof	Cooking	Horde	Eunice Burch	Undercity	62.6,44.8	Trade Quarter	Journeyman
+prof	Cooking	Horde	Gorg	Riverglades	58.8,44.5	Rog’mar	Journeyman
+prof	Cooking	Horde	Mudduk	Stranglethorn Vale	31.4,28.0	Grom’gol Base Camp	Journeyman
+prof	Cooking	Horde	Nyalah Brightfire	Zephras Isle	60.6,72.7	Valanaar	Journeyman
+prof	Cooking	Horde	Ortak Lomgok	Mount Hyjal	13.2,52.8	Elderwild	Journeyman
+prof	Cooking	Horde	Pyall Silentstride	Mulgore	45.1,61.5	Bloodhoof Village	Journeyman
+prof	Cooking	Horde	William Pickman	Tirisfal Glades	61.8,51.5	Brill	Journeyman
+prof	Cooking	Horde	Zamja	Orgrimmar	57.4,53.8	The Drag	Journeyman
+prof	Cooking	Horde	Zerril Softbreeze	Zephras Isle	43.8,43.9	Shen’dar Village	Journeyman
+prof	Fishing	Alliance	Androl Oakhand	Teldrassil	55.8,93.5	Rut’theran Village	Journeyman
+prof	Fishing	Alliance	Arnold Leland	Stormwind City	55.1,69.6	Trade District	Journeyman
+prof	Fishing	Alliance	Astaia	Darnassus	47.5,56.5	Temple Gardens	Journeyman
+prof	Fishing	Alliance	Baelann Swiftcurrent	Zephras Isle	63.2,75.7	Valanaar	Journeyman
+prof	Fishing	Alliance	Brannock	Feralas	32.2,41.4	Feathermoon Stronghold	Journeyman
+prof	Fishing	Alliance	Donald Rabonne	Hillsbrad Foothills	50.3,64.3	Southshore	Journeyman
+prof	Fishing	Alliance	Fenn Fairweather	Zephras Isle	45.0,48.4	Shen’dar Village	Journeyman
+prof	Fishing	Alliance	Grimnur Stonebrand	Ironforge	48.5,6.2	The Forlorn Cavern	Journeyman
+prof	Fishing	Alliance	Harold Riggs	Wetlands	8.2,58.3	Menethil Harbor	Journeyman
+prof	Fishing	Alliance	Hunter Moore	Hillsbrad Foothills	54.0,80.6	Island off the coast	Journeyman
+prof	Fishing	Alliance	Krix	Riverglades	79.3,54.7	Powderfuse Port	Journeyman
+prof	Fishing	Alliance	Lee Brown	Elwynn Forest	47.6,62.3	Goldshire	Journeyman
+prof	Fishing	Alliance	Matthew Hooper	Redridge	21.5,51.0	Lakeshire	Journeyman
+prof	Fishing	Alliance	Myizz Luckycatch	Stranglethorn Vale	27.5,77.2	Booty Bay	Journeyman
+prof	Fishing	Alliance	Paxton Ganter	Dun Morogh	35.6,40.4	Iceflow Lake	Journeyman
+prof	Fishing	Alliance	Warg Deepwater	Loch Modan	40.5,39.4	The Loch	Journeyman
+prof	Fishing	Horde	Armand Cromwell	Undercity	81.0,29.5	The Magic Quarter	Journeyman
+prof	Fishing	Horde	Baelann Swiftcurrent	Zephras Isle	63.2,75.7	Valanaar	Journeyman
+prof	Fishing	Horde	Clyde Kellen	Tirisfal Glades	67.1,51.0	Brightwater Lake	Journeyman
+prof	Fishing	Horde	Fenn Fairweather	Zephras Isle	45.0,48.4	Shen’dar Village	Journeyman
+prof	Fishing	Horde	Kah Mistrunner	Thunder Bluff	56.4,47.6	Middle Rise	Journeyman
+prof	Fishing	Horde	Katoom the Angler	The Hinterlands	80.5,81.5	Revantusk Village	Journeyman
+prof	Fishing	Horde	Kil'Hiwana	Ashenvale	10.7,33.5	Zoram Strand	Journeyman
+prof	Fishing	Horde	Krix	Riverglades	79.3,54.7	Powderfuse Port	Journeyman
+prof	Fishing	Horde	Lau'Tiki	Durotar	53.2,81.5	Sen’jin Village	Journeyman
+prof	Fishing	Horde	Lui'Mala	Desolace	22.7,72.7	Shadowprey Village	Journeyman
+prof	Fishing	Horde	Lumak	Orgrimmar	69.7,29.3	Valey of Honor	Journeyman
+prof	Fishing	Horde	Myizz Luckycatch	Stranglethorn Vale	27.5,77.2	Booty Bay	Journeyman
+prof	Fishing	Horde	Uthan Stillwater	Mulgore	44.2,63.9	Bloodhoof Village	Journeyman
+prof	First Aid	Alliance	Angelique Butler	Alterac Mountains	17.1,61.0	Dalaran	Journeyman
+prof	First Aid	Alliance	Byancie	Teldrassil	55.4,56.9	Dolanaar	Journeyman
+prof	First Aid	Alliance	Dannelor	Darnassus	51.5,13.7	Craftsmen’s Terrace	Journeyman
+prof	First Aid	Alliance	Fremal Doohickey	Wetlands	10.8,61.1	Menethil Harbor	Journeyman
+prof	First Aid	Alliance	Melasa Fairmend	Zephras Isle	63.1,72.6	Valanaar	Journeyman
+prof	First Aid	Alliance	Michelle Belle	Elwynn Forest	43.4,65.7	Goldshire	Journeyman
+prof	First Aid	Alliance	Naleeia Tattermend	Zephras Isle	43.1,46.3	Shen’dar Village	Journeyman
+prof	First Aid	Alliance	Nissa Firestone	Ironforge	54.8,58.6	The Great Forge	Journeyman
+prof	First Aid	Alliance	Shaina Fuller	Stormwind City	52.9,44.9	Cathedral Square	Journeyman
+prof	First Aid	Alliance	Thamner Pol	Dun Morogh	47.2,52.6	Kharanos	Journeyman
+prof	First Aid	Horde	Arnok	Orgrimmar	34.0,84.3	Valley of Spirits	Journeyman
+prof	First Aid	Horde	Mary Edras	Undercity	73.5,55.5	The Rogues’ Quarter	Journeyman
+prof	First Aid	Horde	Melasa Fairmend	Zephras Isle	63.1,72.6	Valanaar	Journeyman
+prof	First Aid	Horde	Naleeia Tattermend	Zephras Isle	43.1,46.3	Shen’dar Village	Journeyman
+prof	First Aid	Horde	Nurse Neela	Tirisfal Glades	61.8,52.8	Brill	Journeyman
+prof	First Aid	Horde	Pand Stonebinder	Thunder Bluff	29.2,21.7	Spirit Rise	Journeyman
+prof	First Aid	Horde	Rawrk	Durotar	54.0,42.0	Razor Hill	Journeyman
+prof	First Aid	Horde	Vira Younghoof	Mulgore	46.2,64.8	Bloodhoof Village	Journeyman

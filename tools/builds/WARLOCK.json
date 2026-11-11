@@ -1,0 +1,58 @@
+{
+  "builds": [
+    {
+      "id": "levelling",
+      "name": "Easy levelling",
+      "icon": "moon",
+      "suits": "Damage over time and a Voidwalker to hold the enemy. You start a fight, then watch it fall. Slow and safe, with little to learn.",
+      "gear": "Stamina and Intellect first, then gear that adds Spell Damage. A staff, or a one-handed weapon with an item for your other hand, and a wand.",
+      "why": {
+        "Suppression": "Your spells miss less often.",
+        "Improved Corruption": "Corruption casts faster and hurts more.",
+        "Improved Drains": "Your Drain spells do more, and Drain Life heals you more.",
+        "Fel Concentration": "Being hit is less likely to interrupt your Drain spells and Wrack.",
+        "Nightfall": "Sometimes your next Shadow Bolt casts much faster.",
+        "Siphon Life": "A spell that slowly takes health from the enemy and gives it to you. It opens Wrack.",
+        "Soul Siphon": "Drain Life and Wrack hurt more for each other Affliction effect on the target.",
+        "Malevolence": "Your Shadow spells critically strike more often.",
+        "Shadow Mastery": "All your Shadow spells do more damage and drain more life.",
+        "Wrack": "A strong over-time spell that also boosts your other Shadow damage over time.",
+        "Demonic Embrace": "More Stamina, so you have more health to survive with.",
+        "Improved Voidwalker": "Your Voidwalker's own spells work better, so it protects you more.",
+        "Fel Vitality": "More Health and Mana for your demon, and more Mana for you.",
+        "Master Summoner": "Summoning a demon is quicker and costs less Mana.",
+        "Demonic Aegis": "Demon Armor protects you better.",
+        "Unholy Power": "Your demon does more damage.",
+        "Grim Reach": "Your Affliction spells reach 20% further, so you can start fights from safer ground."
+      },
+      "order": [
+        ["Suppression", 5],
+        ["Improved Corruption", 5],
+        ["Grim Reach", 2],
+        ["Improved Drains", 3],
+        ["Fel Concentration", 3],
+        ["Nightfall", 2],
+        ["Siphon Life", 1],
+        ["Soul Siphon", 3],
+        ["Malevolence", 1],
+        ["Shadow Mastery", 5],
+        ["Wrack", 1],
+        ["Demonic Embrace", 5],
+        ["Improved Voidwalker", 3],
+        ["Fel Vitality", 3],
+        ["Master Summoner", 2],
+        ["Demonic Aegis", 2],
+        ["Unholy Power", 5]
+      ],
+      "fight": [
+        [null, "Summon Voidwalker first. It stands in front and takes the hits."],
+        [null, "Cast Corruption and Bane of Agony on the enemy, then Shadow Bolt until it falls."],
+        [null, "Mana low? Use Life Tap to turn health into Mana, but only when you are healthy."],
+        [null, "Drain Soul drains the enemy while you hold it. If the enemy dies from it, you get a Soul Shard."],
+        ["Siphon Life", "Put Siphon Life on the enemy early. It slowly gives health to you."],
+        ["Wrack", "Add Wrack to the enemy. It makes your other damage over time spells hurt more."],
+        [null, "Losing a fight? Cast Fear on the enemy, then step away and recover."]
+      ]
+    }
+  ]
+}

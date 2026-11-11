@@ -1,0 +1,53 @@
+{
+  "builds": [
+    {
+      "id": "levelling",
+      "name": "Easy levelling",
+      "icon": "snow",
+      "suits": "Frostbolt from range, with ice to slow enemies and Ice Barrier at level 40 to soak hits. A few Arcane talents at the end save mana.",
+      "gear": "Intellect first, then Stamina and Spirit. Use a staff or a wand, and cloth armor.",
+      "why": {
+        "Improved Frostbolt": "Frostbolt, your main spell, takes less time to cast.",
+        "Precision": "Your spells miss less often.",
+        "Frostbite": "Your chilling effects sometimes freeze the enemy in place.",
+        "Ice Shards": "Your Frost spells hit harder when they critically strike.",
+        "Frost Channeling": "Frost spells cost less mana, so you can cast more before you drink.",
+        "Frost Warding": "Your Frost Armor protects you more, and so will Ice Barrier when you learn it.",
+        "Ice Lance": "An extra Frost hit to use while an enemy is chilled.",
+        "Ice Block": "A button that makes you safe for a short time when a fight goes badly.",
+        "Cold Snap": "Makes your other Frost spells ready again, and it opens Ice Barrier.",
+        "Permafrost": "Chill effects last longer and slow enemies more, so they reach you later.",
+        "Improved Frost Nova": "Frost Nova is ready again sooner, so you can freeze enemies in place more often.",
+        "Arctic Reach": "Your Frostbolt reaches a little further, so you start fights from safer ground.",
+        "Ice Barrier": "A shield you cast on yourself that soaks up damage, from level 40.",
+        "Wand Specialization": "Your wand does more damage, which helps to finish enemies for free.",
+        "Arcane Resilience": "Gives you more Armor, based on your Intellect.",
+        "Arcane Concentration": "Your spells can make your next spell cost less mana.",
+        "Shatter": "Your spells crit more often against a frozen enemy.",
+        "Fingers of Frost": "Your chill effects sometimes treat the next two spells as hitting a frozen enemy.",
+        "Improved Cone of Cold": "Cone of Cold, an area blast in front of you, hits harder.",
+        "Magic Absorption": "Gives you a little protection against spells, and some mana back."
+      },
+      "order": [
+        ["Improved Frostbolt", 5], ["Precision", 3], ["Frostbite", 3],
+        ["Ice Shards", 5], ["Frost Channeling", 3], ["Frost Warding", 2],
+        ["Ice Lance", 1], ["Ice Block", 1], ["Cold Snap", 1],
+        ["Permafrost", 3], ["Improved Frost Nova", 2], ["Arctic Reach", 1],
+        ["Ice Barrier", 1],
+        ["Wand Specialization", 2], ["Arcane Resilience", 3],
+        ["Arcane Concentration", 5],
+        ["Shatter", 3], ["Fingers of Frost", 2], ["Improved Cone of Cold", 3],
+        ["Magic Absorption", 2]
+      ],
+      "fight": [
+        [null, "Start with Frostbolt from far away. Keep casting it until the enemy is dead."],
+        [null, "Enemy at your feet? Frost Nova freezes it. Back away before you cast, as damage can break the freeze."],
+        [null, "Fire Blast is a quick extra hit. Use it to finish an enemy that is nearly dead."],
+        ["Ice Lance", "Ice Lance hits much harder on a frozen enemy. Cast it right after Frost Nova."],
+        ["Ice Barrier", "Cast Ice Barrier on yourself before a hard fight."],
+        [null, "Out of mana? Sit down and drink water. Conjure Water makes more."],
+        ["Ice Block", "Losing a fight? Use Ice Block to be safe, then recover and try again."]
+      ]
+    }
+  ]
+}

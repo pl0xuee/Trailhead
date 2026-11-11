@@ -1,0 +1,231 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans","Liberation Sans",sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}
+.stage{width:1200px;height:800px;display:grid;place-items:center;background:var(--page)}
+.window{width:1120px;height:724px;border-radius:var(--r-win);background:var(--win-bg);border:1px solid var(--win-border);box-shadow:var(--win-shadow);overflow:hidden;position:relative;display:flex;flex-direction:column}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+h1,h2,h3,.serif{font-family:var(--head)}
+/* title bar */
+.title{height:58px;display:flex;align-items:center;padding:0 18px 0 22px;gap:14px;background:var(--bar-bg);border-bottom:1px solid var(--bar-border);color:var(--bar-text);position:relative;z-index:2}
+.logo{width:34px;height:34px;border-radius:var(--r-logo);display:grid;place-items:center;background:var(--logo-bg);color:var(--logo-fg);box-shadow:var(--logo-shadow)}
+.logo svg{width:20px;height:20px;stroke-width:2.2}
+.name{font-family:var(--head);font-size:21px;font-weight:700;letter-spacing:var(--name-ls);text-transform:var(--name-tt)}
+.name small{display:block;font-family:"Noto Sans",sans-serif;font-size:10.500px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--bar-muted);margin-top:-1px}
+.search{margin-left:auto;margin-right:auto;width:440px;height:36px;border-radius:var(--r-pill);background:var(--search-bg);border:1px solid var(--search-border);display:flex;align-items:center;gap:10px;padding:0 14px;color:var(--bar-muted);font-size:13.500px;box-shadow:var(--inset)}
+.search svg{width:17px;height:17px}
+.search kbd{margin-left:auto;font:600 10.500px "Noto Sans";padding:2px 7px;border-radius:5px;border:1px solid var(--search-border);color:var(--bar-muted)}
+.tb{width:32px;height:32px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--bar-muted)}
+.tb svg{width:18px;height:18px}
+/* body */
+.body{flex:1;display:flex;min-height:0}
+.rail{width:86px;background:var(--rail-bg);border-right:1px solid var(--bar-border);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;color:var(--rail-text)}
+.tab{width:68px;height:62px;border-radius:var(--r-md);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:600;letter-spacing:.02em;position:relative}
+.tab.on{background:var(--tab-on-bg);color:var(--tab-on-text);box-shadow:var(--tab-on-shadow)}
+.tab.on::before{content:"";position:absolute;left:-9px;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--accent)}
+.tab .dot{position:absolute;top:5px;right:7px;min-width:16px;height:16px;border-radius:8px;background:var(--go);color:var(--go-ink);font-size:10px;font-weight:800;display:grid;place-items:center;padding:0 4px}
+.rail .sp{flex:1}
+.main{flex:1;min-width:0;padding:18px 22px 20px;display:flex;flex-direction:column;gap:16px;background:var(--main-bg);color:var(--ink)}
+/* hero */
+.hero{height:138px;border-radius:var(--r-lg);position:relative;overflow:hidden;border:1px solid var(--hero-border);box-shadow:var(--card-shadow);flex:none}
+.hero>svg.art{position:absolute;inset:0;width:100%;height:100%}
+.hero .shade{position:absolute;inset:0;background:var(--hero-shade)}
+.hero .in{position:absolute;inset:0;display:flex;align-items:center;padding:0 24px;gap:18px;color:var(--hero-text)}
+.ring{width:84px;height:84px;position:relative;flex:none}
+.ring svg{width:84px;height:84px;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--head);font-size:30px;font-weight:700;color:var(--hero-text);text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.ring i{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);font:700 9.500px "Noto Sans";letter-spacing:.12em;font-style:normal;background:var(--accent);color:var(--accent-ink);padding:2px 8px;border-radius:9px}
+.who h1{margin:0;font-size:27px;line-height:1.1;font-weight:700;text-shadow:0 2px 10px rgba(0,0,0,.45);letter-spacing:var(--h-ls)}
+.who p{margin:5px 0 0;font-size:13.500px;color:var(--hero-muted);display:flex;align-items:center;gap:7px}
+.who p svg{width:15px;height:15px}
+.xp{margin-top:11px;width:330px}
+.xp .bar{height:8px;border-radius:5px;background:rgba(0,0,0,.42);overflow:hidden;position:relative;box-shadow:inset 0 1px 2px rgba(0,0,0,.5)}
+.xp .bar u{position:absolute;inset:0 38% 0 0;background:var(--xp);border-radius:5px}
+.xp .bar s{position:absolute;inset:0 12% 0 62%;background:var(--rest);opacity:.75}
+.xp small{display:flex;justify-content:space-between;font-size:11px;color:var(--hero-muted);margin-top:5px}
+.chips{margin-left:auto;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.chip{display:flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 9px;border-radius:var(--r-pill);background:var(--chip-bg);border:1px solid var(--chip-border);font-size:12.500px;font-weight:600;color:var(--hero-text)}
+.chip svg{width:15px;height:15px;color:var(--accent)}
+.chip em{font-style:normal;color:var(--hero-muted);font-weight:500}
+/* columns */
+.cols{flex:1;display:flex;gap:20px;min-height:0}
+.left{flex:1;min-width:0;display:flex;flex-direction:column;gap:11px}
+.right{width:300px;display:flex;flex-direction:column;gap:12px;flex:none}
+.sec{display:flex;align-items:baseline;gap:10px;height:26px}
+.sec h2{margin:0;font-size:21px;font-weight:700;letter-spacing:var(--h-ls);text-transform:var(--h-tt)}
+.sec span{font-size:12px;color:var(--muted);font-weight:600}
+.sec h3{margin:0;font-size:15px;font-weight:700;letter-spacing:var(--h-ls);text-transform:var(--h-tt)}
+.card{flex:1;border-radius:var(--r-md);background:var(--card-bg);border:1px solid var(--card-border);box-shadow:var(--card-shadow);display:flex;align-items:center;gap:16px;padding:0 18px 0 16px;position:relative;overflow:hidden;clip-path:var(--card-clip)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--stripe-w);background:var(--c)}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(420px 120px at 0% 50%,var(--c-soft),transparent 70%);pointer-events:none}
+.card>*{position:relative;z-index:1}
+.tile{width:54px;height:54px;border-radius:var(--r-tile);display:grid;place-items:center;background:var(--tile-bg);border:1px solid var(--tile-border);color:var(--c);box-shadow:var(--tile-shadow);flex:none}
+.tile svg{width:27px;height:27px;stroke-width:1.9}
+.txt{flex:1;min-width:0}
+.txt h4{margin:0;font-family:var(--head);font-size:16.500px;font-weight:700;letter-spacing:var(--h4-ls)}
+.txt p{margin:4px 0 0;font-size:12.800px;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.txt p svg{width:13px;height:13px;color:var(--c)}
+.sp-ic{display:flex;gap:5px;margin-top:7px}
+.sp-ic b{width:24px;height:24px;border-radius:var(--r-ic);border:1px solid var(--ic-border);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 1px 2px rgba(0,0,0,.4);display:grid;place-items:center;color:#fff}
+.sp-ic b svg{width:13px;height:13px;stroke-width:2.2}
+.sp-ic span{font-size:11.500px;color:var(--muted);align-self:center;margin-left:4px}
+.btn{height:36px;padding:0 16px;border-radius:var(--r-btn);display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:var(--btn-ls);text-transform:var(--btn-tt);flex:none;clip-path:var(--btn-clip)}
+.btn svg{width:15px;height:15px;stroke-width:2.4}
+.btn.pri{background:var(--pri-bg);color:var(--pri-ink);box-shadow:var(--pri-shadow);border:1px solid var(--pri-border)}
+.btn.sec2{background:var(--sec-bg);color:var(--c);border:1px solid var(--sec-border)}
+/* right */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.gt{height:66px;border-radius:var(--r-md);background:var(--card-bg);border:1px solid var(--card-border);box-shadow:var(--card-shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:10.500px;font-weight:600;color:var(--muted)}
+.gt svg{width:21px;height:21px;color:var(--gt-ic)}
+.gt.hot{border-color:var(--accent-line);background:var(--gt-hot)}
+.gt.hot svg{color:var(--accent)}
+.gt.hot{color:var(--ink)}
+.mile{flex:1;border-radius:var(--r-md);background:var(--mile-bg);border:1px solid var(--card-border);box-shadow:var(--card-shadow);padding:14px 16px;display:flex;flex-direction:column;justify-content:center;gap:14px;position:relative;overflow:hidden}
+.mile .top{display:flex;gap:14px;align-items:center}
+.steps{display:flex;padding-top:14px;border-top:1px solid var(--card-border)}
+.step{flex:1;text-align:center;font-size:10.500px;font-weight:600;color:var(--muted);position:relative;line-height:1.25}
+.step b{display:grid;place-items:center;position:relative;z-index:1;width:24px;height:24px;border-radius:50%;margin:0 auto 6px;border:2px solid var(--step-line);background:var(--step-bg);font-size:10px;font-weight:800;color:var(--muted)}
+.step::before{content:"";position:absolute;top:11px;left:-50%;width:100%;height:2px;background:var(--step-line)}
+.step:first-child::before{display:none}
+.step.done b{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.step.done::before,.step.next::before{background:var(--accent)}
+.step.next b{border-color:var(--accent);color:var(--accent-text)}
+.step.next{color:var(--ink)}
+.mile .r2{width:66px;height:66px;position:relative;flex:none}
+.mile .r2 svg.rg{width:66px;height:66px;transform:rotate(-90deg)}
+.mile .r2 svg.i{position:absolute;inset:0;margin:auto;width:26px;height:26px;color:var(--accent)}
+.mile small{font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--accent-text);text-transform:uppercase}
+.mile h4{margin:3px 0 3px;font-family:var(--head);font-size:15.500px;font-weight:700}
+.mile p{margin:0;font-size:12px;color:var(--muted)}
+.mile p b{color:var(--ink)}
+.tip{height:54px;border-radius:var(--r-md);background:var(--tip-bg);border:1px solid var(--tip-border);display:flex;align-items:center;gap:13px;padding:0 16px;font-size:13px;color:var(--tip-text);flex:none}
+.tip .tb2{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--tip-ic-bg);color:var(--accent);flex:none}
+.tip .tb2 svg{width:16px;height:16px}
+.tip b{color:var(--ink);font-weight:700}
+.tip span.nx{margin-left:auto;font-size:11.500px;color:var(--muted);font-weight:600;white-space:nowrap}
+.night{--head:"Noto Serif","Liberation Serif",serif;--page:radial-gradient(900px 600px at 50% 40%,#1a2140,#06070c 75%);
+--r-win:16px;--r-lg:14px;--r-md:12px;--r-sm:8px;--r-pill:18px;--r-btn:18px;--r-tile:14px;--r-ic:6px;--r-logo:10px;
+--win-bg:linear-gradient(180deg,#141a2c,#0d111d);--win-border:#33406a;--win-shadow:0 30px 80px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.07);
+--bar-bg:linear-gradient(180deg,#1b2340,#151b30);--bar-border:#28324f;--bar-text:#f3efe2;--bar-muted:#8791b3;
+--logo-bg:linear-gradient(135deg,#ffd77a,#e89a2c);--logo-fg:#2a1a05;--logo-shadow:0 0 18px rgba(245,180,70,.45),inset 0 1px 0 rgba(255,255,255,.5);--name-ls:.01em;--name-tt:none;
+--search-bg:#0b0f1b;--search-border:#2a3454;--inset:inset 0 2px 4px rgba(0,0,0,.45);
+--rail-bg:linear-gradient(180deg,#111627,#0c1019);--rail-text:#7c86a8;--tab-on-bg:linear-gradient(180deg,#27325a,#1b2342);--tab-on-text:#ffe2a0;--tab-on-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 14px rgba(0,0,0,.4);
+--main-bg:radial-gradient(700px 380px at 78% 0%,rgba(84,104,190,.16),transparent 70%);--ink:#f1eee4;--text:#f1eee4;--muted:#8f99ba;
+--accent:#f6bd55;--accent-ink:#2a1a05;--accent-text:#f6bd55;--accent-line:rgba(246,189,85,.55);
+--go:#5fe0a0;--go-ink:#06281a;--go-soft:rgba(95,224,160,.13);--warn:#f6bd55;--warn-soft:rgba(246,189,85,.11);--info:#7fb2ff;--info-soft:rgba(127,178,255,.12);
+--hero-border:#3a4877;--hero-shade:linear-gradient(90deg,rgba(9,12,26,.88) 0%,rgba(9,12,26,.5) 45%,rgba(9,12,26,.05) 75%);--hero-text:#fff8e8;--hero-muted:#b9c2e0;--h-ls:.005em;--h-tt:none;--h4-ls:0;
+--sky1:#0d1238;--sky2:#3a2f7a;--sky3:#c2658a;--sun:#ffe9b8;--star:#fff;--m1:#3b3478;--m2:#241f52;--m3:#120f2c;
+--xp:linear-gradient(90deg,#b98bff,#7f6bff);--rest:#6fd0ff;--chip-bg:rgba(10,13,28,.62);--chip-border:rgba(255,255,255,.16);
+--card-bg:linear-gradient(180deg,#1c2440,#161c33);--card-border:#2f3b63;--card-shadow:0 6px 18px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);--card-clip:none;--stripe-w:3px;
+--tile-bg:linear-gradient(180deg,#0e1324,#0a0e1b);--tile-border:#34416d;--tile-shadow:inset 0 0 14px var(--c-soft),0 0 0 3px rgba(0,0,0,.18);--ic-border:#0a0d18;
+--pri-bg:linear-gradient(180deg,#7df0b4,#3fc486);--pri-ink:#052416;--pri-shadow:0 0 18px rgba(95,224,160,.4),inset 0 1px 0 rgba(255,255,255,.55);--pri-border:#8ff5c2;--sec-bg:rgba(255,255,255,.03);--sec-border:currentColor;--btn-ls:.01em;--btn-tt:none;--btn-clip:none;
+--gt-ic:#a9b3d6;--gt-hot:linear-gradient(180deg,#2b2a3c,#1d2038);--mile-bg:linear-gradient(135deg,#231f3d,#161c33);--ring-bg:#0c1020;
+--step-line:#2f3b63;--step-bg:#0e1324;--tip-bg:rgba(255,255,255,.03);--tip-border:#28324f;--tip-text:#aeb7d4;--tip-ic-bg:rgba(246,189,85,.12)}
+
+</style></head><body class="night"><div class="stage"><div class="window">
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="home" viewBox="0 0 24 24"><path d="M3 11 12 3l9 8M5 9.500V20h5v-6h4v6h5V9.500"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16.500 16.500 4.500 4.500"/></symbol>
+<symbol id="book" viewBox="0 0 24 24"><path d="M4 5c3-1.500 6-1 8 .500 2-1.500 5-2 8-.500v14c-3-1.500-6-1-8 .500-2-1.500-5-2-8-.500ZM12 5.500v14"/></symbol>
+<symbol id="mtn" viewBox="0 0 24 24"><path d="m2 20 7-13 4 7 3-4 6 10Z"/></symbol>
+<symbol id="scroll" viewBox="0 0 24 24"><path d="M8 4h10a2 2 0 0 1 2 2v10H10v2a2 2 0 0 1-4 0V6a2 2 0 0 1 2-2ZM10 9h6M10 12.500h4"/></symbol>
+<symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.900 4.900 7 7M17 17l2.100 2.100M4.900 19.100 7 17M17 7l2.100-2.100"/></symbol>
+<symbol id="x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+<symbol id="spark" viewBox="0 0 24 24"><path d="m11 4 1.800 6.200L19 12l-6.200 1.800L11 20l-1.800-6.200L3 12l6.200-1.800ZM19 3v4M17 5h4"/></symbol>
+<symbol id="bars" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.500"/><rect x="14" y="3" width="7" height="7" rx="1.500"/><rect x="3" y="14" width="7" height="7" rx="1.500"/><path d="M17.500 14v7M14 17.500h7"/></symbol>
+<symbol id="gate" viewBox="0 0 24 24"><path d="M4 21V10a8 8 0 0 1 16 0v11M3 21h18M9 21v-8a3 3 0 0 1 6 0v8"/></symbol>
+<symbol id="cap" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5ZM6 11.500V16c2 2.500 10 2.500 12 0v-4.500M22 9v6"/></symbol>
+<symbol id="bag" viewBox="0 0 24 24"><path d="M6 8h12l1.500 12h-15ZM9 8V6.500a3 3 0 0 1 6 0V8"/></symbol>
+<symbol id="hammer" viewBox="0 0 24 24"><path d="m14 4 6 6-2.500 2.500-6-6ZM13 9l-9 9 2 2 9-9"/></symbol>
+<symbol id="bed" viewBox="0 0 24 24"><path d="M3 18V7M3 14h18v4M21 14v-3a2 2 0 0 0-2-2h-8v5"/><circle cx="7" cy="11.300" r="1.600"/></symbol>
+<symbol id="wing" viewBox="0 0 24 24"><path d="M3 14c5 0 9-3 11-9 2 4 6 5 7 5-1 5-6 9-12 9-2 0-4-1-6-5ZM9 14c3 0 5.500-2 7-4.500"/></symbol>
+<symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="m3 8 9 6 9-6"/></symbol>
+<symbol id="bank" viewBox="0 0 24 24"><path d="m3 9 9-5 9 5ZM5 9v9M9.500 9v9M14.500 9v9M19 9v9M3 20h18"/></symbol>
+<symbol id="pick" viewBox="0 0 24 24"><path d="M5 8c4-4 10-4 14 0M12 5.500 12 21"/></symbol>
+<symbol id="bulb" viewBox="0 0 24 24"><path d="M9.500 18h5M10.500 21h3M8.500 14.500a6 6 0 1 1 7 0c-.700.800-1 1.500-1 2.500h-5c0-1-.300-1.700-1-2.500Z"/></symbol>
+<symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="pin" viewBox="0 0 24 24"><path d="M12 21c-5-6-7-8.500-7-11.500a7 7 0 0 1 14 0c0 3-2 5.500-7 11.500Z"/><circle cx="12" cy="9.500" r="2.500"/></symbol>
+<symbol id="moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1 1 10 4a6.500 6.500 0 0 0 10 10Z"/></symbol>
+<symbol id="coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.500 10h4a1.500 1.500 0 0 1 0 3h-3a1.500 1.500 0 0 0 0 3h4"/></symbol>
+<symbol id="shoe" viewBox="0 0 24 24"><path d="M7 20v-1C4 16 4 10 6.500 7a7 7 0 0 1 11 0c2.500 3 2.500 9-.500 12v1h-3v-2c2-2.500 2-7 .500-9a3.600 3.600 0 0 0-5 0c-1.500 2-1.500 6.500.500 9v2Z"/></symbol>
+<symbol id="tri" viewBox="0 0 24 24"><path d="M12 3 21 20H3Z"/><circle cx="12" cy="14.500" r="1.600" fill="currentColor" stroke="none"/></symbol>
+<symbol id="snow" viewBox="0 0 24 24"><path d="M12 3v18M4.200 7.500l15.600 9M4.200 16.500l15.600-9"/></symbol>
+<symbol id="burst" viewBox="0 0 24 24"><path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/></symbol>
+</defs></svg>
+<div class="title">
+  <div class="logo"><svg class="i"><use href="#tri"/></svg></div>
+  <div class="name">Trailhead<small>New player companion</small></div>
+  <div class="search"><svg class="i"><use href="#search"/></svg>Find anything: trainer, bank, boat to Darkshore…<kbd>Ctrl F</kbd></div>
+  <div class="tb"><svg class="i"><use href="#gear"/></svg></div>
+  <div class="tb"><svg class="i"><use href="#x"/></svg></div>
+</div>
+<div class="body">
+  <div class="rail">
+    <div class="tab on"><svg class="i"><use href="#home"/></svg>Home<span class="dot">3</span></div>
+    <div class="tab"><svg class="i"><use href="#pin"/></svg>Find it</div>
+    <div class="tab"><svg class="i"><use href="#book"/></svg>Spells</div>
+    <div class="tab"><svg class="i"><use href="#mtn"/></svg>Zones</div>
+    <div class="tab"><svg class="i"><use href="#scroll"/></svg>Guide</div>
+    <div class="sp"></div>
+  </div>
+  <div class="main">
+    <div class="hero">
+      <svg class="art" viewBox="0 0 1000 140" preserveAspectRatio="xMidYMid slice">
+        <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset=".65" style="stop-color:var(--sky2)"/><stop offset="1" style="stop-color:var(--sky3)"/></linearGradient>
+        <radialGradient id="sun"><stop offset="0" style="stop-color:var(--sun);stop-opacity:.95"/><stop offset=".35" style="stop-color:var(--sun);stop-opacity:.35"/><stop offset="1" style="stop-color:var(--sun);stop-opacity:0"/></radialGradient></defs>
+        <rect width="1000" height="140" fill="url(#sky)"/>
+        <g style="fill:var(--star)"><circle cx="520" cy="18" r="1"/><circle cx="610" cy="34" r=".8"/><circle cx="690" cy="14" r="1.100"/><circle cx="770" cy="40" r=".7"/><circle cx="905" cy="16" r="1"/><circle cx="455" cy="40" r=".7"/><circle cx="955" cy="48" r=".8"/><circle cx="560" cy="52" r=".6"/></g>
+        <circle cx="700" cy="50" r="90" fill="url(#sun)"/><circle cx="700" cy="50" r="15" style="fill:var(--sun)"/>
+        <path style="fill:var(--m1)" d="M0 96 80 70l60 22 70-40 90 44 60-26 80 30 70-46 90 50 80-34 70 26 80-38 90 40 80-22v64H0Z"/>
+        <path style="fill:var(--m2)" d="M0 112 90 92l80 16 100-34 110 40 90-24 100 28 110-36 110 34 100-20 110 22v40H0Z"/>
+        <path style="fill:var(--m3)" d="M0 128c120-18 220-6 340-12s210-20 330-10 220 14 330 2v32H0Z"/>
+        <g style="fill:var(--m3)"><path d="m610 122 7-22 7 22ZM628 122l9-30 9 30ZM650 122l6-18 6 18ZM700 120l8-26 8 26ZM722 120l6-18 6 18ZM905 118l8-28 8 28ZM926 118l6-20 6 20ZM948 119l9-30 9 30Z"/></g>
+      </svg>
+      <div class="shade"></div>
+      <div class="in">
+        <div class="ring"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="36" fill="rgba(0,0,0,.38)" stroke="rgba(255,255,255,.16)" stroke-width="5"/><circle cx="42" cy="42" r="36" fill="none" style="stroke:var(--accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="86"/></svg><b>14</b><i>MAGE</i></div>
+        <div class="who"><h1>Aeloria</h1><p><svg class="i"><use href="#pin"/></svg>Sentinel Hill, Westfall <span style="opacity:.55">·</span> zone level 10–20</p>
+          <div class="xp"><div class="bar"><u></u><s></s></div><small><span>62% to level 15</span><span>Rested: double kill XP</span></small></div></div>
+        <div class="chips"><div class="chip"><svg class="i"><use href="#coin"/></svg>34g 12s</div><div class="chip"><svg class="i"><use href="#bed"/></svg><em>Home</em> Goldshire</div><div class="chip"><svg class="i"><use href="#bag"/></svg><em>Bags</em> 9 free</div></div>
+      </div>
+    </div>
+    <div class="cols">
+      <div class="left">
+        <div class="sec"><h2>What now?</h2><span>3 things worth doing</span></div>
+        <div class="card" style="--c:var(--go);--c-soft:var(--go-soft)">
+          <div class="tile"><svg class="i"><use href="#spark"/></svg></div>
+          <div class="txt"><h4>3 new spells to train</h4>
+            <div class="sp-ic"><b style="background:linear-gradient(135deg,#7fd4ff,#1e5fae)"><svg class="i"><use href="#snow"/></svg></b><b style="background:linear-gradient(135deg,#d7a1ff,#6a2fb5)"><svg class="i"><use href="#burst"/></svg></b><b style="background:linear-gradient(135deg,#9ff0c0,#1f8a5b)"><svg class="i"><use href="#spark"/></svg></b><span>Frost Nova, Arcane Explosion, Remove Lesser Curse</span></div>
+            <p><svg class="i"><use href="#pin"/></svg>Nearest Mage trainer: Goldshire, Lion's Pride Inn</p></div>
+          <div class="btn pri">Take me there<svg class="i"><use href="#arrow"/></svg></div>
+        </div>
+        <div class="card" style="--c:var(--warn);--c-soft:var(--warn-soft)">
+          <div class="tile"><svg class="i"><use href="#bars"/></svg></div>
+          <div class="txt"><h4>2 spells are not on your action bars</h4>
+            <div class="sp-ic"><b style="background:linear-gradient(135deg,#ffb3e6,#9b2c7a)"><svg class="i"><use href="#x"/></svg></b><b style="background:linear-gradient(135deg,#cfe4ff,#5b7fb3)"><svg class="i"><use href="#wing"/></svg></b><span>Counterspell, Slow Fall</span></div>
+            <p>You have learned them but cannot cast them yet.</p></div>
+          <div class="btn sec2">Show me</div>
+        </div>
+        <div class="card" style="--c:var(--info);--c-soft:var(--info-soft)">
+          <div class="tile"><svg class="i"><use href="#gate"/></svg></div>
+          <div class="txt"><h4>A dungeon fits your level</h4>
+            <p style="margin-top:6px;color:var(--ink);font-weight:600">Hall of Thanes <span style="color:var(--muted);font-weight:500">· levels 13–18 · 5 players</span></p>
+            <p><svg class="i"><use href="#pin"/></svg>Entrance in Ironforge</p></div>
+          <div class="btn sec2">Set waypoint</div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="sec"><h3>Find nearby</h3></div>
+        <div class="grid">
+          <div class="gt hot"><svg class="i"><use href="#cap"/></svg>Trainer</div><div class="gt"><svg class="i"><use href="#bag"/></svg>Vendor</div><div class="gt"><svg class="i"><use href="#hammer"/></svg>Repair</div><div class="gt"><svg class="i"><use href="#bed"/></svg>Inn</div>
+          <div class="gt"><svg class="i"><use href="#wing"/></svg>Flight</div><div class="gt"><svg class="i"><use href="#mail"/></svg>Mailbox</div><div class="gt"><svg class="i"><use href="#bank"/></svg>Bank</div><div class="gt"><svg class="i"><use href="#pick"/></svg>Crafting</div>
+        </div>
+        <div class="mile">
+          <div class="top"><div class="r2"><svg class="rg" viewBox="0 0 66 66"><circle cx="33" cy="33" r="28" fill="none" style="stroke:var(--ring-bg)" stroke-width="5"/><circle cx="33" cy="33" r="28" fill="none" style="stroke:var(--accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="176" stroke-dashoffset="126"/></svg><svg class="i"><use href="#shoe"/></svg></div>
+          <div><small>Next milestone</small><h4>Level 40: your first mount</h4><p><b>34g</b> saved of about 120g</p></div></div>
+          <div class="steps"><div class="step done"><b>✓</b>Talents<br>level 10</div><div class="step done"><b>✓</b>Dungeons<br>level 13</div><div class="step next"><b>40</b>First<br>mount</div><div class="step"><b>60</b>Max<br>level</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="tip"><div class="tb2"><svg class="i"><use href="#bulb"/></svg></div><div><b>Did you know?</b>&nbsp; Logging out inside an inn builds rested experience, which doubles the XP you get from kills.</div><span class="nx">Next tip ›</span></div>
+  </div>
+</div></div></div></body></html>
