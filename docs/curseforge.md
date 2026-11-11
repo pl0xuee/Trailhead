@@ -25,7 +25,7 @@ Pictures for the project's image gallery: everything in `docs/images/` except th
 |---|---|
 | File | `dist/Trailhead-0.12.0.zip` (built by `tools/package.sh`) |
 | Display name | Trailhead 0.12.0 |
-| Release type | Beta for the first upload; Release once every page has been opened in the game |
+| Release type | Release (CurseForge only shows a project in its app once it has a Release file; Beta and Alpha files stay on the website) |
 | Game version | Forever, 1.60.1 |
 | Changelog | the 0.12.0 and 0.11.0 sections of `CHANGELOG.md` (Markdown) |
 
