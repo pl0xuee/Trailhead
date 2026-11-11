@@ -1,0 +1,45 @@
+# Sends each published GitHub release to CurseForge (project 1799345).
+# Needs the repository secret CF_API_TOKEN: a token from
+# https://authors.curseforge.com/#/settings/api-tokens
+name: CurseForge upload
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to send, for example v0.12.1
+        required: true
+      dry_run:
+        description: Only check the token and the game version; upload nothing
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency: curseforge-upload
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      DRY_RUN: ${{ inputs.dry_run || false }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Fetch the release zip
+        run: |
+          mkdir -p dist
+          gh release download "$TAG" --pattern "Trailhead-${TAG#v}.zip" --dir dist
+      - name: Send it to CurseForge
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          type=release
+          if [ "$(gh release view "$TAG" --json isPrerelease --jq .isPrerelease)" = "true" ]; then type=beta; fi
+          args=("dist/Trailhead-${TAG#v}.zip" "$type")
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          tools/curseforge_upload.sh "${args[@]}"

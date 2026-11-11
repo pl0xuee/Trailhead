@@ -29,7 +29,13 @@ Pictures for the project's image gallery: everything in `docs/images/` except th
 | Game version | Forever, 1.60.1 |
 | Changelog | the 0.12.0 and 0.11.0 sections of `CHANGELOG.md` (Markdown) |
 
-After the project is approved, add `## X-Curse-Project-ID: <the number on the project page>` to `Trailhead/Trailhead.toc` so the CurseForge app matches the addon to its page.
+The project is number 1799345 (created 2026-11-11, author console: https://authors.curseforge.com/#/projects/1799345). `Trailhead/Trailhead.toc` carries it as `## X-Curse-Project-ID` so addon managers match the addon to its page.
+
+## Later versions: automatic
+
+Publishing a GitHub release sends that version to CurseForge by itself (`.github/workflows/curseforge.yml`, which runs `tools/curseforge_upload.sh`). It takes the release's `Trailhead-<version>.zip`, reads the version and game version from the TOC inside it, and uses that version's section of `CHANGELOG.md` as the changelog. A release marked as a pre-release on GitHub goes up as Beta; anything else as Release.
+
+It needs one repository secret, `CF_API_TOKEN`: a token made at <https://authors.curseforge.com/#/settings/api-tokens> and stored under the repo's Settings, Secrets and variables, Actions (or with `gh secret set CF_API_TOKEN`). To test the token without uploading anything, run the workflow by hand from the Actions tab with a tag and "dry run" ticked.
 
 ## Description (Markdown)
 

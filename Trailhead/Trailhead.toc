@@ -5,6 +5,7 @@
 ## Version: 0.12.0
 ## Category: Leveling
 ## X-License: MIT
+## X-Curse-Project-ID: 1799345
 ## SavedVariables: TrailheadDB
 ## SavedVariablesPerCharacter: TrailheadCharDB
 ## IconTexture: Interface\AddOns\Trailhead\Media\logo
