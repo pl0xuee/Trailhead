@@ -1145,8 +1145,8 @@ section("beside game windows", function()
 	PlayerSpellsFrame.rect = { 16, 1170, 500, 100 }
 	window:DockTick()
 	check(select(5, at()) == 600, "its bottom edge is kept on the screen")
-	-- no room at all: Trailhead stays where the player keeps it
-	PlayerSpellsFrame.rect = { 400, 2600, 1084, 201 }
+	-- no room at all, not even for the narrow strip: Trailhead stays where the player keeps it
+	PlayerSpellsFrame.rect = { 250, 2750, 1084, 201 }
 	window:DockTick()
 	point, parent, relPoint, x, y = at()
 	check(point == homePoint and x == homeX and y == homeY and frame:GetScale() == 1 and frame:IsShown(), "with no room either side it stays at home")

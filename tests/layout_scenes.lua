@@ -84,12 +84,29 @@ page("builds-rogue60", "builds", nil, function(T)
 	T.BuildGuide.Choose(list[#list].id)
 	T.Window:Select("builds")
 end, { class = "ROGUE", level = 60 })
-page("builds-strip", "builds", nil, function(T)
+-- The narrow strip (no room beside the game window for the full one): next to the talents with
+-- a build followed and without, and next to the spellbook.
+page("strip-talents", "builds", nil, function(T)
 	T.BuildGuide.Choose("levelling")
 	click("Open talents")
 	PlayerSpellsFrame.rect = { 400, 2600, 1084, 201 }
 	T.Window:DockTick()
 end, { class = "ROGUE", level = 21 })
+page("strip-talents-summary", "builds", nil, function(T)
+	click("Open talents")
+	PlayerSpellsFrame.rect = { 400, 2600, 1084, 201 }
+	T.Window:DockTick()
+end, { class = "ROGUE", level = 21 })
+page("strip-spellbook", "spells", nil, function(T)
+	PlayerSpellsFrame.rect = { 400, 2600, 1084, 201 }
+	click("Open spellbook")
+end)
+page("strip-spellbook-done", "spells", nil, function(T)
+	Stub.world.onBars[2139], Stub.world.onBars[1953] = true, true
+	Stub.fire("ACTIONBAR_SLOT_CHANGED")
+	PlayerSpellsFrame.rect = { 400, 2600, 1084, 201 }
+	click("Open spellbook")
+end)
 
 -- Zones: each filter and the hubs of a few zones.
 for _, id in ipairs({ "fit", "all", "dungeons", "raids" }) do

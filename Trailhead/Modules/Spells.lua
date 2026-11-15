@@ -88,7 +88,7 @@ function Spells:Build(page)
 		end,
 	})
 	T.Secure.Set(book, "spellbook", function()
-		T.Window:Beside("PlayerSpellsFrame")
+		T.Window:Beside("PlayerSpellsFrame", "spellbook")
 	end)
 	book:SetPoint("BOTTOMLEFT", ui.bars, "BOTTOMLEFT", 16, 14)
 
@@ -173,6 +173,30 @@ local function queue()
 	end)
 end
 
+-- The narrow strip beside the spellbook (UI/Window.lua shows it when the screen has no room
+-- for the whole window): the spells that are on no action bar.
+local function spellStrip()
+	local missing = G.SpellsOffBars()
+	if #missing == 0 then
+		return { title = L["Not on your action bars"], note = L["Every class spell you know is on a bar. Nothing to do here."] }
+	end
+	local most = T.Window.STRIP_ROWS
+	local shown = #missing > most and most - 1 or #missing
+	local rows = {}
+	for index = 1, shown do
+		rows[index] = { icon = missing[index].icon or false, name = missing[index].name }
+	end
+	local note = L["Drag each one from your spellbook to an empty bar slot."]
+	if #missing > shown then
+		note = L["And %d more."]:format(#missing - shown) .. " " .. note
+	end
+	return { title = L["Not on your action bars"], rows = rows, note = note }
+end
+
 function Spells:OnInit()
-	T:On("TH_SPELLS_CHANGED", queue)
+	T.Window:SetStrip("PlayerSpellsFrame:spellbook", spellStrip)
+	T:On("TH_SPELLS_CHANGED", function()
+		T.Window:RefreshStrip()
+		queue()
+	end)
 end

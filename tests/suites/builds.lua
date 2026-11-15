@@ -1,5 +1,5 @@
 -- Builds: every class's builds spent point by point on that class's real talent tree, the
--- reasons, the helper at a few levels, the page, the narrow strip, and a mutation check.
+-- reasons, the helper at a few levels, the page and a mutation check (the narrow strip is in strip.lua).
 local H = ...
 local Stub, check = H.Stub, H.check
 
@@ -160,48 +160,4 @@ H.section("builds: mutations fail safe", function()
 	steps[1], steps[#steps] = saved, last
 	empty()
 	check(spend(T, build, 51) == nil, "and with the order restored it is legal again")
-end)
-
-H.section("builds: the narrow strip", function()
-	local T = H.load({ class = "ROGUE", level = 21 }, H.checked())
-	local window, B = T.Window, T.BuildGuide
-	H.slash("")
-	window:Select("builds")
-	Stub.flush()
-	B.Choose("levelling")
-	Stub.click("Open talents")
-	local frame = TrailheadWindow
-	check(window:IsBeside() == "PlayerSpellsFrame" and frame:IsShown(), "with room, the full window sits beside the talents")
-	local function strip()
-		return T.modules.builds:Strip()
-	end
-	check(strip() == nil or not strip():IsShown(), "and no strip is up")
-	-- no room for the full window at its smallest, room for the strip
-	PlayerSpellsFrame.rect = { 400, 2600, 1084, 201 }
-	window:DockTick()
-	local log = window.dockLog[#window.dockLog]
-	check(log.side == "strip" and not frame:IsShown() and strip() and strip():IsShown(), "with room for only a strip, the strip replaces the window")
-	check(Stub.sees("Efficient Strikes"), "and it names the next talent")
-	-- the next point moves on
-	Stub.world.ranks[105741] = 2
-	Stub.fire("TRAIT_CONFIG_UPDATED")
-	Stub.flush()
-	check(not Stub.sees("Efficient Strikes") or strip():IsShown(), "the strip follows the build")
-	-- room again: the window comes back
-	PlayerSpellsFrame.rect = { 16, 1170, 1084, 201 }
-	window:DockTick()
-	check(frame:IsShown() and not strip():IsShown() and window.dockLog[#window.dockLog].side ~= "strip", "with room again, the full window is back and the strip is gone")
-	-- not following a build: no strip, the window stays at home
-	B.Choose(nil)
-	PlayerSpellsFrame.rect = { 400, 2600, 1084, 201 }
-	window:DockTick()
-	check(frame:IsShown() and not strip():IsShown(), "without a followed build there is no strip")
-	-- closing the game window clears it
-	B.Choose("levelling")
-	window:DockTick()
-	check(strip():IsShown() and not frame:IsShown(), "following again, the strip is back")
-	PlayerSpellsFrame:Hide()
-	window:DockTick()
-	check(window:IsBeside() == nil and not strip():IsShown() and frame:IsShown(), "closing the talents removes the strip and brings the window back")
-	H.noErrors(T, "the strip")
 end)

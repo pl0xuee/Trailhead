@@ -166,7 +166,7 @@ function B.AfterOpen()
 	if #B.List() > 0 and B.Usable() then
 		T.Window:Open("builds")
 	end
-	T.Window:Beside("PlayerSpellsFrame")
+	T.Window:Beside("PlayerSpellsFrame", "talents")
 end
 
 -- The click of an "Open talents" button when the safe way is not there. Trailhead never calls the

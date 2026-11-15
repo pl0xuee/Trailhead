@@ -87,17 +87,149 @@ end
 -- the game window itself is not touched. Nothing here runs in a fight.
 
 local GAP = 12
-local docked -- { name, target, wait, key, hidden, scaled, placed, strip }
+local docked -- { name, target, part, wait, key, hidden, scaled, placed, strip }
 local watcher
 Window.dockLog = {} -- the last few placements, for the game check
 
--- A page may offer a narrow strip for when the full window has no room beside a game
--- window (a small screen next to the talents). strip = { width, height, ready(), show(x, y), hide() }
--- keyed by the game window's name. While it is up the full window steps aside, like it does for
--- a full-screen map, and comes back with the game window closing.
+-- ---------------------------------------------------------------------------
+-- The narrow strip: when there is no room beside a game window for the full window even at
+-- the smallest size, a small panel shows only what belongs to that window (the next talent
+-- beside the talents, the spells missing from the bars beside the spellbook) and the full
+-- window steps aside until the game window closes or room appears.
+--
+-- Pages hand in what to show: Window:SetStrip(key, provider), where key is the game window's
+-- name, or "name:part" for one part of it, and provider() returns nil (nothing to show) or
+-- { title, rows = { {icon, name, right} ... }, note }.
+
+local STRIP_W, STRIP_BAR, STRIP_PAD, STRIP_INSET = 260, 40, 8, 12
+local STRIP_ROW, STRIP_ROWS, STRIP_RIGHT = 26, 10, 64
+Window.STRIP_W, Window.STRIP_ROWS = STRIP_W, STRIP_ROWS
 Window.strips = {}
-function Window:SetStrip(name, strip)
-	self.strips[name] = strip
+function Window:SetStrip(key, provider)
+	self.strips[key] = provider
+end
+
+-- The parts of a game window that each have a strip of their own, told apart by which of the
+-- game window's child frames is on show (measured only; the frames are not touched).
+local PARTS = {
+	PlayerSpellsFrame = { { "talents", "TalentsFrame" }, { "spellbook", "SpellBookFrame" } },
+}
+
+local function partOf(d)
+	for _, entry in ipairs(PARTS[d.name] or {}) do
+		local child = d.target[entry[2]]
+		if type(child) == "table" and type(child.IsShown) == "function" and C.Plain(child:IsShown(), false) == true then
+			return entry[1]
+		end
+	end
+	return d.part -- what the button that opened it asked for
+end
+
+local strip -- the strip's frame, built the first time it is needed
+
+local function buildStrip()
+	strip = W.Panel(UIParent, {
+		shape = "window", fill = "window", line = "windowLine", top = "windowTop",
+		shadow = "shadow", shadowSize = 22,
+	}, "Frame", "TrailheadStrip")
+	strip:Hide()
+	strip:SetSize(STRIP_W, 120)
+	strip:SetFrameStrata("HIGH")
+	strip:SetClampedToScreen(true)
+	strip:EnableMouse(true)
+
+	local logo = W.Panel(strip)
+	logo:SetSize(22, 22)
+	logo:SetPoint("TOPLEFT", strip, "TOPLEFT", 12, -9)
+	logo:SetStyle({ shape = "logo", fill = "logo", shadow = "logoGlow", shadowSize = 5 })
+	logo.icon = W.Icon(logo, "tri", 13, "logoInk")
+	logo.icon:SetPoint("CENTER", logo, "CENTER", 0, 0)
+	strip.title = W.Text(strip, "head", 12.5, "barText")
+	strip.title:SetPoint("LEFT", logo, "RIGHT", 9, 0)
+	strip.title:SetWidth(STRIP_W - 12 - 22 - 9 - 36)
+	local close = W.IconButton(strip, "x", 24, "barIcon", function()
+		Window:Close()
+	end)
+	close:SetPoint("TOPRIGHT", strip, "TOPRIGHT", -8, -8)
+
+	local body = W.Panel(strip, { shape = "page", fill = "page", line = "pageLine" })
+	body:SetPoint("TOPLEFT", strip, "TOPLEFT", STRIP_PAD, -STRIP_BAR)
+	body:SetPoint("BOTTOMRIGHT", strip, "BOTTOMRIGHT", -STRIP_PAD, STRIP_PAD)
+	strip.body = body
+	local inner = STRIP_W - STRIP_PAD * 2 - STRIP_INSET * 2
+	strip.rows = {}
+	for index = 1, STRIP_ROWS do
+		local row = CreateFrame("Frame", nil, body)
+		row:SetSize(inner, STRIP_ROW)
+		row:SetPoint("TOPLEFT", body, "TOPLEFT", STRIP_INSET, -(STRIP_INSET + (index - 1) * STRIP_ROW))
+		row.icon = W.GameIcon(row, 20)
+		row.icon:SetPoint("LEFT", row, "LEFT", 0, 0)
+		row.name = W.Text(row, "body", 12, "ink")
+		row.right = W.Text(row, "body", 10.5, "muted")
+		row.right:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+		row.right:SetJustifyH("RIGHT")
+		strip.rows[index] = row
+	end
+	strip.note = W.Text(body, "body", 10.5, "muted", { width = inner })
+	strip.note:SetSpacing(2)
+end
+
+-- Fills the strip and returns its height.
+local function fillStrip(content)
+	local inner = STRIP_W - STRIP_PAD * 2 - STRIP_INSET * 2
+	strip.title:SetLabel(content.title or "")
+	local rows = content.rows or {}
+	local y = STRIP_INSET
+	for index, row in ipairs(strip.rows) do
+		local item = rows[index]
+		row:SetShown(item ~= nil)
+		if item then
+			local hasIcon = item.icon ~= nil
+			local right = item.right ~= nil and item.right ~= ""
+			row.icon:SetShown(hasIcon)
+			if hasIcon then
+				row.icon:SetIcon(item.icon)
+			end
+			row.name:ClearAllPoints()
+			row.name:SetPoint("LEFT", row, "LEFT", hasIcon and 28 or 0, 0)
+			row.name:SetWidth(inner - (hasIcon and 28 or 0) - (right and STRIP_RIGHT or 0))
+			row.name:SetLabel(item.name or "")
+			row.right:SetLabel(right and item.right or "")
+			y = y + STRIP_ROW
+		end
+	end
+	local note = content.note ~= nil and content.note ~= ""
+	strip.note:SetShown(note)
+	if note then
+		local gap = #rows > 0 and 6 or 0
+		strip.note:ClearAllPoints()
+		strip.note:SetPoint("TOPLEFT", strip.body, "TOPLEFT", STRIP_INSET, -(y + gap))
+		strip.note:SetLabel(content.note)
+		y = y + gap + W.TextHeight(strip.note)
+	end
+	local height = math.floor(STRIP_BAR + y + STRIP_INSET + STRIP_PAD + 0.5)
+	strip:SetHeight(height)
+	return height
+end
+
+local function hideStrip()
+	if docked then
+		docked.strip = nil
+	end
+	if strip then
+		strip:Hide()
+	end
+end
+
+-- What the strip would show beside the docked window, or nil.
+local function stripContent()
+	local part = partOf(docked)
+	local provider = part and Window.strips[docked.name .. ":" .. part] or Window.strips[docked.name]
+	if not provider then
+		return nil
+	end
+	local ok, content = pcall(provider)
+	return ok and type(content) == "table" and content or nil
 end
 
 local function undock(keepPlace)
@@ -105,10 +237,8 @@ local function undock(keepPlace)
 	if not was then
 		return
 	end
+	hideStrip()
 	docked = nil
-	if was.strip then
-		was.strip.hide()
-	end
 	if watcher then
 		watcher:SetScript("OnUpdate", nil)
 	end
@@ -145,8 +275,7 @@ local function place()
 	if not left or screenW <= 0 or screenH <= 0 then
 		return
 	end
-	local strip = Window.strips[docked.name]
-	local key = ("%d:%d:%d:%d:%s"):format(left, right, top, bottom, strip and strip.ready and strip.ready() and "s" or "")
+	local key = ("%d:%d:%d:%d:%s"):format(left, right, top, bottom, partOf(docked) or "")
 	if key == docked.key then
 		return
 	end
@@ -157,26 +286,15 @@ local function place()
 		table.remove(Window.dockLog, 1)
 	end
 
+	hideStrip()
 	if right - left >= screenW * 0.9 then
 		-- It fills the screen (a full-size map): step out of the way until it closes.
 		entry.side = "hidden"
-		if docked.strip then
-			docked.strip.hide()
-			docked.strip = nil
-		end
 		if frame:IsShown() then
 			docked.hidden = true
 			frame:Hide()
 		end
 		return
-	end
-	if docked.strip then
-		docked.strip.hide()
-		docked.strip = nil
-	end
-	if docked.hidden then
-		docked.hidden = false
-		frame:Show()
 	end
 
 	local scale = T.db.scale
@@ -196,21 +314,35 @@ local function place()
 				restorePosition()
 			end
 			-- Room for just the narrow strip: show that instead of the full window.
-			local strip = Window.strips[docked.name]
-			if strip and room >= strip.width and (not strip.ready or strip.ready()) then
+			local content = room >= STRIP_W and stripContent()
+			if content then
 				entry.side = "strip"
 				if frame:IsShown() then
 					docked.hidden = true
 					frame:Hide()
 				end
-				local onRight = roomRight >= strip.width
-				local x = onRight and (right + GAP) or (left - GAP - strip.width)
-				docked.strip = strip
-				strip.show(x, math.max(math.min(top, screenH), strip.height))
+				if not strip then
+					buildStrip()
+				end
+				local height = fillStrip(content)
+				local x = roomRight >= STRIP_W and (right + GAP) or (left - GAP - STRIP_W)
+				strip:ClearAllPoints()
+				strip:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, math.max(math.min(top, screenH), height))
+				strip:Show()
+				docked.strip = true
+				return
+			end
+			if docked.hidden then
+				docked.hidden = false
+				frame:Show()
 			end
 			return
 		end
 		scale = fit
+	end
+	if docked.hidden then
+		docked.hidden = false
+		frame:Show()
 	end
 	if scale ~= T.db.scale or docked.scaled then
 		docked.scaled = scale ~= T.db.scale
@@ -224,6 +356,19 @@ local function place()
 	docked.placed = true
 	frame:ClearAllPoints()
 	frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / scale, y / scale)
+end
+
+-- What a strip shows has changed (a point spent, a spell put on a bar): it is filled again on
+-- the next look at the game window.
+function Window:RefreshStrip()
+	if docked then
+		docked.key = nil
+	end
+end
+
+-- The strip's frame while it is up, else nil.
+function Window:Strip()
+	return strip and strip:IsShown() and strip or nil
 end
 
 -- Looks at the game window again: follows it when it moves or changes size, and lets
@@ -247,11 +392,12 @@ function Window:DockTick()
 	place()
 end
 
--- Moves Trailhead next to one of the game's windows, by its global name. Returns true
--- when it is now following that window.
-function Window:Beside(name)
+-- Moves Trailhead next to one of the game's windows, by its global name. `part` names the
+-- part of it that was asked for ("talents", "spellbook"), used for the strip when the game
+-- window does not show which part is up. Returns true when it is now following that window.
+function Window:Beside(name, part)
 	local target = type(name) == "string" and _G[name]
-	if T.db.dock == false or not frame or not frame:IsShown() or C.InCombat()
+	if T.db.dock == false or not frame or not (frame:IsShown() or (docked and docked.hidden)) or C.InCombat()
 		or type(target) ~= "table" or type(target.GetLeft) ~= "function" or type(target.IsShown) ~= "function" then
 		return false
 	end
@@ -261,7 +407,7 @@ function Window:Beside(name)
 	if not docked then
 		docked = { name = name, target = target, wait = 5 } -- a few looks for it to appear
 	end
-	docked.key = nil
+	docked.key, docked.part = nil, part
 	if not watcher then
 		watcher = CreateFrame("Frame")
 	end
@@ -473,6 +619,9 @@ function Window:Open(id, arg)
 	if not frame then
 		build()
 	end
+	if docked and docked.hidden then
+		undock() -- asked for while a strip or a full-screen map has it tucked away: back home
+	end
 	frame:Show()
 	self:Select(id or self.current or T.cdb.tab, arg)
 	T:Fire("TH_WINDOW_OPENED")
@@ -498,6 +647,10 @@ function Window:Search(text)
 end
 
 function Window:Close()
+	if docked and docked.hidden then
+		docked.hidden = false -- closed from the strip: it stays closed
+		undock()
+	end
 	if frame then
 		frame:Hide()
 	end

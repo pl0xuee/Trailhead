@@ -336,53 +336,49 @@ function Builds:Refresh()
 end
 
 -- ---------------------------------------------------------------------------
--- The narrow strip: when the screen has no room for the whole window beside the talents,
--- Window shows this instead, with just the next point.
+-- The narrow strip beside the talents (UI/Window.lua shows it when the screen has no room for
+-- the whole window): the next point of the followed build, or where your points are.
 
-local STRIP_W, STRIP_H = 230, 86
-
-local function fillStrip()
-	if not ui.strip or not ui.strip:IsShown() then
-		return
-	end
+local function talentStrip()
 	local progress = B.Following()
-	local nextPoint = progress and progress.next
-	if nextPoint then
-		ui.stripIcon:SetIcon(nextPoint.icon)
-		ui.stripIcon:Show()
-		ui.stripName:SetLabel(nextPoint.name)
-		ui.stripLine:SetLabel(nextPoint.locked and L["Not open yet"] or L["%d of %d"]:format(nextPoint.rank, nextPoint.max))
-	else
-		ui.stripIcon:Hide()
-		ui.stripName:SetLabel(L["Build complete"])
-		ui.stripLine:SetLabel("")
+	if progress then
+		local nextPoint = progress.next
+		if not nextPoint then
+			return { title = L["Next talent point"], note = L["Every point in this build is placed."] }
+		end
+		local where = nextPoint.row and L["%s, row %d from the top"]:format(nextPoint.tree, nextPoint.row) or nextPoint.tree
+		local why = nextPoint.locked and progress.unspent > 0 and L["Not open yet: it needs more points in its tree first."]
+			or nextPoint.why
+		return {
+			title = L["Next talent point"],
+			rows = { { icon = nextPoint.icon, name = nextPoint.name, right = L["%d of %d"]:format(nextPoint.rank, nextPoint.max) } },
+			note = (where or "") .. (why and why ~= "" and "\n" .. why or ""),
+		}
 	end
-end
-
-local function buildStrip()
-	local strip = W.Panel(UIParent, { shape = "card", fill = "tile", line = "tileLine" })
-	strip:SetSize(STRIP_W, STRIP_H)
-	strip:SetFrameStrata("HIGH")
-	strip:Hide()
-	ui.strip = strip
-	local label = W.Text(strip, "label", 9, "accentText")
-	label:SetPoint("TOPLEFT", strip, "TOPLEFT", 12, -10)
-	label:SetLabel(L["Next point"])
-	ui.stripIcon = W.GameIcon(strip, 36)
-	ui.stripIcon:SetPoint("BOTTOMLEFT", strip, "BOTTOMLEFT", 12, 12)
-	ui.stripName = W.Text(strip, "body", 12, "text", { width = STRIP_W - 66 })
-	ui.stripName:SetPoint("TOPLEFT", ui.stripIcon, "TOPRIGHT", 10, -2)
-	ui.stripLine = W.Text(strip, "body", 10.5, "faint")
-	ui.stripLine:SetPoint("TOPLEFT", ui.stripName, "BOTTOMLEFT", 0, -3)
-end
-
-function Builds:Strip()
-	return ui.strip
+	local info = not C.InCombat() and G.Talents()
+	if not info then
+		return nil
+	end
+	local rows = {}
+	for _, tree in ipairs(info.trees) do
+		rows[#rows + 1] = { name = tree.name, right = points(tree.spent) }
+	end
+	local note
+	if info.unspent > 0 then
+		note = info.unspentUnknown and L["You have talent points to spend. Unspent points do nothing."]
+			or info.unspent == 1 and L["You have 1 talent point to spend. Unspent points do nothing."]
+			or L["You have %d talent points to spend. Unspent points do nothing."]:format(info.unspent)
+	elseif info.spent == 0 then
+		note = L["You have no talent points yet. They come as you level up."]
+	else
+		note = L["All your talent points are spent."]
+	end
+	return { title = L["Your talents"], rows = rows, note = note }
 end
 
 local queued = false
 local function queue()
-	fillStrip()
+	T.Window:RefreshStrip()
 	if queued or not Builds.built or not Builds.page:IsVisible() then
 		return
 	end
@@ -396,27 +392,7 @@ local function queue()
 end
 
 function Builds:OnInit()
-	T.Window:SetStrip("PlayerSpellsFrame", {
-		width = STRIP_W,
-		height = STRIP_H,
-		ready = function()
-			return B.Following() ~= nil
-		end,
-		show = function(x, y)
-			if not ui.strip then
-				buildStrip()
-			end
-			ui.strip:ClearAllPoints()
-			ui.strip:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y)
-			ui.strip:Show()
-			fillStrip()
-		end,
-		hide = function()
-			if ui.strip then
-				ui.strip:Hide()
-			end
-		end,
-	})
+	T.Window:SetStrip("PlayerSpellsFrame:talents", talentStrip)
 	for _, event in ipairs({ "TRAIT_CONFIG_UPDATED", "TRAIT_NODE_CHANGED", "TRAIT_TREE_CURRENCY_INFO_UPDATED", "PLAYER_LEVEL_UP",
 		"PLAYER_REGEN_ENABLED", "TH_BUILD_CHANGED" }) do
 		T:On(event, queue)

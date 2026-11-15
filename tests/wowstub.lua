@@ -658,6 +658,9 @@ function Stub.install(opts)
 		G.PlayerSpellsUtil.FrameTabs = { ClassSpecializations = 1, ClassTalents = 2, SpellBook = 3 }
 		G.PlayerSpellsFrame.tab = nil
 		G.PlayerSpellsFrame.IsFrameTabActive = function(self, tab) return self:IsShown() and self.tab == tab end
+		-- Its tab pages (children, as in Forever's Blizzard_PlayerSpellsFrame.xml): one is shown at a time.
+		G.PlayerSpellsFrame.TalentsFrame = { IsShown = function() return PlayerSpellsFrame.tab == 2 end }
+		G.PlayerSpellsFrame.SpellBookFrame = { IsShown = function() return PlayerSpellsFrame.tab == 3 end }
 		-- The game's menu bar buttons, which toggle their window like a player's click does.
 		G.TalentMicroButton = { Click = function()
 			Stub.opened.talents = true
