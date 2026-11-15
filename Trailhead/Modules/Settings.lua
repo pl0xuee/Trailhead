@@ -14,6 +14,7 @@ local ui = { themeButtons = {}, sections = {}, pills = {}, section = "window" }
 local SECTIONS = {
 	{ id = "window", label = L["Window"] },
 	{ id = "vendors", label = L["At vendors"] },
+	{ id = "items", label = L["Items"] },
 	{ id = "help", label = L["Help and data"] },
 }
 
@@ -174,6 +175,14 @@ function Settings:Build(page)
 		T.db.autoRepair = value
 	end)
 
+	-- Items.
+	y = row(ui.sections.items, 1, L["Upgrade hints"], L["A line on item tooltips: an upgrade for you, not better, or a kind you cannot use."])
+	ui.upgradeHints = toggle(ui.sections.items, y, function()
+		return T.db.upgradeHints ~= false
+	end, function(value)
+		T.db.upgradeHints = value
+	end)
+
 	-- Help: the screen setup page and the welcome each get their own row.
 	y = row(help, 1, L["Screen setup"], L["Game options that make a first character easier to play, one click each."])
 	local screen = W.Button(help, L["Set up my screen"], "ghost", {
@@ -264,6 +273,7 @@ function Settings:Refresh()
 	ui.merchantBar:Sync()
 	ui.autoSell:Sync()
 	ui.autoRepair:Sync()
+	ui.upgradeHints:Sync()
 	local count = T.Places.Count()
 	ui.placesNote:SetLabel(count == 1 and L["Trailhead remembers 1 place you have found."]
 		or L["Trailhead remembers %d places you have found."]:format(count))

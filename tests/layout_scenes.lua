@@ -113,7 +113,7 @@ end
 
 page("legacy", "legacy")
 
-for _, section in ipairs({ { "window" }, { "vendors", "At vendors" }, { "help", "Help and data" } }) do
+for _, section in ipairs({ { "window" }, { "vendors", "At vendors" }, { "items", "Items" }, { "help", "Help and data" } }) do
 	page("settings-" .. section[1], "settings", nil, function()
 		if section[2] then
 			click(section[2])
