@@ -301,7 +301,7 @@ section("advice cards", function()
 	check(cards[2].title == "Visit your class trainer" and cards[2].key == "train:first"
 		and cards[2].body == "Trainers sell your new spells as you level.\nAfter one visit Trailhead lists them here with prices.", "before the first visit the training card sends you to the trainer")
 	check(cards[3].body == "Counterspell, Blink\nDrag them from your spellbook to a bar.", "bars card names the spells")
-	check(cards[4].body == "Ragefire Chasm, levels 13 to 18.\nDungeons need a group of five.", "dungeon card names the dungeon")
+	check(cards[4].title == "Ready for Ragefire Chasm" and cards[4].body == "Levels 13 to 18. Dungeons need a group of five.\nYour class can be: damage.", "dungeon card names the dungeon")
 	Stub.click("Open talents")
 	check(Stub.opened.talents == true, "Open talents opens the game's talent window")
 	Stub.click("Find trainer")
@@ -372,7 +372,7 @@ section("advice cards", function()
 	for _, card in ipairs(T.Advisor.Cards(20)) do
 		dungeon = card.id == "dungeon" and card or dungeon
 	end
-	check(dungeon and dungeon.body:find("Deadmines", 1, true), "the newest fitting dungeon is suggested")
+	check(dungeon and dungeon.title:find("Deadmines", 1, true), "the newest fitting dungeon is suggested")
 	noErrors(T, "advice by level")
 end)
 

@@ -46,6 +46,24 @@ page("home", "home")
 page("home-level1", "home", nil, nil, { level = 1 })
 page("home-warrior30", "home", nil, nil, { class = "WARRIOR", level = 30 })
 page("home-level60", "home", nil, nil, { class = "PRIEST", level = 60 })
+-- The dungeon readiness card at the top: the cards above it dismissed.
+local function readyFirst(T)
+	for _ = 1, 10 do
+		local first = T.Advisor.Cards(1)[1]
+		if not first or first.id == "dungeon" or first.keep then
+			break
+		end
+		T.Advisor.Dismiss(first)
+	end
+	T.modules.home:Refresh()
+end
+page("home-ready", "home", nil, readyFirst, { class = "DRUID", level = 24 })
+page("home-ready-long", "home", nil, function(T)
+	T.Game.World = function()
+		return { zones = {}, byMap = {}, raids = {}, dungeons = { { name = "Upper Blackrock Spire", lo = 55, hi = 60 } } }
+	end
+	readyFirst(T)
+end, { class = "PALADIN", level = 58 })
 
 -- Find it.
 page("find", "find")
@@ -105,11 +123,19 @@ page("zones-hubs-stranglethorn", "zones", { hubs = 1434, name = "Stranglethorn V
 
 -- Guide: every topic, for a low mage and for a warrior further on.
 page("guide", "guide")
-for _, id in ipairs({ "class", "talents", "levels", "gear", "weapons", "professions", "screen", "rest", "services",
+for _, id in ipairs({ "class", "talents", "levels", "gear", "weapons", "professions", "screen", "firststeps", "rest", "services",
 	"supplies", "travel", "mount", "dying", "grouping", "danger", "words", "money", "reputation", "forever" }) do
 	page("guide-" .. id, "guide", id)
 	page("guide-" .. id .. "-warrior", "guide", id, nil, { class = "WARRIOR", level = 38 })
 end
+
+page("guide-firststeps-some", "guide", "firststeps", function(T)
+	H.visit("Jennea Cannon", H.MAGE_TRAINER)
+	H.leave()
+	Stub.world.group = 2
+	Stub.fire("GROUP_ROSTER_UPDATE")
+	T.Window:Select("guide", "firststeps")
+end)
 
 page("legacy", "legacy")
 

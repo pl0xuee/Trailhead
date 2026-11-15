@@ -470,7 +470,8 @@ function Stub.install(opts)
 		-- world.carried = { { itemID, count, name, classID, subClassID } ... } fills the first bag.
 		G.C_Container = {
 			GetContainerNumFreeSlots = function(bag) return world.free[bag] or 0 end,
-			GetContainerNumSlots = function() return 16 end,
+			-- world.bagSlots[bag] overrides the 16 slots every bag has here (0: an empty bag slot).
+			GetContainerNumSlots = function(bag) return world.bagSlots and world.bagSlots[bag] or 16 end,
 			GetContainerItemInfo = function(bag, slot)
 				local item = bag == 0 and world.carried and world.carried[slot]
 				return item and { itemID = item[1], stackCount = item[2], itemName = item[3] } or nil
@@ -1015,7 +1016,10 @@ function Stub.install(opts)
 				end
 			end,
 		}
-		G.IsMounted = function() return false end
+		G.IsMounted = function() return world.mounted == true end
+		-- world.group = number of members in a party (nil: not in a group).
+		G.IsInGroup = function() return world.group ~= nil end
+		G.GetNumGroupMembers = function() return world.group or 0 end
 		G.TUTORIAL1 = "Quest givers have an exclamation mark over their heads."
 		G.NEWBIE_TOOLTIP_XPBAR = "The amount of experience (XP) you have earned."
 		G.REPAIR_COST = "Repair Cost:"

@@ -678,6 +678,17 @@ local function grouping()
 	local raid = C.Plain(C.Call("IsInRaid"), false) == true
 	out.rows[1] = { name = L["Your group"], text = not inGroup and L["You are not in a group"]
 		or raid and L["In a raid of %d"]:format(members) or L["In a party of %d"]:format(members) }
+	-- The dungeon that suits you now (Services/Readiness.lua), with its route.
+	local R = T.Readiness
+	local best = R and R.Best()
+	if best then
+		local label, run = R.Opener(best)
+		out.rows[#out.rows + 1] = { name = L["Ready for"], text = L["%s, levels %d to %d"]:format(best.name, best.lo, best.hi),
+			run = run, tag = best.id and L["Route"] or L["Find"], tagRole = "accentText" }
+		out.action = { label = label, run = run }
+	elseif R and R.FirstLevel() and G.Level() < R.FirstLevel() then
+		out.rows[#out.rows + 1] = { name = L["Ready for"], text = L["No dungeon yet: the first opens at level %d"]:format(R.FirstLevel()) }
+	end
 	for _, row in ipairs(plainRows(def.rows)) do
 		out.rows[#out.rows + 1] = row
 	end
@@ -797,6 +808,43 @@ local function words()
 	return out
 end
 
+-- First steps: early milestones read from the game (Services/FirstSteps.lua), the ones still
+-- to do first. The topic is hidden once every one is done.
+local function firstSteps()
+	local F = T.FirstSteps
+	local list = F and F.List() or {}
+	local done = F and F.Counts(list) or 0
+	local total = #list
+	local out = { rows = {}, attention = 0, hidden = total == 0 or done == total }
+	out.what = L["A short list of things that make the first days easier. Trailhead ticks each one off when it sees you do it, and the list goes away once all are done."]
+	out.heading = L["%d of %d done"]:format(done, total)
+	local nextStep
+	for _, wanted in ipairs({ false, true }) do
+		for _, step in ipairs(list) do
+			if (step.done == true) == wanted then
+				local row = { name = step.name, text = step.text }
+				if step.done then
+					row.tag, row.tagRole, row.tone = L["Done"], "go", "faint"
+				else
+					nextStep = nextStep or step
+					row.run = step.link.run
+					row.tag = step.link.kind == "find" and L["Find"] or step.link.kind == "guide" and L["Read"] or L["Open"]
+					row.tagRole = "accentText"
+				end
+				out.rows[#out.rows + 1] = row
+			end
+		end
+	end
+	out.total = #out.rows
+	if nextStep then
+		out.next = L["Next: %s."]:format(nextStep.text) .. " " .. nextStep.advice
+		out.action = { label = nextStep.link.label, run = nextStep.link.run }
+	else
+		out.next = L["You have done every first step. Well done."]
+	end
+	return out
+end
+
 -- Screen setup: what the page offers, how many are set, and where the rest lives in the game.
 local function screen()
 	local I = T.Interface
@@ -825,6 +873,7 @@ local TOPICS = {
 	{ id = "professions", group = "you", icon = "pick", label = L["Professions"], read = professions },
 	{ id = "screen", group = "you", icon = "gear", label = L["Screen setup"], read = screen },
 
+	{ id = "firststeps", group = "world", icon = "check", label = L["First steps"], read = firstSteps },
 	{ id = "rest", group = "world", icon = "bed", label = L["Inns and rest"], read = rest },
 	{ id = "services", group = "world", icon = "home", label = L["Towns and services"], read = services },
 	{ id = "supplies", group = "world", icon = "bag", label = L["Supplies"], read = supplies },
@@ -1106,18 +1155,39 @@ function Guide:Refresh()
 		return
 	end
 	local current = TOPICS[1]
-	local waiting = {}
+	local waiting, slots = {}, {}
 	for index, topic in ipairs(TOPICS) do
 		local button = ui.topics[index]
 		local info = topic.read()
 		button.info = info
 		button.count:SetLabel(info.attention > 0 and tostring(info.attention) or "")
 		button.badge:SetShown(info.attention > 0)
-		button:SetShown(topic.group == self.group)
+		button:SetShown(topic.group == self.group and not info.hidden)
+		-- A hidden topic (First steps, once done) leaves no gap in its group's list.
+		if not info.hidden then
+			slots[topic.group] = (slots[topic.group] or 0) + 1
+			button:ClearAllPoints()
+			button:SetPoint("TOPLEFT", self.page, "TOPLEFT", 0, -(LIST_TOP + (slots[topic.group] - 1) * (TOPIC_H + TOPIC_GAP)))
+		end
 		waiting[topic.group] = (waiting[topic.group] or 0) + info.attention
 		if topic.id == self.topic then
 			current = topic
 		end
+		topicLook(button)
+	end
+	-- A hidden topic is never the open one: the next one in its group opens instead.
+	for index, topic in ipairs(TOPICS) do
+		if topic == current and ui.topics[index].info.hidden then
+			for later = index + 1, #TOPICS do
+				if TOPICS[later].group == topic.group and not ui.topics[later].info.hidden then
+					current = TOPICS[later]
+					self.topic = current.id
+					break
+				end
+			end
+		end
+	end
+	for _, button in ipairs(ui.topics) do
 		topicLook(button)
 	end
 	for _, chip in ipairs(ui.chips) do
