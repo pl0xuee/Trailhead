@@ -126,7 +126,8 @@ end)
 
 H.section("characters: one character saved under two realm spellings becomes one", function()
 	local saved = H.checked({ chars = {
-		["Test Realm-Aeloria"] = { name = "Aeloria", level = 24, at = time() - 180 },
+		["Test Realm-Aeloria"] = { name = "Aeloria", level = 14, at = time() - 60 },
+		["TestRealm-Aeloria"] = { name = "Aeloria", level = 14, money = 4650, profs = { { name = "Mining", rank = 37, max = 75 } }, at = time() - 600 },
 		["Aeloria"] = { name = "Aeloria", level = 20, at = time() - 86400 },
 		["Other Realm-Aeloria"] = { name = "Aeloria", level = 9, at = time() - 60 },
 	} })
@@ -134,6 +135,15 @@ H.section("characters: one character saved under two realm spellings becomes one
 	check(T.db.chars["Test Realm-Aeloria"] == nil and T.db.chars.Aeloria == nil, "the other spellings are folded away")
 	check(T.db.chars[KEY] and T.db.chars["Other Realm-Aeloria"], "a same-named character on another realm stays")
 	check(#T.Characters.List() == 2, "the page lists two, not four")
+	-- Straight through the merge, before any save reads the game again.
+	T.db.chars = {
+		["Test Realm-Aeloria"] = { name = "Aeloria", level = 14, at = time() - 60 },
+		[KEY] = { name = "Aeloria", level = 14, money = 4650, at = time() - 600 },
+	}
+	check(T.Characters.Merge() == 1 and T.db.chars[KEY].money == 4650, "the fuller record wins over a newer, emptier one")
+	T.db.chars = { ["Test Realm-Aeloria"] = { name = "Aeloria", level = 26, money = 1, at = 1 }, [KEY] = { name = "Aeloria", level = 24, at = 2 } }
+	T.Characters.Merge()
+	check(T.db.chars[KEY].level == 26, "and the higher level wins")
 	H.noErrors(T, "merge")
 end)
 

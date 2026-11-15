@@ -65,6 +65,19 @@ function Chars.Key()
 	return realm .. "-" .. name
 end
 
+-- Which of two records of one character to keep: the higher level (a copy written while the
+-- game was logging out can be newer but emptier), then the one with gold read, then the newest.
+local function better(a, b)
+	local la, lb = tonumber(a.level) or 0, tonumber(b.level) or 0
+	if la ~= lb then
+		return la > lb
+	end
+	if (a.money ~= nil) ~= (b.money ~= nil) then
+		return a.money ~= nil
+	end
+	return (tonumber(a.at) or 0) > (tonumber(b.at) or 0)
+end
+
 -- Folds records of this character saved under another key (older versions keyed the realm
 -- either way, or left it out) into the current key, keeping the newest.
 function Chars.Merge()
@@ -83,7 +96,7 @@ function Chars.Merge()
 			realm = realm:gsub("[%s%-]", "")
 			if other == name or realm == plainRealm then
 				local keep = list[key]
-				if type(keep) ~= "table" or (tonumber(rec.at) or 0) > (tonumber(keep.at) or 0) then
+				if type(keep) ~= "table" or better(rec, keep) then
 					list[key] = rec
 				end
 				list[other] = nil
