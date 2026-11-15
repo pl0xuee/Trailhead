@@ -14,6 +14,7 @@ local DEFAULTS = {
 	merchantBar = false, -- extra sell and repair buttons at a vendor; off, because the game has its own
 	autoSellJunk = false, -- only ever on if the player turns it on
 	autoRepair = false, -- same
+	upgradeHints = true, -- a line on item tooltips: upgrade, not better, or cannot use
 	tip = 1,
 	minimap = { show = true, angle = 208 },
 	window = {}, -- point, relPoint, x, y once the window has been moved

@@ -1284,11 +1284,13 @@ local WEAPON_SKILL = {
 	[0] = 44, [1] = 172, [2] = 45, [3] = 46, [4] = 54, [5] = 160, [6] = 229, [7] = 43, [8] = 55,
 	[10] = 136, [13] = 162, [15] = 173, [16] = 176, [18] = 226, [19] = 228,
 }
+G.WEAPON_SKILL = WEAPON_SKILL
 
--- { weapons, professions, secondary = { {id, name, rank, max} ... }, defense, byId, complete }
+-- { weapons, professions, secondary = { {id, name, rank, max} ... }, defense, byId, complete,
+--   armor = { name ... }, armorIds = { [skill line id] = true } }
 -- complete is false when the game gave no list or one of the headings is folded shut.
 function G.Skills()
-	local out = { weapons = {}, professions = {}, secondary = {}, armor = {}, byId = {}, complete = true }
+	local out = { weapons = {}, professions = {}, secondary = {}, armor = {}, armorIds = {}, byId = {}, complete = true }
 	local total = C.Plain(C.Call("C_SkillInfo.GetNumSkillLines"), 0)
 	if type(total) ~= "number" or total == 0 then
 		out.complete = false
@@ -1310,6 +1312,7 @@ function G.Skills()
 				local list = lists[C.Plain(info.skillLineCategoryID, nil)]
 				if C.Plain(info.skillLineCategoryID, nil) == SKILL_ARMOR then
 					out.armor[#out.armor + 1] = name
+					out.armorIds[id] = true
 				end
 				if list and type(rank) == "number" and type(max) == "number" and max > 0 then
 					local bonus = C.Plain(info.modifier, 0)

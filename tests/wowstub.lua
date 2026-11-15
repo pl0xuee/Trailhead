@@ -324,6 +324,7 @@ function Stub.install(opts)
 	Stub.eventFrames, Stub.unknownEvents = {}, { HEARTHSTONE_BOUND = opts.bare or nil }
 	Stub.textures, Stub.timers, Stub.chat, Stub.errors, Stub.combat, Stub.sounds = {}, {}, {}, {}, false, 0
 	Stub.waypoint, Stub.fontstrings, Stub.mapOpened, Stub.opened = nil, {}, nil, {}
+	Stub.tooltipPostCalls = {}
 	-- The fake game's state. Tests change it and fire the matching event.
 	local world = {
 		level = opts.level or 14, noActivities = opts.noActivities, map = 52, x = 0.56, y = 0.47, npc = "Innkeeper Farley",
@@ -848,7 +849,9 @@ function Stub.install(opts)
 			list[#list + 1] = head("Armor Proficiencies", 8, world.armorFolded)
 			if not world.armorFolded then
 				for index, name in ipairs(world.armor or { "Cloth" }) do
-					list[#list + 1] = line(name, 414 + index, 1, 1, 8)
+					-- The game's own skill line ids (SkillLine table, build 1.60.1.70888).
+					local ids = { Cloth = 415, Leather = 414, Mail = 413, ["Plate Mail"] = 293, Shield = 433 }
+					list[#list + 1] = line(name, ids[name] or (414 + index), 1, 1, 8)
 				end
 			end
 			list[#list + 1] = head("Languages", 10)
@@ -1051,12 +1054,81 @@ function Stub.install(opts)
 		G.C_GameRules = { GetForeverExperiencePreset = function() error("not available here") end,
 			IsMultiActionBarVisibilityForced = opts.bars and function() return Stub.barsForced end or nil }
 		G.C_UI = { Reload = function() Stub.reloaded = true end }
+
+		-- Item tooltips (Services/Upgrades.lua). world.items[link] = { id, equipLoc, classID,
+		-- subClassID, subType, stats = { KEY = n }, lines = { "text" ... }, minLevel };
+		-- world.equipped[slot] = link. Stub.itemTooltip(tooltip, data) runs the post-calls the
+		-- addon registered for item tooltips, the way the game does after filling one.
+		G.Enum.TooltipDataType = { Item = 0, Spell = 1, Unit = 2 }
+		G.TooltipDataProcessor = {
+			AddTooltipPostCall = function(kind, fn)
+				Stub.tooltipPostCalls[kind] = Stub.tooltipPostCalls[kind] or {}
+				table.insert(Stub.tooltipPostCalls[kind], fn)
+			end,
+		}
+		local function fakeItem(ref)
+			if type(ref) == "string" then return world.items and world.items[ref] end
+			for _, item in pairs(world.items or {}) do
+				if item.id == ref then return item end
+			end
+		end
+		local function itemLines(item)
+			local lines = { { leftText = item.name or "Item" } }
+			for _, text in ipairs(item.lines or {}) do lines[#lines + 1] = { leftText = text } end
+			return lines
+		end
+		Stub.itemLines = itemLines
+		local instant = G.C_Item.GetItemInfoInstant
+		G.C_Item.GetItemInfoInstant = function(ref)
+			local item = fakeItem(ref)
+			if item then return item.id, "Armor", item.subType or "", item.equipLoc, 1, item.classID, item.subClassID end
+			return instant(ref)
+		end
+		G.C_Item.GetItemInfo = function(ref)
+			local item = fakeItem(ref)
+			if not item then return nil end
+			return item.name or "Item", ref, 2, 10, item.minLevel or 1, "Armor", item.subType or "", 1, item.equipLoc
+		end
+		G.C_Item.GetItemStats = function(ref)
+			local item = fakeItem(ref)
+			if not item then return nil end
+			if item.stats == SECRET then return SECRET end
+			local copy = {}
+			for key, value in pairs(item.stats or {}) do copy[key] = value end
+			return copy
+		end
+		G.C_Item.GetItemLinkByGUID = function(guid) return world.guids and world.guids[guid] end
+		G.GetInventoryItemLink = function(_, slot) return world.equipped and world.equipped[slot] end
+		G.C_TooltipInfo.GetInventoryItem = function(_, slot)
+			local item = fakeItem(world.equipped and world.equipped[slot])
+			return item and { lines = itemLines(item) } or nil
+		end
+		G.ITEM_SPELL_TRIGGER_ONEQUIP, G.ITEM_SPELL_TRIGGER_ONUSE = "Equip:", "Use:"
+		G.ITEM_SPELL_TRIGGER_ONPROC, G.ITEM_SET_BONUS = "Chance on hit:", "Set: %s"
+		G.ITEM_MOD_STRENGTH_SHORT, G.ITEM_MOD_AGILITY_SHORT, G.ITEM_MOD_STAMINA_SHORT = "Strength", "Agility", "Stamina"
+		G.ITEM_MOD_INTELLECT_SHORT, G.ITEM_MOD_SPIRIT_SHORT, G.RESISTANCE0_NAME = "Intellect", "Spirit", "Armor"
+		G.ITEM_MOD_DAMAGE_PER_SECOND_SHORT = "damage per second"
 	end
 
 	for name, value in pairs(G) do
 		_G[name] = value
 	end
 	Stub.globals = G
+end
+
+-- A fake item tooltip: remembers the lines added to it.
+function Stub.tooltip(forbidden)
+	local tip = { added = {} }
+	function tip:AddLine(text, r, g, b, wrap) self.added[#self.added + 1] = { text = text, r = r, g = g, b = b, wrap = wrap } end
+	function tip:IsForbidden() return forbidden == true end
+	return tip
+end
+
+-- Runs the item tooltip post-calls, as the game does once it has filled an item tooltip.
+function Stub.itemTooltip(tooltip, data)
+	for _, fn in ipairs(Stub.tooltipPostCalls and Stub.tooltipPostCalls[0] or {}) do
+		fn(tooltip, data)
+	end
 end
 
 -- Removes the fake globals and the addon's own, so the next run starts clean.
