@@ -108,25 +108,6 @@ local function place()
 	return true
 end
 
--- While covering: what the mouse is over, a few times, for /th check.
-local samples, nextSample = 0, 0
-local function sample()
-	local now = GetTime and GetTime() or 0
-	if samples >= 6 or now < nextSample then
-		return
-	end
-	samples, nextSample = samples + 1, now + 0.5
-	local focus = C.Call("GetMouseFoci")
-	focus = type(focus) == "table" and focus[1]
-	local name = type(focus) == "table" and type(focus.GetDebugName) == "function" and focus:GetDebugName() or tostring(focus)
-	local function r(f)
-		local ok, l, b, w, h = pcall(f.GetRect, f)
-		return ok and l and ("%.0f,%.0f %.0fx%.0f s%.2f"):format(l, b, w, h, f:GetEffectiveScale()) or "?"
-	end
-	local over = type(cover.IsMouseOver) == "function" and cover:IsMouseOver()
-	note(("sample over=%s focus=%s cover=%s owner=%s"):format(tostring(over), tostring(name), r(cover), owner and r(owner) or "-"))
-end
-
 -- Lets go of the button it lies over. In combat the secure button cannot be hidden; it then
 -- stays where it is, still only opening the game's window, until combat ends.
 local function release()
@@ -169,7 +150,6 @@ local function make()
 	made:SetAttribute("useOnKeyDown", false) -- act on the mouse coming up, like every Trailhead button
 	made:Hide()
 	made:SetScript("OnEnter", function()
-		note("cover entered")
 		if owner then
 			local enter = owner:GetScript("OnEnter")
 			if enter then
@@ -178,7 +158,6 @@ local function make()
 		end
 	end)
 	made:SetScript("OnLeave", function()
-		note("cover left")
 		local was = release()
 		if was then
 			local leave = was:GetScript("OnLeave")
@@ -190,9 +169,6 @@ local function make()
 	made:SetScript("OnUpdate", function()
 		if C.InCombat() then
 			return
-		end
-		if owner then
-			sample()
 		end
 		if not owner then
 			release()
@@ -263,7 +239,6 @@ function S.Cover(button)
 	made:SetFrameStrata(ABOVE[button:GetFrameStrata()] or "DIALOG")
 	made:SetFrameLevel(math.min(button:GetFrameLevel() + 20, 9000))
 	made:Show()
-	samples = 0
 	note(("covered %s, shown %s, level %s over %s"):format(tostring(button.secureId), tostring(made:IsShown()),
 		tostring(made:GetFrameLevel()), tostring(button:GetFrameLevel())))
 	return true
