@@ -138,6 +138,16 @@ local function buildCards(page, top)
 	heading:SetLabel(L["What now?"])
 	ui.cardCount = W.Text(page, "body", 11, "muted")
 	ui.cardCount:SetPoint("BOTTOMLEFT", heading, "BOTTOMRIGHT", 10, 2)
+	-- What resets each week (Modules/Weekly.lua), at the right end of the heading line.
+	if T.modules.weekly then
+		local week = W.Button(page, L["This week"], "ghost", {
+			role = "accentText", height = 24, size = 11, width = 110,
+			onClick = function()
+				T.Window:Select("weekly")
+			end,
+		})
+		week:SetPoint("TOPRIGHT", page, "TOPLEFT", LEFT_W, -(top - 3))
+	end
 
 	ui.cards = {}
 	for index = 1, CARDS do

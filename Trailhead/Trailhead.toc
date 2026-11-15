@@ -60,4 +60,5 @@ Modules\Guide.lua
 Modules\Legacy.lua
 Modules\Welcome.lua
 Modules\Setup.lua
+Modules\Weekly.lua
 Modules\Settings.lua

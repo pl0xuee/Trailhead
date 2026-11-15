@@ -106,7 +106,7 @@ page("zones-hubs-stranglethorn", "zones", { hubs = 1434, name = "Stranglethorn V
 -- Guide: every topic, for a low mage and for a warrior further on.
 page("guide", "guide")
 for _, id in ipairs({ "class", "talents", "levels", "gear", "weapons", "professions", "screen", "rest", "services",
-	"supplies", "travel", "mount", "dying", "grouping", "danger", "words", "money", "reputation", "forever" }) do
+	"supplies", "travel", "mount", "dying", "grouping", "danger", "words", "money", "reputation", "forever", "week" }) do
 	page("guide-" .. id, "guide", id)
 	page("guide-" .. id .. "-warrior", "guide", id, nil, { class = "WARRIOR", level = 38 })
 end
@@ -127,6 +127,29 @@ page("setup-some-set", "setup", nil, function()
 	click("Turn on", 3)
 end)
 scene("setup-bare", { bare = true }, SAVED, nil, open("setup"))
+
+-- This week: before raids open, with lockouts and a rank cap, and on a client without the functions.
+local function day(year, month, dayOfMonth)
+	Stub.skew = os.time({ year = year, month = month, day = dayOfMonth, hour = 12 }) - os.time()
+end
+local function weekly(data, date)
+	local opts = options({ weekly = data })
+	scene(data.scene, opts, SAVED, nil, function(T)
+		day(date[1], date[2], date[3])
+		open("weekly")(T)
+	end)
+end
+weekly({ scene = "weekly", reset = 3 * 86400 + 5 * 3600, saved = {} }, { 2026, 11, 15 })
+weekly({ scene = "weekly-lockouts", reset = 2 * 86400 + 4 * 3600, rank = { level = 3, earned = 500, capLevel = 5, lastLevel = 4 }, saved = {
+	{ name = "Hyjal Summit", reset = 2 * 86400 + 4 * 3600, done = 3, total = 8 },
+	{ name = "Onyxia's Lair", reset = 2 * 86400 + 4 * 3600, done = 1, total = 1 },
+	{ name = "Barrow Deeps", reset = 2 * 86400 + 4 * 3600, done = 0, total = 6 },
+} }, { 2026, 12, 12 })
+weekly({ scene = "weekly-none", reset = 40 * 60, rank = { level = 5, earned = 0, capLevel = 5, lastLevel = 5 }, saved = {} }, { 2026, 12, 12 })
+scene("weekly-bare", { bare = true }, SAVED, nil, function(T)
+	day(2026, 12, 12)
+	open("weekly")(T)
+end)
 
 -- Dungeon routes: outside, inside, long ones, raids.
 for _, name in ipairs({ "Wailing Caverns", "The Deadmines", "Blackrock Depths", "Molten Core", "Scarlet Monastery",

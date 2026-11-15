@@ -456,6 +456,35 @@ function Stub.install(opts)
 		G.ShowUIPanel = function(frame) Stub.panelOpened[#Stub.panelOpened + 1] = frame end
 	end
 
+	-- The weekly page, only when a test brings it (never on a bare client):
+	-- opts.weekly = { reset = seconds to the weekly reset, saved = { { name, reset, done, total,
+	-- isRaid, locked } }, rank = { level, earned, capLevel, lastLevel } }. Stub.weekly is the live
+	-- table; Stub.raidInfoAsked counts RequestRaidInfo. A rank level is worth 1000 points.
+	Stub.raidInfoAsked = 0
+	if opts.weekly and not opts.bare then
+		Stub.weekly = opts.weekly
+		G.C_DateAndTime = { GetSecondsUntilWeeklyReset = function() return Stub.weekly.reset end }
+		G.GetNumSavedInstances = function() return #(Stub.weekly.saved or {}) end
+		G.GetSavedInstanceInfo = function(index)
+			local s = (Stub.weekly.saved or {})[index]
+			if not s then return nil end
+			return s.name, 1000 + index, s.reset, 9, s.locked ~= false, false, 0, s.isRaid ~= false, 40, "Normal",
+				s.total, s.done, false, 2000 + index
+		end
+		G.RequestRaidInfo = function() Stub.raidInfoAsked = Stub.raidInfoAsked + 1 end
+		if opts.weekly.rank then
+			G.C_MajorFactions = {
+				GetMajorFactionProgressionInfo = function(id)
+					local r = Stub.weekly.rank
+					if id ~= 2800 or not r then return nil end
+					return { renownLevel = r.level, renownReputationEarned = r.earned, currentWeekProgressiveMaxLevel = r.capLevel,
+						previousWeekProgressiveMaxLevel = r.lastLevel, maxLevel = 14, renownLevelThreshold = 1000, weekNumber = 2 }
+				end,
+				GetTotalReputationForRenownLevel = function(_, level) return level * 1000 end,
+			}
+		end
+	end
+
 	if not opts.bare then
 		-- world.rested (bonus experience left), world.resting, world.rest = { id, name, multiplier },
 		-- world.stones (hearthstones carried), world.stoneCooldown = { start, duration }, world.now.
