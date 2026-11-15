@@ -27,7 +27,7 @@ S.TARGETS = {
 
 local cover -- the secure button: nil until first needed, false if the game would not make one
 local owner -- the Trailhead button it lies over
-local placed -- the owner's position when it was last laid over it
+local placed -- the button it is pinned to
 
 -- What happened lately, newest last, for /th check: the game check saves it so a cover that
 -- does not take the click can be traced from the saved file.
@@ -85,19 +85,41 @@ local function rect(frame)
 	return left * ratio, bottom * ratio, width * ratio, height * ratio
 end
 
+-- Pinned to the Trailhead button itself, so the game keeps it exactly there (working the
+-- position out by hand put it somewhere the mouse never was). Let go before every fight.
 local function place()
 	local left, bottom, width, height = rect(owner)
 	if not left then
 		return false
 	end
-	local key = ("%.1f:%.1f:%.1f:%.1f"):format(left, bottom, width, height)
-	if key ~= placed then
-		placed = key
+	if placed ~= owner then
 		cover:ClearAllPoints()
-		cover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", left, bottom)
-		cover:SetSize(width, height)
+		if not pcall(cover.SetAllPoints, cover, owner) then
+			cover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", left, bottom)
+			cover:SetSize(width, height)
+		end
+		placed = owner
 	end
 	return true
+end
+
+-- While covering: what the mouse is over, a few times, for /th check.
+local samples, nextSample = 0, 0
+local function sample()
+	local now = GetTime and GetTime() or 0
+	if samples >= 6 or now < nextSample then
+		return
+	end
+	samples, nextSample = samples + 1, now + 0.5
+	local focus = C.Call("GetMouseFoci")
+	focus = type(focus) == "table" and focus[1]
+	local name = type(focus) == "table" and type(focus.GetDebugName) == "function" and focus:GetDebugName() or tostring(focus)
+	local function r(f)
+		local ok, l, b, w, h = pcall(f.GetRect, f)
+		return ok and l and ("%.0f,%.0f %.0fx%.0f s%.2f"):format(l, b, w, h, f:GetEffectiveScale()) or "?"
+	end
+	local over = type(cover.IsMouseOver) == "function" and cover:IsMouseOver()
+	note(("sample over=%s focus=%s cover=%s owner=%s"):format(tostring(over), tostring(name), r(cover), owner and r(owner) or "-"))
 end
 
 -- Lets go of the button it lies over. In combat the secure button cannot be hidden; it then
@@ -107,6 +129,7 @@ local function release()
 	owner, placed = nil, nil
 	if cover and not C.InCombat() then
 		cover:Hide()
+		cover:ClearAllPoints()
 	end
 	return was
 end
@@ -141,6 +164,7 @@ local function make()
 	made:SetAttribute("useOnKeyDown", false) -- act on the mouse coming up, like every Trailhead button
 	made:Hide()
 	made:SetScript("OnEnter", function()
+		note("cover entered")
 		if owner then
 			local enter = owner:GetScript("OnEnter")
 			if enter then
@@ -149,6 +173,7 @@ local function make()
 		end
 	end)
 	made:SetScript("OnLeave", function()
+		note("cover left")
 		local was = release()
 		if was then
 			local leave = was:GetScript("OnLeave")
@@ -160,6 +185,9 @@ local function make()
 	made:SetScript("OnUpdate", function()
 		if C.InCombat() then
 			return
+		end
+		if owner then
+			sample()
 		end
 		if not owner then
 			release()
@@ -228,7 +256,8 @@ function S.Cover(button)
 	made:SetFrameStrata(button:GetFrameStrata())
 	made:SetFrameLevel(math.min(button:GetFrameLevel() + 20, 9000))
 	made:Show()
-	note(("covered %s at %s, level %s over %s"):format(tostring(button.secureId), tostring(placed),
+	samples = 0
+	note(("covered %s, shown %s, level %s over %s"):format(tostring(button.secureId), tostring(made:IsShown()),
 		tostring(made:GetFrameLevel()), tostring(button:GetFrameLevel())))
 	return true
 end
