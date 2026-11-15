@@ -19,7 +19,7 @@ end
 
 local function specifiers(text)
 	local out = {}
-	for spec in text:gsub("%%%%", ""):gmatch("%%[-+ #0]*%d*%.?%d*[a-zA-Z]") do
+	for spec in text:gsub("%%%%", ""):gmatch("%%[-+#0]*%d*%.?%d*[cdeEfgGioqsuxX]") do
 		out[#out + 1] = spec
 	end
 	return table.concat(out, " ")

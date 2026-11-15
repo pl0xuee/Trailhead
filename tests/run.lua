@@ -92,7 +92,7 @@ section("startup and defaults", function()
 	check(#Stub.chat == 1, "one welcome line in chat")
 	check(TrailheadMinimapButton ~= nil and TrailheadMinimapButton:IsShown(), "minimap button shown")
 	check(TrailheadWindow == nil, "window is not built until opened")
-	check(T.version == "0.12.1", "version read from the TOC")
+	check(T.version == "0.13.0", "version read from the TOC")
 	noErrors(T, "startup")
 end)
 

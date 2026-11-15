@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.13.0
+
+- **Your characters.** A new page lists every character you have played with Trailhead: level, rested experience, hearthstone, professions, gold, unspent talent points, spells waiting at the trainer and gear wear. Open it from the button next to your name on Home, or from the Legacy page.
+- **Welcome back.** After 8 hours or more away, Home says what changed: rested experience gained, new spells at the trainer, gear close to breaking.
+- **Upgrade hints on items.** Item tooltips say "Upgrade for you", "Not better than what you wear" or "You can't use this", using the stats your build asks for. When it can't tell, it says nothing. It can be switched off in Settings, under Items.
+- **This week.** A new page with the time to the weekly reset, your raid lockouts (raids open on 9 December) and your PvP Rank Points against the weekly cap. Open it from Home or from the Guide's new "Each week" topic.
+- **Ready for a dungeon.** A Home card names the dungeon that fits your level, its level range, what your class can do in a group, and opens the route there. The Guide's Grouping topic shows it too.
+- **First steps.** A new Guide topic with ten early milestones (hearthstone, class trainer, first talent point, a profession, Action Bar 2, a bigger bag, a group, a first dungeon, a mount, resting at an inn), each linked to the topic that explains it.
+- **Narrow strip.** When there is no room beside the talents or the spellbook, Trailhead shows a slim strip with just your next talent point, or the spells not yet on your bars.
+- **German, French and Spanish.** Trailhead now speaks the language of your game client. The translations are new and machine-made; corrections are welcome.
+
 ## 0.12.1
 
 - Fixed: after Trailhead opened the talent window, the action bars could stop showing cooldowns until a reload, with a Lua error ("Secret values are only allowed during untainted execution"). The game was treating its own talent window as addon code. "Open talents", "Open spellbook" and "Open Legacy window" now press the game's own menu bar button through a secure button, the same as clicking it yourself, so Trailhead never runs the game's window code. They do nothing in combat.

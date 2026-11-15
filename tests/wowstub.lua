@@ -423,7 +423,7 @@ function Stub.install(opts)
 	G.SOUNDKIT = { IG_MAINMENU_OPTION_CHECKBOX_ON = 856, IG_CHARACTER_INFO_TAB = 841,
 		IG_CHARACTER_INFO_OPEN = 839, IG_CHARACTER_INFO_CLOSE = 840 }
 	G.PlaySound = function() Stub.sounds = Stub.sounds + 1 end
-	G.C_AddOns = { GetAddOnMetadata = function(_, field) return field == "Version" and "0.12.1" or nil end }
+	G.C_AddOns = { GetAddOnMetadata = function(_, field) return field == "Version" and "0.13.0" or nil end }
 	G.ReloadUI = function() Stub.reloaded = true end
 
 	-- Game options, only when a test brings them: opts.cvars = { name = "value" } makes C_CVar

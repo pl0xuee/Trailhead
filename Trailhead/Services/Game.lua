@@ -1340,7 +1340,7 @@ end
 local ARMOR_CLASS = 4
 local ARMOR_SLOT = { [1] = true, [3] = true, [5] = true, [6] = true, [7] = true, [8] = true, [9] = true, [10] = true }
 local GEAR_SLOTS = {
-	{ 1, "HEADSLOT", L["Head"] }, { 2, "NECKSLOT", L["Neck"] }, { 3, "SHOULDERSLOT", L["Shoulders"] }, { 15, "BACKSLOT", L["Back"] },
+	{ 1, "HEADSLOT", L["Head"] }, { 2, "NECKSLOT", L["Neck"] }, { 3, "SHOULDERSLOT", L["Shoulders"] }, { 15, "BACKSLOT", INVTYPE_CLOAK or L["Back"] },
 	{ 5, "CHESTSLOT", L["Chest"] }, { 9, "WRISTSLOT", L["Wrist"] }, { 10, "HANDSSLOT", L["Hands"] }, { 6, "WAISTSLOT", L["Waist"] },
 	{ 7, "LEGSSLOT", L["Legs"] }, { 8, "FEETSLOT", L["Feet"] }, { 11, "FINGER0SLOT", L["Finger"] }, { 12, "FINGER1SLOT", L["Finger"] },
 	{ 13, "TRINKET0SLOT", L["Trinket"] }, { 14, "TRINKET1SLOT", L["Trinket"] }, { 16, "MAINHANDSLOT", L["Main Hand"] },
