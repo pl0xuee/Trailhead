@@ -210,7 +210,7 @@ Home also has a "Find nearby" grid (eight services), the next milestone (talents
 ### Phase 3: depth and release
 
 - **Legacy tracker** (built in 0.11.0, `Modules/Legacy.lua`): points, how they are earned, the three perk trees and rewards, buttons into the game's own Legacy window. Perk numbers and thresholds are left out where sources gave none.
-- **Weekly**: not built. Nothing weekly exists at launch (raids open 2026-12-09); revisit then.
+- **Weekly** (`Modules/Weekly.lua`, no tab; from a Home button and the Guide topic "Each week"): time to the weekly reset (`C_DateAndTime.GetSecondsUntilWeeklyReset`), raid lockouts (`GetSavedInstanceInfo`, as the game's own group finder reads them) with an empty state until raids open on 2026-12-09, and the PvP Rank Point weekly cap read as the game's PvP rank pane reads it (major faction 2800). Unseen in the game.
 - **First-run setup** (built in 0.11.0): a welcome shown once with doors into the main pages (`Modules/Welcome.lua`), and a **Screen setup** page (`Services/Interface.lua`, `Modules/Setup.lua`) with eleven game options a first character benefits from, each read from Blizzard's own settings panels for this build, switched on by one click and undone by one click; Edit Mode, more action bars, key bindings and the Classic or Enhanced preset are explained and, where safe, opened.
 - **Vendors** (0.11.0, `Services/Merchant.lua`): the game has its own Sell All Junk and Repair buttons, so Trailhead only offers "sell grey items by itself" and "repair by itself" (both off) and an optional second pair of buttons that shows the price first (off).
 - **Localization** scaffolding (built: `tools/gen_locale_keys.py`).

@@ -4,7 +4,7 @@ local H = ...
 local Stub, check = H.Stub, H.check
 
 local CLASSES = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID" }
-local NEW = { class = true, services = true, grouping = true, danger = true, words = true, money = true,
+local NEW = { week = true, class = true, services = true, grouping = true, danger = true, words = true, money = true,
 	reputation = true, travel = true, forever = true }
 local PANEL_H, ROW_H = 452, 24
 

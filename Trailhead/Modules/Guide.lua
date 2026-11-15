@@ -816,6 +816,29 @@ local function screen()
 	return out
 end
 
+-- Each week: what resets, in short, with the way into the This week page (Modules/Weekly.lua).
+local function week()
+	local Wk = T.Weekly
+	local out = { rows = {}, attention = 0 }
+	out.what = L["A few things in Forever start over once a week: raid lockouts, and the cap on PvP Rank Points goes up. Legacy challenges never reset."]
+	if not Wk then
+		out.total = 0
+		return out
+	end
+	out.rows[#out.rows + 1] = { name = L["Next reset"], text = Wk.ResetText() or L["Your game does not say"] }
+	local state, days = Wk.RaidState()
+	out.rows[#out.rows + 1] = { name = L["Raids"], text = state == "before" and L["Open on 9 December, in %d days"]:format(days)
+		or state == "today" and L["Open today"] or L["Each raid resets once a week"] }
+	out.rows[#out.rows + 1] = { name = L["PvP rank"], text = L["Rank Points have a weekly cap that goes up each reset"] }
+	out.rows[#out.rows + 1] = { name = L["PvP journey"], text = L["Weekly tasks that give Honor and Rank Points"] }
+	out.total = #out.rows
+	out.next = L["Raids are for level 60 characters: Barrow Deeps for 10 players, Hyjal Summit for 20 and Onyxia's Lair for 40."]
+	out.action = { label = L["Open This week"], run = function()
+		T.Window:Select("weekly")
+	end }
+	return out
+end
+
 local TOPICS = {
 	{ id = "class", group = "you", icon = "sword", label = L["Your class"], read = classNotes },
 	{ id = "talents", group = "you", icon = "spark", label = L["Talents"], read = talents },
@@ -839,6 +862,7 @@ local TOPICS = {
 	{ id = "money", group = "gold", icon = "coin", label = L["Money"], read = money },
 	{ id = "reputation", group = "gold", icon = "bars", label = L["Reputation"], read = reputation },
 	{ id = "forever", group = "gold", icon = "mtn", label = L["Forever's systems"], read = forever },
+	{ id = "week", group = "gold", icon = "scroll", label = L["Each week"], read = week },
 }
 Guide.Topics = TOPICS
 Guide.group = "you"
