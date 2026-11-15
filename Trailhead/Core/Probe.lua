@@ -847,8 +847,13 @@ end
 -- Sections that read another section's result run after it.
 local ORDER = {
 	"build", "player", "apis", "character", "map", "zones", "taxi", "dungeons", "tracking",
-	"spellbook", "talents", "skills", "rest", "bags", "visits", "words", "mounts", "spelltips", "routes", "groupFinder", "learned",
+	"spellbook", "talents", "skills", "rest", "bags", "visits", "words", "mounts", "spelltips", "routes", "groupFinder", "learned", "secure",
 }
+
+-- The safe openers (UI/Secure.lua): whether the cover was made, where it went, what took the click.
+sections.secure = function()
+	return T.Secure.Report()
+end
 
 -- Runs the check. Returns true when it ran.
 function Probe:Run()

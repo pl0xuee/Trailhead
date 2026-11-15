@@ -10,6 +10,8 @@
 - **First steps.** A new Guide topic with ten early milestones (hearthstone, class trainer, first talent point, a profession, Action Bar 2, a bigger bag, a group, a first dungeon, a mount, resting at an inn), each linked to the topic that explains it.
 - **Narrow strip.** When there is no room beside the talents or the spellbook, Trailhead shows a slim strip with just your next talent point, or the spells not yet on your bars.
 - **German, French and Spanish.** Trailhead now speaks the language of your game client. The translations are new and machine-made; corrections are welcome.
+- Fixed: a character could show up twice on Your characters, once as an older copy without gold or professions. The game names the realm two ways, and a save made while logging out or reloading caught the game with its data already cleared. Existing doubles are merged.
+- Work in progress on "Open talents" and "Open spellbook" printing "Open ... from the game's menu bar" instead of opening the window. `/th check` now records what happens when you hover those buttons.
 
 ## 0.12.1
 

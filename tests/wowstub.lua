@@ -327,7 +327,7 @@ function Stub.install(opts)
 	Stub.tooltipPostCalls = {}
 	-- The fake game's state. Tests change it and fire the matching event.
 	local world = {
-		level = opts.level or 14, noActivities = opts.noActivities, map = 52, x = 0.56, y = 0.47, npc = "Innkeeper Farley",
+		level = opts.level or 14, realm = opts.realm, noActivities = opts.noActivities, map = 52, x = 0.56, y = 0.47, npc = "Innkeeper Farley",
 		bind = "Goldshire", talents = true, free = { [0] = 5, 1, 1, 1, 1 }, durability = {},
 		repair = false, trainer = nil, gossip = {}, poi = nil,
 		onBars = { [116] = true, [122] = true, [12051] = true },

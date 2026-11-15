@@ -50,8 +50,48 @@ function Chars.Key()
 	if not name then
 		return nil
 	end
+	-- The game names the realm two ways ("Realm 7 PvE" and "Realm7PvE") and answers only one of
+	-- them early in a login: both come down to the same key, without spaces or hyphens.
 	local realm = text(C.Call("GetNormalizedRealmName")) or text(C.Call("GetRealmName"))
-	return realm and (realm .. "-" .. name) or name
+	realm = realm and realm:gsub("[%s%-]", "")
+	if not realm or realm == "" then
+		-- A client with no realm call at all keys by name; one that has it but has not
+		-- answered yet waits, so no second record is made.
+		if C.Has("GetNormalizedRealmName") or C.Has("GetRealmName") then
+			return nil
+		end
+		return name
+	end
+	return realm .. "-" .. name
+end
+
+-- Folds records of this character saved under another key (older versions keyed the realm
+-- either way, or left it out) into the current key, keeping the newest.
+function Chars.Merge()
+	local key = Chars.Key()
+	if not key then
+		return 0
+	end
+	local list, merged = Chars.All(), 0
+	local plainRealm, name = key:match("^(.-)%-(.+)$")
+	if not name then
+		return 0
+	end
+	for other, rec in pairs(list) do
+		if other ~= key and type(other) == "string" and type(rec) == "table" and rec.name == name then
+			local realm = other:match("^(.-)%-") or other
+			realm = realm:gsub("[%s%-]", "")
+			if other == name or realm == plainRealm then
+				local keep = list[key]
+				if type(keep) ~= "table" or (tonumber(rec.at) or 0) > (tonumber(keep.at) or 0) then
+					list[key] = rec
+				end
+				list[other] = nil
+				merged = merged + 1
+			end
+		end
+	end
+	return merged
 end
 
 -- Reads the character now. Fields the game does not answer are left out; `keep` (the record
@@ -304,6 +344,7 @@ end
 
 T:On("PLAYER_LOGIN", function()
 	loginAt = time()
+	T.SafeCall("Characters.Merge", Chars.Merge)
 	local key = Chars.Key()
 	local saved = key and Chars.All()[key]
 	if type(saved) == "table" then
@@ -323,8 +364,13 @@ T:On("PLAYER_LOGIN", function()
 			soon()
 		end
 	end)
-	-- Logging out: the last word, written at once.
+	-- Logging out or reloading: the game has already emptied gold, experience and professions,
+	-- so only the time is written; everything else is from the last save while playing.
 	T:On("PLAYER_LOGOUT", function()
-		Chars.Save()
+		local key = Chars.Key()
+		local rec = key and Chars.All()[key]
+		if type(rec) == "table" then
+			rec.at = time()
+		end
 	end)
 end)

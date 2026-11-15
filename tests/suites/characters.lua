@@ -71,9 +71,13 @@ H.section("characters: this character is saved at login and logout", function()
 	Stub.flush()
 	check(T.db.chars[KEY].money == 600000, "written once the fight ends")
 
+	-- Logging out or reloading: the game has emptied its data by then, so only the time moves.
 	Stub.world.bind = "Sentinel Hill"
+	Stub.world.money = 0
+	T.db.chars[KEY].at = 1
 	Stub.fire("PLAYER_LOGOUT")
-	check(T.db.chars[KEY].bind == "Sentinel Hill", "logging out writes at once")
+	check(T.db.chars[KEY].at > 1, "logging out stamps the time")
+	check(T.db.chars[KEY].money == 600000 and T.db.chars[KEY].bind ~= "Sentinel Hill", "and keeps what was saved while playing")
 	H.noErrors(T, "saving")
 end)
 
@@ -118,6 +122,25 @@ H.section("characters: old and broken saved records", function()
 	end
 	check(Stub.sees("Gold on all of them: 35g 12s"), "gold on every character, added up")
 	H.noErrors(T, "old records")
+end)
+
+H.section("characters: one character saved under two realm spellings becomes one", function()
+	local saved = H.checked({ chars = {
+		["Test Realm-Aeloria"] = { name = "Aeloria", level = 24, at = time() - 180 },
+		["Aeloria"] = { name = "Aeloria", level = 20, at = time() - 86400 },
+		["Other Realm-Aeloria"] = { name = "Aeloria", level = 9, at = time() - 60 },
+	} })
+	local T = H.load(nil, saved)
+	check(T.db.chars["Test Realm-Aeloria"] == nil and T.db.chars.Aeloria == nil, "the other spellings are folded away")
+	check(T.db.chars[KEY] and T.db.chars["Other Realm-Aeloria"], "a same-named character on another realm stays")
+	check(#T.Characters.List() == 2, "the page lists two, not four")
+	H.noErrors(T, "merge")
+end)
+
+H.section("characters: no realm answer yet, no record", function()
+	local T = H.load({ realm = {} }, H.checked())
+	check(T.Characters.Key() == nil and next(T.db.chars) == nil, "nothing saved until the realm is known")
+	H.noErrors(T, "realm not yet known")
 end)
 
 H.section("characters: forgetting a character takes two clicks", function()
