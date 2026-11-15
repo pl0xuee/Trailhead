@@ -372,7 +372,7 @@ function Stub.install(opts)
 	G.date = os.date
 	G.geterrorhandler = function() return function(err) Stub.errors[#Stub.errors + 1] = tostring(err) end end
 	G.GetBuildInfo = function() return "1.60.1", "70888", "Nov  3 2026", 16001 end
-	G.GetLocale = function() return "enUS" end
+	G.GetLocale = function() return opts.locale or "enUS" end
 	G.WOW_PROJECT_ID = 1
 	G.InCombatLockdown = function() return Stub.combat end
 	G.GetCursorPosition = function() return 500, 400 end

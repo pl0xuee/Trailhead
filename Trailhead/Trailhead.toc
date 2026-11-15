@@ -12,6 +12,9 @@
 ## AddonCompartmentFunc: Trailhead_OnAddonCompartmentClick
 
 Locales\enUS.lua
+Locales\deDE.lua
+Locales\frFR.lua
+Locales\esES.lua
 Core\Init.lua
 Core\Compat.lua
 Core\DB.lua
