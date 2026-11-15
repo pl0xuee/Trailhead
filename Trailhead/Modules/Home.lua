@@ -106,6 +106,32 @@ local function buildHero(page)
 	ui.bind:SetPoint("TOPRIGHT", ui.gold, "BOTTOMRIGHT", 0, -6)
 	ui.bags = W.Chip(hero, "bag")
 	ui.bags:SetPoint("TOPRIGHT", ui.bind, "BOTTOMRIGHT", 0, -6)
+
+	-- Beside the name: every character on the account (Modules/Characters.lua).
+	local others = W.Panel(hero, { shape = "chip", fill = "chip", line = "chipLine" }, "Button")
+	others:SetHeight(22)
+	others:SetPoint("LEFT", ui.name, "RIGHT", 14, 0)
+	others.label = W.Text(others, "body", 10.5, "heroMuted")
+	others.label:SetPoint("LEFT", others, "LEFT", 10, 0)
+	others.label:SetLabel(L["Your characters"])
+	others.icon = W.Icon(others, "arrow", 11, "accent")
+	others.icon:SetPoint("LEFT", others.label, "RIGHT", 5, 0)
+	others.AfterRestyle = function(self)
+		self:SetWidth(self.label:GetStringWidth() + 36)
+	end
+	others:AfterRestyle()
+	others:SetScript("OnEnter", function(self)
+		self:SetStyle({ line = "accent" })
+		self.label:SetRole("heroText")
+	end)
+	others:SetScript("OnLeave", function(self)
+		self:SetStyle({ line = "chipLine" })
+		self.label:SetRole("heroMuted")
+	end)
+	others:SetScript("OnClick", function()
+		C.Sound("IG_MAINMENU_OPTION_CHECKBOX_ON")
+		T.Window:Select("characters")
+	end)
 	return hero
 end
 

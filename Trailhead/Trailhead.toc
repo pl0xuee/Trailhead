@@ -45,6 +45,7 @@ Services\Advisor.lua
 Services\Merchant.lua
 Services\Interface.lua
 Services\Upgrades.lua
+Services\Characters.lua
 UI\Theme.lua
 UI\Widgets.lua
 UI\Window.lua
@@ -62,4 +63,5 @@ Modules\Legacy.lua
 Modules\Welcome.lua
 Modules\Setup.lua
 Modules\Weekly.lua
+Modules\Characters.lua
 Modules\Settings.lua

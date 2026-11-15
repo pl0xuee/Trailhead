@@ -118,6 +118,14 @@ function Legacy:Build(page)
 	})
 	ui.window:SetPoint("TOPRIGHT", mine, "TOPRIGHT", -16, -14)
 	T.Secure.Set(ui.window, "legacy")
+	-- Legacy Points belong to the whole account, and so does this list.
+	local others = W.Button(mine, L["Your characters"], "ghost", {
+		role = "accentText", height = 26, size = 11, width = 190,
+		onClick = function()
+			T.Window:Select("characters")
+		end,
+	})
+	others:SetPoint("TOPRIGHT", ui.window, "BOTTOMRIGHT", 0, -6)
 
 	-- What earns a point.
 	local earn = card(page, 0, 152, 382, 118)

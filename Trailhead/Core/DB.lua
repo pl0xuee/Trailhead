@@ -21,6 +21,7 @@ local DEFAULTS = {
 	places = {}, -- services the player has found, shared by all characters
 	cardsOff = {}, -- advice cards switched off for good, by id
 	interface = { prev = {} }, -- what the player had before a Screen setup change, by option id
+	chars = {}, -- a short record of each character on the account, by "Realm-Name" (Services/Characters.lua)
 }
 
 local CHAR_DEFAULTS = {

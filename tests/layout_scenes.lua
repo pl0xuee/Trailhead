@@ -198,3 +198,40 @@ end)
 
 -- The welcome, on a first open.
 scene("welcome", options(), { firstRun = false }, nil, open())
+
+-- Your characters: a full account, a single character, and Home's "since you last played" card.
+local ALTS = {
+	["TestRealm-Thrallgarnok"] = { name = "Thrallgarnok", realm = "Test Realm", class = "SHAMAN", className = "Shaman",
+		race = "Orc", level = 38, xp = 41000, xpMax = 77000, rested = 52000, bind = "Thousand Needles", money = 4815162,
+		durability = 0.18, zone = "Stranglethorn Vale", talents = 3, train = 4, at = time() - 2 * 86400,
+		profs = { { name = "Leatherworking", rank = 187, max = 225 }, { name = "Skinning", rank = 201, max = 225 },
+			{ name = "Cooking", rank = 150, max = 225 }, { name = "First Aid", rank = 225, max = 225 }, { name = "Fishing", rank = 98, max = 150 } } },
+	["OtherRealm-Mira"] = { name = "Mira", realm = "Other Realm", className = "Priest", race = "Night Elf", level = 60,
+		bind = "Light's Hope Chapel", money = 251234567, durability = 1, zone = "Eastern Plaguelands", talents = 0,
+		at = time() - 26 * 86400, profs = { { name = "Tailoring", rank = 300, max = 300 } } },
+	["TestRealm-Bankalt"] = { name = "Bankalt", level = 1, at = time() - 5 * 3600 },
+	["TestRealm-Old"] = { name = "Old", level = 12, at = "long ago" },
+}
+local function withAlts(extra)
+	local saved = H.checked({ welcomeDone = true, chars = {} })
+	for key, rec in pairs(ALTS) do
+		saved.chars[key] = rec
+	end
+	for key, rec in pairs(extra or {}) do
+		saved.chars[key] = rec
+	end
+	return saved
+end
+scene("characters", options(), withAlts(), nil, open("characters"))
+scene("characters-one", options(), SAVED, nil, open("characters"))
+scene("characters-forget", options(), withAlts(), nil, open("characters", nil, function()
+	click("Forget", 1)
+end))
+scene("home-since", options(), withAlts({
+	["TestRealm-Aeloria"] = { name = "Aeloria", level = 14, xp = 6200, xpMax = 10000, rested = 0, at = time() - 3 * 86400 },
+}), nil, open("home", nil, function(T)
+	H.visit("Jennea Cannon", H.MAGE_TRAINER)
+	H.leave()
+	Stub.world.durability[1] = { 3, 40 }
+	T.Window:Select("home")
+end))

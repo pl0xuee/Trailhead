@@ -75,6 +75,11 @@ rules[#rules + 1] = function()
 	}
 end
 
+-- Back after a while: what changed while the character was away (Services/Characters.lua).
+rules[#rules + 1] = function()
+	return T.Characters and T.Characters.SinceCard() or nil
+end
+
 rules[#rules + 1] = function()
 	if not G.HasTalentPoints() then
 		return nil

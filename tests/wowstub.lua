@@ -496,6 +496,9 @@ function Stub.install(opts)
 		G.IsResting = function() return world.resting == true end
 		G.GetTime = function() return world.now or 1000 end
 		G.GetBindLocation = function() return world.bind end
+		-- world.realm = { "Display Name", "NormalizedName" }: the character's realm.
+		G.GetRealmName = function() return (world.realm or { "Test Realm" })[1] end
+		G.GetNormalizedRealmName = function() return (world.realm or { "Test Realm", "TestRealm" })[2] end
 		G.GetMaxPlayerLevel = function() return 60 end
 		-- world.carried = { { itemID, count, name, classID, subClassID } ... } fills the first bag.
 		G.C_Container = {
