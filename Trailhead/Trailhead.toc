@@ -40,6 +40,8 @@ Services\Places.lua
 Services\Routes.lua
 Services\Hubs.lua
 Services\Dungeons.lua
+Services\Readiness.lua
+Services\FirstSteps.lua
 Services\Builds.lua
 Services\Advisor.lua
 Services\Merchant.lua

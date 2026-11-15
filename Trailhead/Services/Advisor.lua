@@ -16,6 +16,18 @@ T.Advisor = A
 
 local dismissed = {} -- key -> true, until the next login
 
+-- Cards marked `persist` stay dismissed on this character, until their key changes.
+local function keptOff()
+	local cdb = T.cdb
+	if not cdb then
+		return {}
+	end
+	if type(cdb.cardsDismissed) ~= "table" then
+		cdb.cardsDismissed = {}
+	end
+	return cdb.cardsDismissed
+end
+
 local function open(tab, arg)
 	return function()
 		T.Window:Open(tab, arg)
@@ -251,30 +263,9 @@ rules[#rules + 1] = function()
 	return nil
 end
 
+-- The dungeon that suits the character best (Services/Readiness.lua).
 rules[#rules + 1] = function()
-	local level = G.Level()
-	local fits = {}
-	for _, dungeon in ipairs(G.World().dungeons) do
-		if level >= dungeon.lo and level <= dungeon.hi then
-			fits[#fits + 1] = dungeon
-		end
-	end
-	if #fits == 0 then
-		return nil
-	end
-	-- The one that opened most recently is the best match.
-	table.sort(fits, function(a, b)
-		return a.lo > b.lo
-	end)
-	local best = fits[1]
-	return {
-		id = "dungeon", tone = "info", icon = "gate", key = "dungeon:" .. best.name,
-		title = L["A dungeon fits your level"],
-		body = L["%s, levels %d to %d."]:format(best.name, best.lo, best.hi) .. "\n"
-			.. L["Dungeons need a group of five."],
-		action = L["See dungeons"],
-		run = open("zones", "dungeons"),
-	}
+	return T.Readiness and T.Readiness.Card()
 end
 
 rules[#rules + 1] = function()
@@ -299,7 +290,7 @@ function A.Cards(most)
 		local ok, card = pcall(rule)
 		if not ok then
 			T:LogError("advisor", card)
-		elseif card and not off[card.id] and not (card.key and dismissed[card.key]) then
+		elseif card and not off[card.id] and not (card.key and (dismissed[card.key] or (card.persist and keptOff()[card.key]))) then
 			out[#out + 1] = card
 			if #out >= (most or 3) then
 				break
@@ -320,6 +311,9 @@ end
 function A.Dismiss(card)
 	if card and card.key then
 		dismissed[card.key] = true
+		if card.persist then
+			keptOff()[card.key] = true
+		end
 		T:Fire("TH_ADVICE_CHANGED")
 	end
 end
@@ -327,5 +321,8 @@ end
 function A.Reset()
 	dismissed = {}
 	T.db.cardsOff = {}
+	if T.cdb then
+		T.cdb.cardsDismissed = {}
+	end
 	T:Fire("TH_ADVICE_CHANGED")
 end
