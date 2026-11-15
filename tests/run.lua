@@ -92,7 +92,7 @@ section("startup and defaults", function()
 	check(#Stub.chat == 1, "one welcome line in chat")
 	check(TrailheadMinimapButton ~= nil and TrailheadMinimapButton:IsShown(), "minimap button shown")
 	check(TrailheadWindow == nil, "window is not built until opened")
-	check(T.version == "0.12.0", "version read from the TOC")
+	check(T.version == "0.12.1", "version read from the TOC")
 	noErrors(T, "startup")
 end)
 
@@ -744,8 +744,16 @@ section("spells", function()
 	end
 	check(not Stub.sees("Fireball") and not Stub.sees("Attack") and not Stub.sees("Mage Armor")
 		and not Stub.sees("READY TO LEARN NOW"), "and nothing it should not")
+	Stub.combat = true
+	Stub.click("Open spellbook")
+	check(not Stub.opened.spellbook and not PlayerSpellsFrame:IsShown(), "in combat Open spellbook does nothing")
+	Stub.combat = false
 	Stub.click("Open spellbook")
 	check(Stub.opened.spellbook == true, "Open spellbook opens the game's spellbook")
+	check(TrailheadSecureOpen and TrailheadSecureOpen:GetAttribute("clickbutton1") == SpellbookMicroButton
+		and TrailheadSecureOpen:GetAttribute("useOnKeyDown") == false,
+		"through a secure button pressing the game's own spellbook button, on mouse up")
+	check(not TrailheadSecureOpen:IsShown(), "the secure button goes away when the mouse leaves")
 	world.onBars[2139] = true
 	Stub.fire("ACTIONBAR_SLOT_CHANGED", 5)
 	Stub.flush()
@@ -1586,7 +1594,8 @@ section("builds: the rogue build and the talent helper", function()
 		and not Stub.sees("Follow this build"),
 		"and the Builds page says it cannot suggest points")
 	T.BuildGuide.Open()
-	check(Stub.opened.talents == true and T.Window.current == "builds", "Open talents still opens the game's window")
+	check(not Stub.opened.talents and T.Window.current == "builds", "the fallback shows the page and never calls the game's talent code")
+	check(Stub.chat[#Stub.chat]:find("Open your talents from the game's menu bar.", 1, true), "and says where to open them")
 	noErrors(T, "builds with a talent tree that does not match")
 
 	T = load({ bare = true }, checked())

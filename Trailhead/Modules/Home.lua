@@ -120,6 +120,10 @@ local function fillCard(card, advice)
 		card.action:Show()
 		card.action:SetKind(advice.tone == "go" and "primary" or "ghost", advice.tone)
 		card.action:SetLabel(advice.action)
+		T.Secure.Set(card.action, advice.secure, advice.after and function()
+			advice.after()
+			Home:Refresh()
+		end)
 	else
 		card.action:Hide()
 	end

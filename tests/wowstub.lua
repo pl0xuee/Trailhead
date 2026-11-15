@@ -45,7 +45,8 @@ local ALLOWED = {
 		"SetHeight", "GetWidth", "GetHeight", "Show", "Hide", "SetShown", "IsShown", "IsVisible",
 		"GetPoint", "CreateTexture", "CreateFontString", "SetScript", "GetScript", "RegisterEvent",
 		"GetFrameLevel", "GetCenter", "GetEffectiveScale", "EnableMouseWheel", "IsMouseOver",
-		"GetLeft", "GetRight", "GetTop", "GetBottom", "GetScale" },
+		"GetLeft", "GetRight", "GetTop", "GetBottom", "GetScale", "SetAttribute", "GetAttribute",
+		"HookScript", "GetFrameStrata" },
 	Texture = { "SetPoint", "ClearAllPoints", "SetAllPoints", "SetAlpha", "SetSize", "SetWidth",
 		"SetHeight", "GetWidth", "GetHeight", "Show", "Hide", "SetShown", "IsShown", "SetTexture",
 		"SetTexCoord", "SetVertexColor", "SetColorTexture", "SetSnapToPixelGrid",
@@ -109,6 +110,13 @@ function methods:GetEffectiveScale() return self.effective or 1 end
 function methods:GetFrameLevel() return 1 end
 function methods:SetScript(name, fn) self.scripts[name] = fn end
 function methods:GetScript(name) return self.scripts[name] end
+function methods:HookScript(name, fn)
+	local before = self.scripts[name]
+	self.scripts[name] = before and function(...) before(...); fn(...) end or fn
+end
+function methods:SetAttribute(key, value) self.attrs = self.attrs or {}; self.attrs[key] = value end
+function methods:GetAttribute(key) return self.attrs and self.attrs[key] end
+function methods:GetFrameStrata() return "MEDIUM" end
 function methods:RegisterEvent(event)
 	if Stub.unknownEvents[event] then error("Attempt to register unknown event " .. event) end
 	self.events[event] = true
@@ -259,6 +267,22 @@ function Stub.click(label, nth)
 	end
 	local button = found[nth or #found]
 	assert(button, "no visible button labelled " .. label)
+	-- A button that opens a game window the safe way (UI/Secure.lua): the mouse comes onto it,
+	-- the secure button laid over it takes the click and presses the game's own button.
+	if button.secureId then
+		button.rect = button.rect or { 600, 720, 500, 476 }
+		if button.scripts.OnEnter then button.scripts.OnEnter(button) end
+		local cover = _G.TrailheadSecureOpen
+		if cover and cover:IsShown() then
+			Stub.secureClicks = (Stub.secureClicks or 0) + 1
+			if cover.scripts.PreClick then cover.scripts.PreClick(cover, "LeftButton", false) end
+			local target = cover:GetAttribute("clickbutton1")
+			if cover:GetAttribute("type1") == "click" and target then target:Click("LeftButton") end
+			if cover.scripts.PostClick then cover.scripts.PostClick(cover, "LeftButton", false) end
+			if cover.scripts.OnLeave then cover.scripts.OnLeave(cover) end
+			return button
+		end
+	end
 	button.scripts.OnClick(button)
 	return button
 end
@@ -398,7 +422,7 @@ function Stub.install(opts)
 	G.SOUNDKIT = { IG_MAINMENU_OPTION_CHECKBOX_ON = 856, IG_CHARACTER_INFO_TAB = 841,
 		IG_CHARACTER_INFO_OPEN = 839, IG_CHARACTER_INFO_CLOSE = 840 }
 	G.PlaySound = function() Stub.sounds = Stub.sounds + 1 end
-	G.C_AddOns = { GetAddOnMetadata = function(_, field) return field == "Version" and "0.12.0" or nil end }
+	G.C_AddOns = { GetAddOnMetadata = function(_, field) return field == "Version" and "0.12.1" or nil end }
 	G.ReloadUI = function() Stub.reloaded = true end
 
 	-- Game options, only when a test brings them: opts.cvars = { name = "value" } makes C_CVar
@@ -621,21 +645,37 @@ function Stub.install(opts)
 			GetSpellLevelLearned = function() return 10 end,
 		}
 		G.ActionButtonUtil = { GetActionBarStatusForSpell = function(id) return world.onBars[id] and 1 or 2 end }
+		-- The game's own window code. Trailhead must never call it: an addon's call runs it tainted,
+		-- and the action bars then fail to show cooldowns (see UI/Secure.lua).
+		local function forbidden(name)
+			return function() error("Trailhead called the game's " .. name .. " itself") end
+		end
 		G.PlayerSpellsUtil = {
-			ToggleSpellBookFrame = function() Stub.opened.spellbook = true; PlayerSpellsFrame:SetShown(not PlayerSpellsFrame:IsShown()) end,
-			-- The talents are a centred window: showing one closes every window Escape closes.
-			ToggleClassTalentFrame = function()
-				Stub.opened.talents = true
-				if PlayerSpellsFrame:IsShown() then PlayerSpellsFrame:Hide() return end
-				Stub.closeSpecial()
-				PlayerSpellsFrame:Show()
-			end,
-			OpenToClassTalentsTab = function()
-				Stub.opened.talents = true
-				Stub.closeSpecial()
-				PlayerSpellsFrame:Show()
-			end,
+			ToggleSpellBookFrame = forbidden("ToggleSpellBookFrame"),
+			ToggleClassTalentFrame = forbidden("ToggleClassTalentFrame"),
+			OpenToClassTalentsTab = forbidden("OpenToClassTalentsTab"),
 		}
+		G.PlayerSpellsUtil.FrameTabs = { ClassSpecializations = 1, ClassTalents = 2, SpellBook = 3 }
+		G.PlayerSpellsFrame.tab = nil
+		G.PlayerSpellsFrame.IsFrameTabActive = function(self, tab) return self:IsShown() and self.tab == tab end
+		-- The game's menu bar buttons, which toggle their window like a player's click does.
+		G.TalentMicroButton = { Click = function()
+			Stub.opened.talents = true
+			if PlayerSpellsFrame:IsShown() and PlayerSpellsFrame.tab == 2 then PlayerSpellsFrame:Hide() return end
+			Stub.closeSpecial()
+			PlayerSpellsFrame.tab = 2
+			PlayerSpellsFrame:Show()
+		end }
+		G.SpellbookMicroButton = { Click = function()
+			Stub.opened.spellbook = true
+			if PlayerSpellsFrame:IsShown() and PlayerSpellsFrame.tab == 3 then PlayerSpellsFrame:Hide() return end
+			PlayerSpellsFrame.tab = 3
+			PlayerSpellsFrame:Show()
+		end }
+		G.LegacyMicroButton = { Click = function()
+			Stub.opened.legacy = true
+			if ToggleLegacySystemUI then ToggleLegacySystemUI() end
+		end }
 		G.C_ClassTalents = { HasUnspentTalentPoints = function() return world.talents end }
 		-- The talent tree, the way the game's own talent window reads it.
 		G.C_SpecializationInfo = {

@@ -81,17 +81,15 @@ function Spells:Build(page)
 	local book = W.Button(ui.bars, L["Open spellbook"], "ghost", {
 		role = "accentText",
 		onClick = function()
-			if C.InCombat() then
-				return
-			end
-			if C.Has("PlayerSpellsUtil.ToggleSpellBookFrame") then
-				T.Window:Keep("PlayerSpellsUtil.ToggleSpellBookFrame")
-				T.Window:Beside("PlayerSpellsFrame")
-			else
+			-- Only reached when the safe way is not there (UI/Secure.lua).
+			if not C.InCombat() then
 				T:Print(L["Open your spellbook from the game's menu bar."])
 			end
 		end,
 	})
+	T.Secure.Set(book, "spellbook", function()
+		T.Window:Beside("PlayerSpellsFrame")
+	end)
 	book:SetPoint("BOTTOMLEFT", ui.bars, "BOTTOMLEFT", 16, 14)
 
 	ui.learn = column(page, COL_W + COL_GAP, L["From your class trainer"])

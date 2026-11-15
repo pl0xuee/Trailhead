@@ -157,7 +157,20 @@ function B.Following()
 	return not progress.problem and progress or nil
 end
 
--- Opens the Builds page with the game's talent window beside it.
+-- Runs once the game's talent window has opened from an "Open talents" button (see UI/Secure.lua):
+-- shows the Builds page when a build can be followed, with Trailhead beside the talent window.
+function B.AfterOpen()
+	if C.InCombat() then
+		return
+	end
+	if #B.List() > 0 and B.Usable() then
+		T.Window:Open("builds")
+	end
+	T.Window:Beside("PlayerSpellsFrame")
+end
+
+-- The click of an "Open talents" button when the safe way is not there. Trailhead never calls the
+-- game's talent code itself (that taints the action bars), so it shows the page and says where to go.
 function B.Open()
 	if C.InCombat() then
 		return

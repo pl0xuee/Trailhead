@@ -182,9 +182,9 @@ H.section("setup: the ways in", function()
 	check(T.modules.guide.Read("screen").attention == 0, "the Guide topic is calm once all is set")
 	-- The game's own panels.
 	local I = T.Interface
-	check(I.OpenManual("morebars") and Stub.panelOpened[1] == 7, "Action Bars panel opens by its category id")
-	check(I.OpenManual("keys") and Stub.panelOpened[2] == 9, "Key Bindings panel opens")
-	check(I.OpenManual("editmode") == false and #Stub.panelOpened == 2, "Edit Mode is explained only, never opened by the addon")
+	check(I.OpenManual("morebars") == false and I.OpenManual("keys") == false and #Stub.panelOpened == 0,
+		"Action Bars and Key Bindings are explained only: an Options panel opened by an addon taints the bars")
+	check(I.OpenManual("editmode") == false and #Stub.panelOpened == 0, "Edit Mode is explained only, never opened by the addon")
 	check(I.OpenManual("preset") == false, "the preset has no opener, it is explained only")
 	H.noErrors(T, "ways in")
 end)

@@ -212,7 +212,7 @@ local function talents()
 	end
 	out.total = #out.rows
 	-- With a build chosen the button leads to its next point, with the talent window beside it.
-	local open = { label = L["Open talents"], run = function()
+	local open = { label = L["Open talents"], secure = "talents", after = T.BuildGuide.AfterOpen, run = function()
 		T.BuildGuide.Open()
 	end }
 	local progress = T.BuildGuide.Following()
@@ -1189,6 +1189,7 @@ function Guide:Refresh()
 		ui.action:SetLabel(info.action.label)
 		ui.action.run = info.action.run
 	end
+	T.Secure.Set(ui.action, info.action and info.action.secure, info.action and info.action.after)
 	ui.pager:SetShown(info.pager ~= nil)
 	if info.pager then
 		ui.pager:SetLabel(info.pager.label)

@@ -187,31 +187,16 @@ for _, def in ipairs(DEFS) do
 end
 
 -- Things the addon leaves to the game's own screens, each with a short instruction.
--- `open` is the game's panel it can bring up, when there is one.
-local function openSettings(key)
-	return function()
-		local id = C.Resolve("Settings." .. key)
-		if type(id) == "number" and C.Has("Settings.OpenToCategory") then
-			C.Call("Settings.OpenToCategory", id)
-			return true
-		end
-		return false
-	end
-end
-
--- Edit Mode is explained, never opened from here: a panel opened by an addon runs as addon
--- code, and Edit Mode then blocks protected actions (the game's "interface action failed").
+-- None is opened from here: a game panel an addon opens runs as addon code ("tainted"). Edit Mode
+-- then blocks protected actions, and the Options panels can carry it into the action bars,
+-- which then stop showing cooldowns. `open` stays for a panel that has a safe way in.
 I.manual = {
 	{ id = "editmode", name = game("HUD_EDIT_MODE_MENU", "Edit Mode"), menu = L["Game Menu > Edit Mode"],
 		why = L["Move and resize the bars, the minimap and the chat window. Press Escape and choose Edit Mode; Trailhead cannot do this for you."] },
 	{ id = "morebars", name = game("ACTIONBARS_LABEL", "Action Bars"), menu = gameplay("ACTIONBARS_LABEL", "Action Bars"),
-		why = L["Switch on Action Bars 3 to 8 here when you have more spells than room."],
-		button = L["Open Action Bars"], open = openSettings("ACTION_BAR_CATEGORY_ID"),
-		can = function() return type(C.Resolve("Settings.ACTION_BAR_CATEGORY_ID")) == "number" and C.Has("Settings.OpenToCategory") end },
+		why = L["Switch on Action Bars 3 to 8 here when you have more spells than room."] },
 	{ id = "keys", name = game("KEY_BINDINGS", "Key Bindings"), menu = game("GAMEMENU_OPTIONS", L["Options"]) .. " > " .. game("KEY_BINDINGS", "Key Bindings"),
-		why = L["Choose which key does what. Trailhead does not change keys."],
-		button = L["Open Key Bindings"], open = openSettings("KEYBINDINGS_CATEGORY_ID"),
-		can = function() return type(C.Resolve("Settings.KEYBINDINGS_CATEGORY_ID")) == "number" and C.Has("Settings.OpenToCategory") end },
+		why = L["Choose which key does what. Trailhead does not change keys."] },
 	{ id = "preset", name = game("PRESET_LABEL", "Preset"), menu = menu("SETTING_GROUP_SYSTEM", game("PRESET_LABEL", "Preset")),
 		why = L["Classic or Enhanced: two ready-made sets of settings for how the game looks and plays. Read the buttons there before you pick."] },
 }

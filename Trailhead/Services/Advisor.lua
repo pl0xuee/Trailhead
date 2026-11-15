@@ -89,6 +89,8 @@ rules[#rules + 1] = function()
 			or L["Talents make your character stronger. Unspent points do nothing."],
 		action = L["Open talents"],
 		run = T.BuildGuide.Open,
+		secure = "talents",
+		after = T.BuildGuide.AfterOpen,
 	}
 end
 

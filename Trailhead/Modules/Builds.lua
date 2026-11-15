@@ -137,6 +137,7 @@ function Builds:Build(page)
 			B.Open()
 		end,
 	})
+	T.Secure.Set(ui.open, "talents", B.AfterOpen)
 	ui.open:SetPoint("BOTTOMRIGHT", card, "TOPRIGHT", 0, 5)
 	ui.name = W.Text(card, "head", 14, "ink")
 	ui.name:SetPoint("TOPLEFT", card, "TOPLEFT", 66, -11)

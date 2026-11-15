@@ -308,21 +308,13 @@ function G.Talents()
 	return out
 end
 
--- Opens the game's talent window with Trailhead beside it. False when it cannot.
+-- The fallback when the game's talent window cannot be opened the safe way (UI/Secure.lua).
+-- Never calls the game's talent code: that runs it tainted and breaks the action bars' cooldowns.
 function G.OpenTalents()
-	if C.InCombat() then
-		return false
-	end
-	-- "Open" must open: the game's toggle would close a talent window that is already up.
-	local open = C.Has("PlayerSpellsUtil.OpenToClassTalentsTab") and "PlayerSpellsUtil.OpenToClassTalentsTab"
-		or C.Has("PlayerSpellsUtil.ToggleClassTalentFrame") and "PlayerSpellsUtil.ToggleClassTalentFrame"
-	if not open then
+	if not C.InCombat() then
 		T:Print(L["Open your talents from the game's menu bar."])
-		return false
 	end
-	T.Window:Keep(open)
-	T.Window:Beside("PlayerSpellsFrame")
-	return true
+	return false
 end
 
 -- ---------------------------------------------------------------------------

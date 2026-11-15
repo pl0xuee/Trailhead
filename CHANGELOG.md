@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.1
+
+- Fixed: after Trailhead opened the talent window, the action bars could stop showing cooldowns until a reload, with a Lua error ("Secret values are only allowed during untainted execution"). The game was treating its own talent window as addon code. "Open talents", "Open spellbook" and "Open Legacy window" now press the game's own menu bar button through a secure button, the same as clicking it yourself, so Trailhead never runs the game's window code. They do nothing in combat.
+- "Open challenges" on the Legacy page is gone: the game has no safe way for an addon to open that list. Use the tab in the Legacy window.
+- Screen setup no longer opens the game's Action Bars and Key Bindings options. Opening an Options panel from an addon can cause the same problem. The row still says where to find them.
+
 ## 0.12.0
 
 - Find it lists places closest first, wherever they are on your continent, and each row says how far away it is in yards. Places on another continent come last.

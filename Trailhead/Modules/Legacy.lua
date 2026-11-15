@@ -85,14 +85,6 @@ function Legacy.Read()
 	return out
 end
 
-local function open(path)
-	return function()
-		if not C.InCombat() then
-			T.Window:Keep(path)
-		end
-	end
-end
-
 -- ---------------------------------------------------------------------------
 -- The page
 
@@ -119,14 +111,13 @@ function Legacy:Build(page)
 	ui.pointsBody = W.Text(mine, "body", 11.5, "muted", { width = 500 })
 	ui.pointsBody:SetPoint("TOPLEFT", ui.pointsHead, "BOTTOMLEFT", 0, -6)
 	ui.pointsBody:SetSpacing(3)
+	-- Opens through the game's own Legacy button (UI/Secure.lua). The challenges list has no such
+	-- button, so Trailhead leaves it to the Legacy window's own tab.
 	ui.window = W.Button(mine, L["Open Legacy window"], "primary", {
-		height = 28, size = 11.5, width = 190, onClick = open("ToggleLegacySystemUI"),
+		height = 28, size = 11.5, width = 190,
 	})
 	ui.window:SetPoint("TOPRIGHT", mine, "TOPRIGHT", -16, -14)
-	ui.challenges = W.Button(mine, L["Open challenges"], "ghost", {
-		role = "accentText", height = 28, size = 11.5, width = 190, onClick = open("ToggleLegacyChallenges"),
-	})
-	ui.challenges:SetPoint("TOPRIGHT", ui.window, "BOTTOMRIGHT", 0, -8)
+	T.Secure.Set(ui.window, "legacy")
 
 	-- What earns a point.
 	local earn = card(page, 0, 152, 382, 118)
@@ -197,6 +188,5 @@ function Legacy:Refresh()
 			ui.pointsBody:SetLabel(L["Open the Legacy window to spend them."])
 		end
 	end
-	ui.window:SetEnabled(C.Has("ToggleLegacySystemUI"))
-	ui.challenges:SetEnabled(C.Has("ToggleLegacyChallenges"))
+	ui.window:SetEnabled(T.Secure.Can("legacy"))
 end
