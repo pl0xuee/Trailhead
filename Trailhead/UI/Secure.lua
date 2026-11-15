@@ -25,6 +25,11 @@ S.TARGETS = {
 	legacy = { button = "LegacyMicroButton", frame = "LegacySystemFrame" },
 }
 
+local ABOVE = {
+	BACKGROUND = "LOW", LOW = "MEDIUM", MEDIUM = "HIGH", HIGH = "DIALOG",
+	DIALOG = "FULLSCREEN", FULLSCREEN = "FULLSCREEN_DIALOG", FULLSCREEN_DIALOG = "TOOLTIP",
+}
+
 local cover -- the secure button: nil until first needed, false if the game would not make one
 local owner -- the Trailhead button it lies over
 local placed -- the button it is pinned to
@@ -253,7 +258,9 @@ function S.Cover(button)
 	end
 	made:SetAttribute("type1", "click")
 	made:SetAttribute("clickbutton1", micro)
-	made:SetFrameStrata(button:GetFrameStrata())
+	-- One layer above the button: in the same layer, the game put the Trailhead window (which
+	-- comes to the front when used) ahead of the cover, and the click went to Trailhead's button.
+	made:SetFrameStrata(ABOVE[button:GetFrameStrata()] or "DIALOG")
 	made:SetFrameLevel(math.min(button:GetFrameLevel() + 20, 9000))
 	made:Show()
 	samples = 0
