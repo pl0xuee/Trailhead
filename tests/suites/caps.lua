@@ -27,13 +27,13 @@ end)
 H.section("caps: errors from another version are dropped", function()
 	local saved = H.checked({ errors = {
 		{ at = 1, where = "Zones", err = "old trouble", v = "0.2.0" },
-		{ at = 2, where = "Home", err = "this version", v = "0.13.0" },
+		{ at = 2, where = "Home", err = "this version", v = "0.14.0" },
 		{ at = 3, where = "Odd", err = "no version" },
 	} })
 	local T = H.load(nil, saved)
 	check(#T.db.errors == 1 and T.db.errors[1].err == "this version", "only this version's errors are kept at load")
 	H.slash("errors")
-	check(Stub.chat[#Stub.chat]:find("[0.13.0] Home: this version", 1, true) ~= nil, "/th errors says which version the error is from")
+	check(Stub.chat[#Stub.chat]:find("[0.14.0] Home: this version", 1, true) ~= nil, "/th errors says which version the error is from")
 	T.db.errors = {}
 end)
 

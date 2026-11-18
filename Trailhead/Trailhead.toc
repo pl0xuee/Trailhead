@@ -2,7 +2,7 @@
 ## Title: Trailhead
 ## Notes: The new player companion. Shows what to do next, helps you find trainers, vendors and everything else, and guides you on the road to 60.
 ## Author: pl0xuee
-## Version: 0.13.0
+## Version: 0.14.0
 ## Category: Leveling
 ## X-License: MIT
 ## X-Curse-Project-ID: 1799345

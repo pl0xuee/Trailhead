@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.14.0
+
+- **Map opens safely.** Every "Show on map" button now sets the game's map marker and opens the map through the game's own map button, like the talents and spellbook buttons. No more addon-opened map windows. The map opens on your current zone, with the marker set.
+- **New Guide topics.** Fighting (your health and mana right now, plus tips for fighting safely), Quests (how full your quest log is, plus quest know-how), Your pet (hunters), Camping (camp items and buffs per profession) and Pick professions (what each one does and what it pairs with).
+- **Class quests.** The Your class topic lists the quests that teach class spells, where they start, and marks them done once you know the spell.
+- **Class trainers per class.** Found trainers remember which class they teach, so "Find trainer" only shows yours.
+- **Tooltips on buttons**, a Back button on pages opened from elsewhere, and pages that keep their scroll position when they refresh. Faint text is easier to read in every look.
+- **Pages tidied.** The Spells buttons sit right under their list. Dungeon tips are merged into one card. Routes offer "Find a flight master". Builds explain that your class trainer can reset talents for a fee.
+- **Zones.** "For my level" puts your current zone first. Dungeons with an entrance in enemy territory say so and sort last. More towns show their inn and flight icons, and zeppelin masters are no longer listed as flight masters.
+- **German, French and Spanish clients** now recognise dungeons by their translated names, and many translations were checked against the game's own names.
+- **Fixes.** Greyed-out game buttons are no longer clicked. Old hearthstone records are judged again so the First steps hearthstone milestone is right. Wrong dungeon level ranges and raid text corrected. Settings: size buttons stop at their limits, "Forget all" disarms itself, and notes no longer run under their buttons. The "Teach Trailhead about your game" card is gone; `/th check` still works.
+
 ## 0.13.0
 
 - **Your characters.** A new page lists every character you have played with Trailhead: level, rested experience, hearthstone, professions, gold, unspent talent points, spells waiting at the trainer and gear wear. Open it from the button next to your name on Home, or from the Legacy page.
