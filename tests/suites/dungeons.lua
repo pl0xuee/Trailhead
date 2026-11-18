@@ -85,6 +85,20 @@ H.section("dungeons: names and doors", function()
 	for name, id in pairs(cases) do
 		H.check(D.Find(name) == id, "group finder name " .. name .. " finds " .. id)
 	end
+	-- German, French and Spanish clients name places in their own language.
+	local localized = {
+		["Todesminen"] = 36, ["Höhlen des Wehklagens"] = 43, ["Verlies von Stormwind"] = 34, ["Düsterbruch (Ost)"] = 429,
+		["Scharlachrotes Kloster - Bibliothek"] = 189, ["Untere Blackrockspitze"] = 229, ["Onyxias Hort"] = 249,
+		["Mortemines"] = 36, ["Monastère Écarlate (bibliothèque)"] = 189, ["Repaire d’Onyxia"] = 249, ["Zul’Farrak"] = 209,
+		["Haches-Tripes (nord)"] = 429, ["Minas de la Muerte"] = 36, ["La Masacre (Este)"] = 429, ["Sima Ígnea"] = 389,
+		["Cumbre de Roca Negra Superior"] = 229, ["Scarlet Library"] = 189, ["Dire Maul (East)"] = 429,
+	}
+	for name, id in pairs(localized) do
+		H.check(D.Find(name) == id, "the name " .. name .. " finds " .. id)
+	end
+	H.check(D.Key("La Masacre", true) == "la masacre" and D.Key("The Deadmines", true) == "the deadmines"
+		and D.Key("The Deadmines") == "deadmines", "plain keys keep the English article rules off")
+	H.check(D.Find("Kloster") == nil and D.Find("Nordend") == nil, "a stray word is no dungeon")
 	H.check(D.Has("The Deadmines") and not D.Has("Warsong Gulch") and not D.Has("") and not D.Has(nil) and not D.Has("Black"), "Has says yes only for a dungeon")
 	local got = D.Get("Wailing Caverns")
 	H.check(got and got.id == 43 and got.guide and got.summary and #got.bosses == 8 and got.steps and got.entrance.m == 1413, "Get merges index and guide")
@@ -102,6 +116,30 @@ H.section("dungeons: names and doors", function()
 	T.DungeonIndex = {}
 	H.check(not D.Has("The Deadmines") and G.Entrance("Ragefire Chasm") == nil, "without an index there is nothing, and no error")
 	H.noErrors(T, "dungeon names")
+end)
+
+H.section("dungeons: a German client", function()
+	local T = H.load()
+	local D = T.Dungeons
+	local english = _G.C_LFGList.GetActivityInfoTable
+	local german = { ["Deadmines"] = "Todesminen", ["Ragefire Chasm"] = "Ragefireabgrund", ["The Stockade"] = "Verlies von Stormwind" }
+	_G.C_LFGList.GetActivityInfoTable = function(id)
+		local info = english(id)
+		if type(info) == "table" and german[info.fullName] then
+			local copy = {}
+			for k, v in pairs(info) do
+				copy[k] = v
+			end
+			copy.fullName = german[info.fullName]
+			return copy
+		end
+		return info
+	end
+	local lo, hi = D.Levels(36)
+	H.check(lo == 17 and hi == 26, "the group finder's German name gives the Deadmines levels")
+	H.check(D.Levels(389) == 13 and D.Levels(34) ~= nil, "every German dungeon in the list is found")
+	H.check(D.Get("Todesminen").id == 36 and D.Get("Todesminen").name == "Deadmines", "the guide opens from the German name")
+	H.noErrors(T, "German names")
 end)
 
 H.section("dungeons: the run", function()

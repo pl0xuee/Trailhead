@@ -24,21 +24,26 @@ local ALIAS_NAMES = {
 	["Stockade"] = 34, ["Stockades"] = 34, ["Stormwind Stockades"] = 34,
 }
 
--- One spelling for every name the game uses: no "The", no wing ("Scarlet Monastery:
--- Library", "Dire Maul - East"), no Lower or Upper, no punctuation, no doubled letters
--- ("Zul'Farak" and "Zul'Farrak" meet).
-local function key(name)
+-- One spelling for every name the game uses: no wing ("Scarlet Monastery: Library", "Dire
+-- Maul - East", "Dire Maul (East)"), no punctuation, no doubled letters ("Zul'Farak" and
+-- "Zul'Farrak" meet). English names also lose "The", Lower and Upper; plain keeps those
+-- rules off for names in other languages. Letters outside A to Z (ü, é) are kept as they are.
+local function key(name, plain)
 	if type(name) ~= "string" then
 		return nil
 	end
 	local k = name:lower()
+	k = k:gsub("\226\128\153", "'") -- the curly apostrophe French names use
 	k = k:gsub(":.*$", "")
 	k = k:gsub("%s+%-%s+.*$", "")
-	k = k:gsub("^the ", "")
-	k = k:gsub("^lower ", "")
-	k = k:gsub("^upper ", "")
-	k = k:gsub("'s%f[%A]", "") -- "Onyxia's Lair" and "Onyxia" meet
-	k = k:gsub("[^%a%d ]", "")
+	k = k:gsub("%s*%b()%s*$", "")
+	if not plain then
+		k = k:gsub("^the ", "")
+		k = k:gsub("^lower ", "")
+		k = k:gsub("^upper ", "")
+		k = k:gsub("'s%f[%A]", "") -- "Onyxia's Lair" and "Onyxia" meet
+	end
+	k = k:gsub("[^%a%d\128-\255 ]", "")
 	for _ = 1, 3 do
 		k = k:gsub("(%a)%1", "%1") -- doubled letters: "Zul'Farak" and "Zul'Farrak" meet
 	end
@@ -59,11 +64,20 @@ local byKey, built
 
 local function build()
 	byKey, built = {}, T.DungeonIndex
-	for id, entry in pairs(T.DungeonIndex) do
-		local k = key(entry.name)
+	local function add(k, id, entry)
 		-- Two maps with one name (Naxxramas): the bigger one is the place people mean.
 		if k and (not byKey[k] or (T.DungeonIndex[byKey[k]].size or 0) < (entry.size or 0)) then
 			byKey[k] = id
+		end
+	end
+	for id, entry in pairs(T.DungeonIndex) do
+		add(key(entry.name), id, entry)
+		for _, name in ipairs(entry.alt or {}) do
+			add(key(name), id, entry)
+		end
+		-- The game names places in the client's language (German, French, Spanish).
+		for _, name in ipairs(entry.names or {}) do
+			add(key(name, true), id, entry)
 		end
 	end
 end
@@ -84,6 +98,10 @@ function D.Find(name)
 	end
 	if byKey[k] then
 		return byKey[k]
+	end
+	local plain = key(name, true)
+	if plain and byKey[plain] then
+		return byKey[plain]
 	end
 	if ALIASES[k] and T.DungeonIndex[ALIASES[k]] then
 		return ALIASES[k]

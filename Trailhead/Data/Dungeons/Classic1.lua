@@ -10,7 +10,7 @@ local G = T.DungeonGuides
 
 -- Ragefire Chasm
 G[389] = {
-	summary = L["Orgrimmar's own dungeon: a hot cave of troggs and cultists under the city. Four bosses, for levels 13 to 18."],
+	summary = L["Orgrimmar's own dungeon: a hot cave of troggs and cultists under the city. Four bosses."],
 	door = L["Go to the Cleft of Shadow, the cave in the middle of Orgrimmar, and follow the path down. The way in is at the bottom."],
 	tips = {
 		L["Cultists cast spells that hurt. Pull one group at a time."],
@@ -34,7 +34,7 @@ G[389] = {
 
 -- Wailing Caverns
 G[43] = {
-	summary = L["A twisting cave of snakes, raptors and druids gone bad, with a short escort at the end. Eight bosses, for levels 15 to 24."],
+	summary = L["A twisting cave of snakes, raptors and druids gone bad, with a short escort at the end. Eight bosses."],
 	door = L["In the Lushwater Oasis, in the middle of The Barrens, find the cave called the Cavern of Mists. Follow the winding tunnel down to a big pool."],
 	tips = {
 		L["Elite monsters walk the tunnel outside. Go in as a group."],
@@ -66,7 +66,7 @@ G[43] = {
 
 -- The Deadmines
 G[36] = {
-	summary = L["Pirates and goblins in a mine under Westfall that ends on a ship. Eight bosses, for levels 17 to 26. A good first group dungeon."],
+	summary = L["Pirates and goblins in a mine under Westfall that ends on a ship. Eight bosses. A good first group dungeon."],
 	door = L["In Westfall, in the town of Moonbrook, go into the big Defias Hideout building in the south-west corner. Follow the cave maze down to the bottom."],
 	tips = {
 		L["Pull one group at a time and kill the casters first."],
@@ -96,7 +96,7 @@ G[36] = {
 
 -- Shadowfang Keep
 G[33] = {
-	summary = L["A haunted keep full of worgen and ghosts, with a wizard at the top. Eight bosses, for levels 20 to 30. Most fights have helpers."],
+	summary = L["A haunted keep full of worgen and ghosts, with a wizard at the top. Eight bosses. Most fights have helpers."],
 	door = L["In Silverpine Forest, in the mountains just north of Pyrewood Village, walk up to the big keep gate."],
 	tips = {
 		L["Rooms are full of monsters. Pull small groups, never the whole room."],
@@ -125,7 +125,7 @@ G[33] = {
 
 -- Blackfathom Deeps
 G[48] = {
-	summary = L["Sunken night elf ruins above and below the water, full of naga and murlocs. Seven bosses, for levels 24 to 32. Some parts are under water."],
+	summary = L["Sunken night elf ruins above and below the water, full of naga and murlocs. Seven bosses. Some parts are under water."],
 	door = L["In the north-west corner of Ashenvale, at the Zoram Strand, find the sunken ruins. Swim down into the pool at the bottom, then follow the narrow cave."],
 	tips = {
 		L["The cave after the pool is full of strong naga. Take it slowly."],
@@ -138,7 +138,7 @@ G[48] = {
 		{ boss = "Lady Sarevess", where = L["The second boss, with two helpers."],
 			tip = L["Spread out, because her lightning jumps between people. Kill the helpers first."] },
 		{ boss = "Geilhast", optional = true, where = L["A murloc boss in a side room."],
-			tip = L["Clear the murlocs in his room first, then pull him alone. His net lowers threat."] },
+			tip = L["Clear the murlocs in his room first, then pull him alone."] },
 		{ boss = "Lorgus Jett", optional = true, where = L["A smaller boss on the way. Horde quests need him."],
 			tip = L["Skip him if you have no quest for him."] },
 		{ boss = "Old Serra'kis", optional = true, where = L["You fight this one in the water. Guides disagree on whether he comes before or after Kelris."],
@@ -152,7 +152,7 @@ G[48] = {
 
 -- The Stockade
 G[34] = {
-	summary = L["Stormwind's prison, under the canals: a small jail full of Defias and prisoners. Five bosses, for levels 25 to 29."],
+	summary = L["Stormwind's prison, under the canals: a small jail full of Defias and prisoners. Five bosses."],
 	door = L["In Stormwind City, go to the canals near the Mage Quarter. The gate to the Stockade is on the water's edge."],
 	tips = {
 		L["Many Defias fighters stand in the halls. Pull one group at a time."],
@@ -175,7 +175,7 @@ G[34] = {
 
 -- Gnomeregan
 G[90] = {
-	summary = L["A gnome city overrun by troggs and broken machines, with narrow halls on many floors. Five bosses, for levels 29 to 38."],
+	summary = L["A gnome city overrun by troggs and broken machines, with narrow halls on many floors. Five bosses."],
 	door = L["In the north-west of Dun Morogh, take the lift down to the outer tunnels, then walk to the dungeon portal."],
 	tips = {
 		L["Do not jump or fall down. Monsters on lower paths run up to you."],
@@ -198,7 +198,7 @@ G[90] = {
 
 -- Razorfen Kraul
 G[47] = {
-	summary = L["A maze of thorn bushes and tunnels full of quilboar, with paths above and below each other. Six bosses, for levels 29 to 38."],
+	summary = L["A maze of thorn bushes and tunnels full of quilboar, with paths above and below each other. Six bosses."],
 	door = L["In the far south-west of The Barrens, push through the maze of thorns and quilboar to the portal at its end."],
 	tips = {
 		L["The paths cross over and under each other. Stay together."],
@@ -225,7 +225,7 @@ G[47] = {
 -- Scarlet Monastery
 G[189] = {
 	summary = L["Four wings behind one door: Graveyard, Library, Armory and Cathedral, each for higher levels (30 to 46 in all). Seven bosses in all."],
-	door = L["In the north-east corner of Tirisfal Glades. The four wing portals sit in the main building. The Scarlet Key opens the locked doors; the Graveyard needs none."],
+	door = L["In the north-east corner of Tirisfal Glades. The four wing portals sit in the main building. The Scarlet Key from the Library opens the Armory and Cathedral; the other two need none."],
 	tips = {
 		L["Pick one wing and finish it. The Graveyard (levels 30 to 38) is the easiest start and needs no key."],
 		L["Scarlet monsters hit hard and heal. Interrupt healers when you can."],
@@ -236,7 +236,7 @@ G[189] = {
 			tip = L["He is a caster. Pull him back from other monsters so the group is not hit from two sides."] },
 		{ boss = "Bloodmage Thalnos", where = L["Deeper in the Graveyard wing, near the end."],
 			tip = L["He casts fire. Kill him quickly. Rare bosses can also show up in this wing."] },
-		{ text = L["Library wing, levels 33 to 41. One guide says its door is locked, so ask your group who has the Scarlet Key."] },
+		{ text = L["Library wing, levels 33 to 41. No key needed: the Scarlet Key is in the chest behind its last boss."] },
 		{ boss = "Houndmaster Loksey", where = L["In the Library wing, with his dogs."],
 			tip = L["Kill the dogs first."] },
 		{ boss = "Arcanist Doan", where = L["At the end of the Library wing."],
@@ -255,7 +255,7 @@ G[189] = {
 
 -- Razorfen Downs
 G[129] = {
-	summary = L["An old quilboar city of bone and thorn, with undead at its heart. Six bosses, for levels 37 to 46."],
+	summary = L["An old quilboar city of bone and thorn, with undead at its heart. Six bosses."],
 	door = L["In the south-east of The Barrens, cross the maze of thorns and quilboar to the portal at its end."],
 	tips = {
 		L["Ring the gong in the first big room only when the group is ready."],
@@ -279,7 +279,7 @@ G[129] = {
 
 -- Uldaman
 G[70] = {
-	summary = L["A buried dwarf ruin with stone guardians. Eight bosses, for levels 41 to 51. A long one, so plan for it."],
+	summary = L["A buried dwarf ruin with stone guardians. Eight bosses. A long one, so plan for it."],
 	door = L["In the north of the Badlands, near Loch Modan, find the excavation tunnels and go in. Strong monsters wait in the tunnels."],
 	tips = {
 		L["There is also a back door in Dustwind Gulch, inside a cave of strong troggs."],
@@ -295,11 +295,11 @@ G[70] = {
 		{ boss = "Obsidian Sentinel", where = L["A stone guardian in the ruins."],
 			tip = L["At two points in the fight it makes smaller stone helpers. Kill them."] },
 		{ boss = "Ancient Stone Keeper", where = L["A stone guardian further in."],
-			tip = L["Its sand storm slows and silences. Ranged fighters and healers should stay far away."] },
+			tip = L["Its sand storm slows and silences. Players who fight from afar and healers should stay far away."] },
 		{ boss = "Galgann Firehammer", where = L["A fire dwarf, with two helpers."],
 			tip = L["His fire spell makes fire hit harder. Remove it if you can."] },
 		{ boss = "Grimlok", where = L["A trogg boss, with helpers."],
-			tip = L["Stop the helpers where you can. If not, kill the basilisk first. Then burn him down."] },
+			tip = L["Stop the helpers where you can. If not, kill the basilisk first. Then put all your damage on him."] },
 		{ text = L["The last room is a big round hall with columns. Archaedas is here."] },
 		{ boss = "Archaedas", where = L["In the big round hall with columns, the last room."],
 			tip = L["He wakes stone helpers during the fight. They fall when he dies, so keep the damage on him."] },

@@ -48,7 +48,12 @@ ABSORB = 0.075  # a small hub this close to a big one is part of it
 SMALL, BIG = 8, 12
 SPREAD = 0.06  # a giver whose spawns are further apart than this is skipped
 MAX_SPAWNS = 6  # a giver with more spawns than this in one zone is skipped
-NEAR = 0.035  # an inn or flight master this close belongs to the hub
+NEAR = 0.035  # an inn or flight master this close belongs to the hub (while hubs are formed)
+# After the hubs are formed, each inn and flight master is given to the nearest hub of its side
+# on its map, if that hub is this close. Town services often stand at the edge of town, further
+# from the middle of the quest givers than NEAR (Sentinel Hill's inn, Darkshire's flight master).
+SERVICE_REACH = 0.08
+SEED = Path(__file__).resolve().parent.parent / "Trailhead" / "Data" / "Seed.lua"
 ASPECT = 1.5  # zone maps are 3 wide to 2 tall; distances are measured on a square
 ALLIANCE, HORDE = 2, 1  # the numbers Game.Faction uses
 ALLY_MASK, HORDE_MASK = 77, 178
@@ -366,7 +371,14 @@ HAND_RENAMES = [("Shen'dar Village", 2521, 0.454, 0.455, 0.03), ("Steamwheedle P
 # west gate of the Western Plaguelands. The old data files it under Tirisfal Glades (24 Horde quests
 # from 7 givers, levels 53 up, typically 56), so it is placed on the Plaguelands map by hand, at the
 # spot the two maps share.
+# Valanaar is the Skyborne town in the south-east of Zephras Isle. Its place is the middle of the ten
+# quest givers Warcraft Tavern's walkthrough gives coordinates for (58-67, 72-80; they match the
+# trainer positions players saw), counted as eleven quests like Thendal. Levels: "To Valanaar", the
+# quest that sends you there, is level 9 (Forever quest data, Wowhead), and "What Comes Next", the
+# last quest there before leaving the island, is level 13 (Warcraft Wiki). Its inn, bank and flight
+# master are not confirmed by any source, so it has no flags.
 HAND_HUBS = [("Thendal Village", 2521, 0.430, 0.240, 10, 1, 1, 4, (ALLIANCE, HORDE)),
+             ("Valanaar", 2521, 0.628, 0.763, 11, 9, 13, 0, (ALLIANCE, HORDE)),
              ("The Bulwark", 1422, 0.264, 0.561, 24, 53, 56, 4, (HORDE,))]
 # One side's view of a hub that is the other side's guarded camp: its few quests there come from
 # neutral givers standing inside it, and sending a new player in would get them killed.
@@ -647,6 +659,19 @@ def build(data_dir, db_dir):
         per = {f: {"n": n, "lo": lo, "typ": typ, "inn": bool(flags & 1), "fm": bool(flags & 2)} for f in sides}
         hubs.append({"map": m, "pos": (x, y), "name": name, "per": per, "givers": n, "hand": True,
                      "start": set(sides) if flags & 4 else set()})
+    # Inns and flight masters, from the quest data and from the built-in places (Seed.lua, which
+    # also knows Forever's new towns), each flag the nearest hub of its side on its map.
+    services = [(kind, m, pos, facs) for kind, table in (("inn", inns), ("fm", fms))
+                for m, items in table.items() for pos, facs in items]
+    services += seed_services()
+    for kind, m, pos, facs in services:
+        for fac in facs:
+            near = [h for h in hubs if h["map"] == m and fac in h["per"]]
+            if not near:
+                continue
+            best = min(near, key=lambda h: dist(h["pos"], pos))
+            if dist(best["pos"], pos) <= SERVICE_REACH:
+                best["per"][fac][kind] = True
     # Start hubs: the place a new character of a side should go to in a zone. A side's own town
     # (one only it uses, or a neutral town such as Ratchet that both use) beats a hub the other side
     # shares at the same level, so each side in a contested zone starts in its own town.
@@ -678,6 +703,25 @@ def build(data_dir, db_dir):
                         best = min(towns, key=lambda h: (h["per"][fac]["typ"], -h["per"][fac]["n"]))
                 best.setdefault("start", set()).add(fac)
     return hubs, world
+
+
+def seed_services():
+    """Inns and flight masters from Trailhead/Data/Seed.lua: [(kind, map, (x, y), factions)].
+    Zeppelin masters are not flight masters and are left out."""
+    if not SEED.exists():
+        return []
+    text = SEED.read_text(encoding="utf-8")
+    m = re.search(r"places = \[==\[\n(.*?)\]==\]", text, re.S)
+    out = []
+    for line in (m.group(1) if m else "").split("\n"):
+        f = line.split("|")
+        if len(f) < 6 or f[0] not in ("i", "f") or not f[2].isdigit():
+            continue
+        if f[0] == "f" and len(f) > 6 and "Zeppelin" in f[6]:
+            continue
+        facs = {"A": {ALLIANCE}, "H": {HORDE}}.get(f[1], {ALLIANCE, HORDE})
+        out.append(("inn" if f[0] == "i" else "fm", int(f[2]), (int(f[3]) / 1000, int(f[4]) / 1000), facs))
+    return out
 
 
 def lua_string(text):

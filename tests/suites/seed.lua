@@ -325,6 +325,22 @@ H.section("built-in places: weapons, riding, flight, new zones", function()
 	local flights = P.Find("flight")
 	check(#flights >= 1, "flight masters are listed even when the game's flight map is empty")
 	check(flights[1].shipped == true and flights[1].note ~= nil, "and marked as built in")
+	-- Zeppelin masters are no flight masters: standing at Orgrimmar's zeppelin tower, the
+	-- nearest flight master is a wind rider master, not the zeppelin's.
+	local zeppelins = 0
+	for _, p in ipairs(lines) do
+		if p.code == "f" and (p.extra:lower():find("zeppelin") or p.name == "Frezza" or p.name == "Nez'raz") then
+			zeppelins = zeppelins + 1
+		end
+	end
+	check(zeppelins == 0, "no zeppelin master is filed as a flight master")
+	local orc = begin(STARTS[5])
+	Stub.world.map, Stub.world.x, Stub.world.y = 1411, 0.507, 0.134
+	Stub.world.cx, Stub.world.cy = onContinent(1411, 0.507, 0.134)
+	local nearest = orc.Places.Find("flight")[1]
+	check(nearest ~= nil and not tostring(nearest.note):lower():find("zeppelin") and nearest.title ~= "Frezza"
+		and nearest.title ~= "Snurk Bucksquick", "at the zeppelin tower, Find nearby: Flight does not list the zeppelin master")
+	noErrors(orc, "the zeppelin tower")
 
 	-- The Skyborne isle has its own trainers and an innkeeper.
 	local isle = H.load({ seed = true, class = "DRUID", level = 1 })

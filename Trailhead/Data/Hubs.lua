@@ -48,11 +48,11 @@ T.HubData = {
 		{ "Angor Fortress", 423, 528, 0, 36, 38, 6, 0 },
 		{ "Hammertoe's Digsite", 536, 433, 2, 35, 39, 6, 0 },
 		{ "The Dustbowl", 259, 447, 0, 37, 42, 11, 4 },
-		{ "Kargath", 39, 471, 1, 40, 52, 24, 10 },
+		{ "Kargath", 39, 471, 1, 40, 52, 24, 11 },
 	},
 	[1419] = { -- Blasted Lands
-		{ "Nethergarde Keep", 664, 196, 2, 47, 47, 5, 0 },
-		{ "Dreadmaul Hold", 506, 142, 0, 50, 50, 10, 12 },
+		{ "Nethergarde Keep", 664, 196, 2, 47, 47, 5, 6 },
+		{ "Dreadmaul Hold", 506, 142, 0, 50, 50, 10, 8 },
 	},
 	[1420] = { -- Tirisfal Glades
 		{ "Deathknell", 312, 664, 1, 1, 3, 17, 8 },
@@ -78,7 +78,7 @@ T.HubData = {
 	},
 	[1424] = { -- Hillsbrad Foothills
 		{ "Tarren Mill", 622, 201, 1, 22, 30, 45, 11 },
-		{ "Southshore", 504, 580, 2, 32, 34, 21, 5 },
+		{ "Southshore", 504, 580, 2, 32, 34, 21, 7 },
 	},
 	[1425] = { -- The Hinterlands
 		{ "Plaguemist Ravine", 233, 585, 1, 43, 43, 8, 0 },
@@ -86,7 +86,7 @@ T.HubData = {
 		{ "Aerie Peak", 101, 449, 2, 43, 46, 6, 6 },
 		{ "Plaguemist Ravine (north)", 267, 484, 0, 43, 46, 4, 0 },
 		{ "Aerie Peak (east)", 145, 442, 2, 45, 47, 5, 1 },
-		{ "Revantusk Village", 790, 799, 1, 48, 48, 16, 9 },
+		{ "Revantusk Village", 790, 799, 1, 48, 48, 16, 11 },
 	},
 	[1426] = { -- Dun Morogh
 		{ "Coldridge Valley", 295, 701, 2, 1, 1, 16, 4 },
@@ -96,8 +96,8 @@ T.HubData = {
 	},
 	[1427] = { -- Searing Gorge
 		{ "The Cauldron", 391, 390, 0, 48, 50, 9, 0 },
-		{ "Thorium Point", 388, 274, 1, 48, 50, 12, 8 },
-		{ "Thorium Point", 388, 274, 2, 48, 50, 13, 4 },
+		{ "Thorium Point", 388, 274, 1, 48, 50, 12, 10 },
+		{ "Thorium Point", 388, 274, 2, 48, 50, 13, 6 },
 	},
 	[1428] = { -- Burning Steppes
 		{ "Flame Crest", 652, 234, 1, 52, 55, 17, 10 },
@@ -116,12 +116,12 @@ T.HubData = {
 	},
 	[1431] = { -- Duskwood
 		{ "The Hushed Bank", 78, 339, 2, 21, 26, 6, 0 },
-		{ "Darkshire", 739, 466, 2, 23, 28, 43, 5 },
+		{ "Darkshire", 739, 466, 2, 23, 28, 43, 7 },
 		{ "Raven Hill Cemetery", 282, 314, 2, 24, 28, 6, 0 },
 	},
 	[1432] = { -- Loch Modan
 		{ "Valley of Kings", 231, 743, 2, 12, 15, 5, 0 },
-		{ "Thelsamar", 358, 476, 2, 10, 16, 14, 5 },
+		{ "Thelsamar", 358, 476, 2, 10, 16, 14, 7 },
 		{ "Ironband's Excavation Site", 828, 643, 2, 15, 17, 5, 0 },
 	},
 	[1433] = { -- Redridge Mountains
@@ -142,7 +142,7 @@ T.HubData = {
 	[1436] = { -- Westfall
 		{ "Furlbrow's Pumpkin Farm (north)", 600, 194, 2, 10, 11, 4, 0 },
 		{ "Furlbrow's Pumpkin Farm", 562, 309, 2, 10, 12, 4, 0 },
-		{ "Sentinel Hill", 562, 482, 2, 10, 16, 14, 4 },
+		{ "Sentinel Hill", 562, 482, 2, 10, 16, 14, 7 },
 	},
 	[1437] = { -- Wetlands
 		{ "Ironbeard's Tomb", 383, 516, 2, 24, 27, 5, 0 },
@@ -183,10 +183,10 @@ T.HubData = {
 		{ "Ghost Walker Post", 524, 538, 1, 33, 33, 8, 0 },
 		{ "Kormek's Hut", 560, 588, 1, 31, 33, 5, 0 },
 		{ "Gelkis Village", 368, 790, 2, 32, 36, 6, 0 },
-		{ "Shadowprey Village", 240, 710, 1, 25, 36, 7, 9 },
+		{ "Shadowprey Village", 240, 710, 1, 25, 36, 7, 11 },
 		{ "Ethel Rethor", 374, 288, 2, 33, 37, 4, 0 },
 		{ "Gelkis Village", 368, 790, 1, 35, 37, 5, 0 },
-		{ "Nijel's Point", 663, 99, 2, 33, 39, 16, 6 },
+		{ "Nijel's Point", 663, 99, 2, 33, 39, 16, 7 },
 	},
 	[1444] = { -- Feralas
 		{ "Camp Mojache", 748, 433, 1, 43, 45, 37, 11 },
@@ -196,7 +196,7 @@ T.HubData = {
 	[1445] = { -- Dustwallow Marsh
 		{ "The Den of Flame", 297, 480, 0, 35, 35, 4, 0 },
 		{ "Witch Hill", 554, 260, 0, 35, 35, 5, 0 },
-		{ "Theramore Isle", 670, 479, 2, 30, 38, 17, 5 },
+		{ "Theramore Isle", 670, 479, 2, 30, 38, 17, 7 },
 		{ "Brackenwall Village", 362, 315, 1, 35, 40, 15, 10 },
 	},
 	[1446] = { -- Tanaris
@@ -227,8 +227,7 @@ T.HubData = {
 		{ "Moonglade (west)", 363, 413, 0, 60, 60, 4, 0 },
 	},
 	[1451] = { -- Silithus
-		{ "Cenarion Hold", 506, 380, 1, 59, 60, 85, 11 },
-		{ "Cenarion Hold", 506, 380, 2, 59, 60, 85, 5 },
+		{ "Cenarion Hold", 506, 380, 0, 59, 60, 85, 15 },
 	},
 	[1452] = { -- Winterspring
 		{ "Starfall Village", 520, 303, 2, 56, 57, 4, 0 },
@@ -237,6 +236,7 @@ T.HubData = {
 	},
 	[2521] = { -- Zephras Isle
 		{ "Thendal Village", 430, 240, 0, 1, 1, 10, 12 },
-		{ "Shen'dar Village", 454, 455, 0, 8, 8, 5, 0 },
+		{ "Shen'dar Village", 454, 455, 0, 8, 8, 5, 1 },
+		{ "Valanaar", 628, 763, 0, 9, 13, 11, 0 },
 	},
 }
