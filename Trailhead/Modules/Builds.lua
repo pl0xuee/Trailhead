@@ -75,7 +75,7 @@ function Builds:Build(page)
 	ui.gearLabel:SetLabel(L["What to look for on gear"])
 	ui.gear = W.Text(page, "body", 10.5, "muted", { width = LIST_W - 12 })
 	ui.gear:SetSpacing(3)
-	ui.note = W.Text(page, "body", 10.5, "faint", { width = LIST_W - 12 })
+	ui.note = W.Text(page, "body", 10.5, "muted", { width = LIST_W - 12 })
 	ui.note:SetSpacing(3)
 
 	local panel = W.Panel(page, { shape = "card", fill = "card", line = "cardLine", top = "cardTop" })
@@ -105,6 +105,17 @@ function Builds:Build(page)
 	ui.empty = W.Text(panel, "body", 11.5, "muted", { width = INNER })
 	ui.empty:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -72)
 	ui.empty:SetSpacing(4)
+	-- The next step from an empty panel: the Guide's Talents topic shows where your points are.
+	ui.pointer = W.Text(panel, "body", 11.5, "muted", { width = INNER })
+	ui.pointer:SetSpacing(4)
+	ui.pointer:Hide()
+	ui.guide = W.Button(panel, L["Open the Talents topic"], "ghost", {
+		role = "accentText", height = 28, size = 11,
+		onClick = function()
+			T.Window:Select("guide", "talents")
+		end,
+	})
+	ui.guide:Hide()
 
 	local body = CreateFrame("Frame", nil, panel)
 	body:SetAllPoints(panel)
@@ -122,7 +133,7 @@ function Builds:Build(page)
 	ui.nextLabel = W.Text(body, "label", 9, "accentText")
 	ui.nextLabel:SetPoint("TOPLEFT", body, "TOPLEFT", 20, -138)
 	ui.nextLabel:SetLabel(L["Next point"])
-	ui.when = W.Text(body, "body", 10.5, "faint")
+	ui.when = W.Text(body, "body", 10.5, "muted")
 	ui.when:SetPoint("LEFT", ui.nextLabel, "RIGHT", 10, 0)
 
 	local card = W.Panel(body, { shape = "card", fill = "tile", line = "tileLine" })
@@ -177,7 +188,7 @@ function Builds:Build(page)
 	ui.fight:SetPoint("TOPLEFT", ui.fightLabel, "BOTTOMLEFT", 0, -6)
 	ui.fight:SetSpacing(5)
 
-	ui.outside = W.Text(body, "body", 10.5, "faint", { width = INNER })
+	ui.outside = W.Text(body, "body", 10.5, "muted", { width = INNER })
 	ui.outside:SetPoint("BOTTOMLEFT", body, "BOTTOMLEFT", 20, 14)
 	if ui.outside.SetMaxLines then
 		ui.outside:SetMaxLines(1)
@@ -192,11 +203,21 @@ function Builds:Goto(id)
 	end
 end
 
-local function showEmpty(title, text)
+-- guide = true adds the pointer to the Guide's Talents topic and its button under the text.
+local function showEmpty(title, text, guide)
 	ui.title:SetLabel(title)
 	ui.empty:SetLabel(text)
 	ui.empty:Show()
 	ui.body:Hide()
+	ui.pointer:SetShown(guide == true)
+	ui.guide:SetShown(guide == true)
+	if guide then
+		ui.pointer:SetLabel(L["Until then, the Guide's Talents topic shows where your points are."])
+		ui.pointer:ClearAllPoints()
+		ui.pointer:SetPoint("TOPLEFT", ui.empty, "TOPLEFT", 0, -(W.TextHeight(ui.empty) + 12))
+		ui.guide:ClearAllPoints()
+		ui.guide:SetPoint("TOPLEFT", ui.pointer, "TOPLEFT", 0, -(W.TextHeight(ui.pointer) + 14))
+	end
 end
 
 local function points(count)
@@ -205,6 +226,8 @@ end
 
 local function showProgress(build, progress)
 	ui.empty:Hide()
+	ui.pointer:Hide()
+	ui.guide:Hide()
 	ui.body:Show()
 	ui.suits:SetLabel(build.suits)
 	ui.bar:Set(progress.total > 0 and progress.done / progress.total or 0)
@@ -300,8 +323,7 @@ function Builds:Refresh()
 		ui.gearLabel:Hide()
 		ui.gear:SetLabel("")
 		showEmpty(L["No build for your class yet"],
-			L["Builds are written from the game's own talent texts. Your class has none yet."]
-			.. "\n\n" .. L["Until then, the Guide's Talents topic shows where your points are."])
+			L["Builds are written from the game's own talent texts. Your class has none yet."], true)
 		return
 	end
 	local hasGear = build.gear ~= nil and build.gear ~= ""
@@ -314,7 +336,8 @@ function Builds:Refresh()
 	end
 	-- Draft builds are checked against the game's talent data by a tool, not played through.
 	ui.note:SetLabel((build.draft and L["Draft: every point is checked against the game's talent data, but we have not played this build through yet."] .. "\n\n" or "")
-		.. L["You spend the points yourself in the game's talent window. Trailhead shows where each one goes."])
+		.. L["You spend the points yourself in the game's talent window. Trailhead shows where each one goes."]
+		.. "\n\n" .. L["Your class trainer can reset your talents for a fee."])
 	ui.tile.icon:SetTexture(Theme.MEDIA .. "icon-" .. (build.icon or "spark"))
 	ui.follow:SetKind(build == chosen and "ghost" or "primary", build == chosen and "muted" or "accentText")
 	ui.follow:SetLabel(build == chosen and L["Stop following"] or L["Follow this build"])
@@ -325,8 +348,9 @@ function Builds:Refresh()
 	end
 	local progress = B.Progress(build)
 	if progress.problem == "changed" then
-		ui.follow:Hide()
-		showEmpty(build.name, L["The game's talents have changed since this build was written, so Trailhead will not suggest points from it. An update will bring it back."])
+		-- Following it stays undoable: only a build you are not following loses its button.
+		ui.follow:SetShown(build == chosen)
+		showEmpty(build.name, L["The game's talents have changed since this build was written, so Trailhead will not suggest points from it. An update will bring it back."], true)
 	elseif progress.problem then
 		showEmpty(build.name, L["The game has not listed your talents yet. Try again in a moment."])
 	else

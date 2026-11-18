@@ -90,16 +90,30 @@ function Spells:Build(page)
 	T.Secure.Set(book, "spellbook", function()
 		T.Window:Beside("PlayerSpellsFrame", "spellbook")
 	end)
-	book:SetPoint("BOTTOMLEFT", ui.bars, "BOTTOMLEFT", 16, 14)
+	ui.bars.action = book
 
 	ui.learn = column(page, COL_W + COL_GAP, L["From your class trainer"])
-	local trainer = W.Button(ui.learn, L["Find my trainer"], "primary", {
+	ui.learn.action = W.Button(ui.learn, L["Find my trainer"], "primary", {
 		onClick = function()
 			T.Window:Select("find", "trainer")
 		end,
 	})
-	trainer:SetPoint("BOTTOMLEFT", ui.learn, "BOTTOMLEFT", 16, 14)
 	self.built = true
+end
+
+-- Puts a column's button straight under its list, or under the empty text when the list is
+-- empty, instead of at the foot of a mostly empty card.
+local function placeAction(panel, count)
+	local y
+	if count > 0 then
+		local rows = math.min(count, panel.list.visible or count)
+		y = LIST_TOP + rows * ROW_H + (rows - 1) * ROW_GAP + 14
+	else
+		y = LIST_TOP + 8 + W.TextHeight(panel.empty) + 16
+	end
+	y = math.min(y, COL_H - FOOT + 12)
+	panel.action:ClearAllPoints()
+	panel.action:SetPoint("TOPLEFT", panel, "TOPLEFT", 16, -y)
 end
 
 function Spells:Refresh(keep)
@@ -157,6 +171,8 @@ function Spells:Refresh(keep)
 	else
 		ui.learn.empty:SetLabel(L["Visit your class trainer once. From then on Trailhead lists what you can learn, what it costs and what is coming at later levels."])
 	end
+	placeAction(ui.bars, #missing)
+	placeAction(ui.learn, #items)
 end
 
 local queued = false

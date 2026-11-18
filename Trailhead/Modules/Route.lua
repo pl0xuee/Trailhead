@@ -70,6 +70,13 @@ function Route:Build(page)
 	end
 	ui.note = W.Text(page, "body", 11.5, "muted", { width = PAGE_W - 24 })
 	ui.note:SetSpacing(4)
+	-- The next step under the route: every flight master you meet makes later trips quicker.
+	ui.flight = W.Button(page, L["Find a flight master"], "ghost", {
+		role = "accentText", height = 28, size = 11,
+		onClick = function()
+			T.Window:Select("find", "flight")
+		end,
+	})
 	self.built = true
 end
 
@@ -111,6 +118,14 @@ function Route:Refresh()
 	ui.note:ClearAllPoints()
 	ui.note:SetPoint("TOPLEFT", self.page, "TOPLEFT", 12, -(STEPS_TOP + shown * (STEP_H + STEP_GAP) + 10))
 	ui.note:SetLabel(plan.note or "")
+	-- Not for a place Trailhead cannot find, nor on the way to a flight master already.
+	local flight = not plan.unknown and target.node == nil
+	ui.flight:SetShown(flight)
+	if flight then
+		local below = (plan.note and plan.note ~= "") and (W.TextHeight(ui.note) + 14) or 0
+		ui.flight:ClearAllPoints()
+		ui.flight:SetPoint("TOPLEFT", ui.note, "TOPLEFT", 0, -below)
+	end
 end
 
 local queued = false
