@@ -153,6 +153,16 @@ end)
 
 H.section("strip: a fight, the switch, the map", function()
 	local T = H.load(nil, H.checked())
+	-- Opens the map the way the secure cover does: off Trailhead's escape list for the click.
+	local function openMapLikeCover()
+		local kept
+		for i, name in ipairs(UISpecialFrames) do
+			if name == "TrailheadWindow" then kept = table.remove(UISpecialFrames, i) break end
+		end
+		QuestLogMicroButton:Click()
+		if kept then table.insert(UISpecialFrames, kept) end
+		T.Places.AfterMap()
+	end
 	local window = T.Window
 	H.slash("")
 	local frame = TrailheadWindow
@@ -202,7 +212,7 @@ H.section("strip: a fight, the switch, the map", function()
 
 	-- the map has no strip: a narrow room leaves the window at home, a full-screen map hides it
 	WorldMapFrame.rect = { 300, 2700, 1084, 316 }
-	T.Places.ShowMap(52)
+	openMapLikeCover()
 	check(window:IsBeside() == "WorldMapFrame" and frame:IsShown() and window:Strip() == nil, "beside the map there is no strip")
 	WorldMapFrame.rect = { 0, 2968, 1200, 0 }
 	window:DockTick()

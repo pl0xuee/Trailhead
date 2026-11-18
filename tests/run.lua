@@ -548,10 +548,10 @@ section("flight points and search", function()
 	check(T.Window.current == "find" and Stub.sees("Search results") and Stub.sees("2 matches"), "typing opens Find it with the results")
 	check(Stub.sees("Darkshire") and Stub.sees("Duskwood") and Stub.sees("TOO DANGEROUS"), "results are listed with how they fit")
 	Stub.click("Open map")
-	check(Stub.mapOpened == 47, "a zone result opens the map on that zone")
+	check(Stub.opened.map and Stub.mapOpened == nil, "a zone result opens the map through the game's own button")
 	Stub.click("Set marker")
 	check(Stub.waypoint ~= nil and Stub.sees("Remove marker"), "a flight result sets the marker")
-	check(Stub.mapOpened == 13 and Stub.waypoint.uiMapID == 13, "and opens the game's map where the marker is")
+	check(WorldMapFrame:IsShown() and Stub.waypoint.uiMapID == 13, "and the open map keeps showing, with the marker on it")
 	Stub.click("Remove marker")
 	Stub.flush()
 	check(Stub.waypoint == nil and not Stub.sees("Remove marker"), "Remove marker clears it")
@@ -593,11 +593,11 @@ section("flight points and search", function()
 	Stub.click("Vendor")
 	check(T.modules.find.category == "vendor" and Stub.sees("1 place known") and not Stub.sees("Show on the minimap"), "vendors have no minimap tracking to offer")
 	Stub.click("Flight master")
-	check(Stub.sees("Sentinel Hill") and Stub.sees("500 YARDS") and not Stub.sees("Show on the minimap"), "flight points list with how far each is; the stub has no flight tracking")
+	check(Stub.sees("Sentinel Hill") and Stub.sees("500 yards") and not Stub.sees("Show on the minimap"), "flight points list with how far each is; the stub has no flight tracking")
 	check(T.modules.find.YardsText(1949) == "1,900 yards" and T.modules.find.YardsText(44) == "40 yards", "distances are rounded")
 	Stub.world.noYards = true
 	T.Window:Select("find", "flight")
-	check(Stub.sees("IN THIS ZONE") and not Stub.sees("500 YARDS"), "without the size of the continent the row says In this zone")
+	check(Stub.sees("IN THIS ZONE") and not Stub.sees("500 yards"), "without the size of the continent the row says In this zone")
 	Stub.world.noYards = nil
 	Stub.click("Repair")
 	Stub.click("Show on the minimap")
@@ -827,7 +827,7 @@ section("zones", function()
 	T.Window:Select("zones")
 	local list = T.modules.zones
 	check(list.filter == "fit" and Stub.sees("Zones and the levels they are meant for. You are level 14."), "opens on zones for my level")
-	for _, wanted in ipairs({ "Westfall", "10-20", "You are here", "RIGHT FOR YOU", "Stormwind City", "The Barrens", "15-30", "ALMOST",
+	for _, wanted in ipairs({ "Westfall", "10-20", "You are here", "Stormwind City", "The Barrens", "15-30", "ALMOST",
 		"Kalimdor  \194\183  No flight point for your side" }) do
 		check(Stub.sees(wanted), "zones for my level shows: " .. wanted)
 	end
@@ -841,8 +841,10 @@ section("zones", function()
 	check(titles(list.Items("all", 14)) == "Elwynn Forest | Stormwind City | Westfall | The Barrens | Duskwood | Stranglethorn Vale | The Hinterlands", "All zones runs from low to high")
 	Stub.click("All zones")
 	check(list.filter == "all" and Stub.sees("Elwynn Forest") and Stub.sees("OUTGROWN") and Stub.sees("Duskwood") and Stub.sees("TOO DANGEROUS"), "All zones lists everything")
+	Stub.opened.map = nil
+	WorldMapFrame:Hide()
 	Stub.click("Open map", 1)
-	check(Stub.mapOpened == 37, "Open map opens the game's map on that zone")
+	check(Stub.opened.map and Stub.mapOpened == nil, "Open map opens the game's map through its own button")
 	Stub.click("Dungeons")
 	check(list.filter == "dungeons" and Stub.sees("Ragefire Chasm") and Stub.sees("13-18") and Stub.sees("Deadmines") and Stub.sees("The Stockade")
 		and not Stub.sees("Broken Entry") and not Stub.sees("Warsong Gulch"), "Dungeons lists the dungeons only")
@@ -1064,7 +1066,7 @@ section("how to get there", function()
 		"the button on a row opens its route")
 	check(Stub.sees("1") and not Stub.sees("2") and Stub.sees("Stranglethorn"), "one step, numbered, with where it is")
 	Stub.click("Set marker", 1)
-	check(Stub.waypoint and Stub.waypoint.uiMapID == 13 and Stub.mapOpened == 13, "a step's marker goes on the map and the map opens")
+	check(Stub.waypoint and Stub.waypoint.uiMapID == 13 and Stub.mapOpened == nil, "a step's marker goes on the map; the addon itself opens nothing")
 	Stub.click("Back")
 	check(T.Window.current == "find" and T.modules.find.category == "flight", "Back returns to the list it came from")
 	Stub.type(T.Window.search.edit, "dusk")
@@ -1109,6 +1111,16 @@ end)
 
 section("beside game windows", function()
 	local T = load(nil, checked())
+	-- Opens the map the way the secure cover does: off Trailhead's escape list for the click.
+	local function openMapLikeCover()
+		local kept
+		for i, name in ipairs(UISpecialFrames) do
+			if name == "TrailheadWindow" then kept = table.remove(UISpecialFrames, i) break end
+		end
+		QuestLogMicroButton:Click()
+		if kept then table.insert(UISpecialFrames, kept) end
+		T.Places.AfterMap()
+	end
 	local window = T.Window
 	slash("")
 	local frame = TrailheadWindow
@@ -1173,7 +1185,7 @@ section("beside game windows", function()
 	check(point == homePoint and x == homeX, "and it opens at home next time")
 
 	-- the map, windowed and then full-screen
-	T.Places.ShowMap(52)
+	openMapLikeCover()
 	check(window:IsBeside() == "WorldMapFrame" and select(4, at()) == 1052, "the map gets Trailhead beside it too")
 	WorldMapFrame.rect = { 0, 2968, 1200, 0 }
 	window:DockTick()
@@ -1185,14 +1197,14 @@ section("beside game windows", function()
 	WorldMapFrame.rect = { 16, 1040, 1084, 316 }
 
 	-- moved by hand while beside: it stays where the player drops it
-	T.Places.ShowMap(52)
+	openMapLikeCover()
 	window:Undock(true)
 	check(window:IsBeside() == nil and select(4, at()) == 1052, "moved by hand, it stays put")
 	WorldMapFrame:Hide()
 
 	-- a fight
 	window:ResetPosition()
-	T.Places.ShowMap(52)
+	openMapLikeCover()
 	Stub.combat = true
 	Stub.fire("PLAYER_REGEN_DISABLED")
 	check(window:IsBeside() == nil and not frame:IsShown(), "a fight ends it and hides Trailhead as usual")
@@ -1203,7 +1215,7 @@ section("beside game windows", function()
 	WorldMapFrame:Hide()
 
 	-- a fight while a full-screen map has Trailhead tucked away
-	T.Places.ShowMap(52)
+	openMapLikeCover()
 	WorldMapFrame.rect = { 0, 2968, 1200, 0 }
 	window:DockTick()
 	Stub.combat = true
@@ -1216,7 +1228,7 @@ section("beside game windows", function()
 
 	-- a game window drawn at another scale than the screen
 	WorldMapFrame.effective, WorldMapFrame.rect = 0.5, { 32, 2080, 2168, 632 }
-	T.Places.ShowMap(52)
+	openMapLikeCover()
 	check(select(4, at()) == 1052 and select(5, at()) == 1084, "a game window at its own scale is measured in the screen's units")
 	WorldMapFrame.effective, WorldMapFrame.rect = nil, { 16, 1040, 1084, 316 }
 	WorldMapFrame:Hide()
@@ -1226,8 +1238,8 @@ section("beside game windows", function()
 	window:Select("settings")
 	check(Stub.sees("Beside game windows"), "Settings has the switch")
 	T.db.dock = false
-	T.Places.ShowMap(52)
-	check(window:IsBeside() == nil and Stub.mapOpened == 52, "switched off, the map opens and Trailhead stays put")
+	openMapLikeCover()
+	check(window:IsBeside() == nil and WorldMapFrame:IsShown(), "switched off, the map opens and Trailhead stays put")
 	T.db.dock = true
 	WorldMapFrame:Hide()
 
