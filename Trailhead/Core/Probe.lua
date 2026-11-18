@@ -10,7 +10,7 @@ local C = T.Compat
 local Probe = {}
 T.Probe = Probe
 
--- Raised whenever the check learns to ask something new; Home then offers to run it again.
+-- Raised whenever the check learns to ask something new.
 Probe.VERSION = 8
 
 local MAX_ZONES, MAX_LIST = 200, 60
@@ -683,12 +683,6 @@ sections.spelltips = function()
 	return out
 end
 
--- The last few vendors and trainers the player opened, written down as they were opened
--- (see the bottom of this file): for the Guide's Mount, Supplies and Gear topics.
-sections.visits = function()
-	return clean(T.db and T.db.visits)
-end
-
 sections.skills = function()
 	local out = { count = pack(C.Call("C_SkillInfo.GetNumSkillLines")), rows = {}, descriptions = {}, words = {} }
 	for _, name in ipairs({ "WEAPON_SKILL_DETAIL_SAME_LEVEL_HEADER", "WEAPON_SKILL_DETAIL_SAME_LEVEL", "WEAPON_SKILL_DETAIL_SAME_LEVEL_RANGED",
@@ -847,12 +841,54 @@ end
 -- Sections that read another section's result run after it.
 local ORDER = {
 	"build", "player", "apis", "character", "map", "zones", "taxi", "dungeons", "tracking",
-	"spellbook", "talents", "skills", "rest", "bags", "visits", "words", "mounts", "spelltips", "routes", "groupFinder", "learned", "secure",
+	"spellbook", "talents", "skills", "rest", "bags", "words", "mounts", "spelltips", "routes", "groupFinder", "learned", "secure",
 }
 
 -- The safe openers (UI/Secure.lua): whether the cover was made, where it went, what took the click.
 sections.secure = function()
 	return T.Secure.Report()
+end
+
+-- The large dumps that only help write Trailhead itself (the game's own texts, every talent's
+-- tooltip, the mount journal): recorded only while developer collection is on.
+local DEV_ONLY = { words = true, talents = true, mounts = true }
+
+-- Developer collection (/th check collect): off for every player unless switched on. While on,
+-- the vendors, trainers and guard menus the player opens are written down (see the bottom of
+-- this file) and the game check records the DEV_ONLY sections too.
+function Probe:Collecting()
+	return type(T.db) == "table" and T.db.collect == true
+end
+
+-- Removes what only developer collection keeps: the visits, and the large dumps in a saved check.
+local function trim()
+	local db = T.db
+	if type(db) ~= "table" then
+		return
+	end
+	db.visits = nil
+	local report = type(db.probe) == "table" and db.probe.report
+	if type(report) == "table" then
+		report.visits = nil
+		for name in pairs(DEV_ONLY) do
+			report[name] = nil
+		end
+	end
+end
+Probe.Trim = trim
+
+function Probe:SetCollect(on)
+	if type(T.db) ~= "table" then
+		return
+	end
+	if on then
+		T.db.collect = true
+		T:Print(L["Developer collection is on. Vendors, trainers and guard menus you open are written down, and the game check records more."])
+	else
+		T.db.collect = nil
+		trim()
+		T:Print(L["Developer collection is off. What it wrote down is removed."])
+	end
 end
 
 -- Runs the check. Returns true when it ran.
@@ -862,13 +898,16 @@ function Probe:Run()
 		return false
 	end
 	local report, failed = {}, 0
+	local all = Probe:Collecting()
 	for _, name in ipairs(ORDER) do
-		local ok, result = pcall(sections[name], report)
-		if ok then
-			report[name] = result
-		else
-			report[name] = { error = tostring(result) }
-			failed = failed + 1
+		if all or not DEV_ONLY[name] then
+			local ok, result = pcall(sections[name], report)
+			if ok then
+				report[name] = result
+			else
+				report[name] = { error = tostring(result) }
+				failed = failed + 1
+			end
 		end
 	end
 	report.compatErrors = clean(C.errors)
@@ -910,9 +949,10 @@ function Probe:LastRun()
 end
 
 -- ---------------------------------------------------------------------------
--- Vendors and trainers the player opens are written down (the last few only), so a game
--- check can show what they sell and teach, at what price and from what level. This is how
--- facts such as "what a mount costs" are read from the game instead of remembered.
+-- While developer collection is on (/th check collect), vendors and trainers the player
+-- opens are written down (the last few only, in TrailheadDB.visits): what they sell and
+-- teach, at what price and from what level. This is how facts such as "what a mount costs"
+-- are read from the game instead of remembered.
 -- Vendor row: name|price|stack|item|classID|subClassID|type|subType|usable|tooltip
 -- Trainer row: name|rank|state|level|cost|group
 -- A menu of four or more choices (a guard's list of what the town has, mostly) is written
@@ -922,7 +962,7 @@ local MAX_VISITS, MAX_VISIT_ROWS = 16, 40
 local MENU_MIN = 4
 
 local function keepVisit(visit)
-	if not T.db or #visit.rows == 0 then
+	if not T.db or #visit.rows == 0 or not Probe:Collecting() then
 		return
 	end
 	T.db.visits = type(T.db.visits) == "table" and T.db.visits or {}
@@ -947,7 +987,7 @@ local function newVisit(kind)
 end
 
 local function readVendor()
-	if C.InCombat() then
+	if C.InCombat() or not Probe:Collecting() then
 		return
 	end
 	local count = C.Plain(C.Call("GetMerchantNumItems"), 0)
@@ -970,7 +1010,7 @@ local function readVendor()
 end
 
 local function readTrainer()
-	if C.InCombat() then
+	if C.InCombat() or not Probe:Collecting() then
 		return
 	end
 	local count = C.Plain(C.Call("GetNumTrainerServices"), 0)
@@ -989,7 +1029,7 @@ local function readTrainer()
 end
 
 local function readMenu()
-	if C.InCombat() then
+	if C.InCombat() or not Probe:Collecting() then
 		return
 	end
 	local options = C.Call("C_GossipInfo.GetOptions")
@@ -1026,4 +1066,11 @@ T:On("TRAINER_SHOW", soon(readTrainer))
 -- A menu is complete the moment it shows, and the next click replaces it.
 T:On("GOSSIP_SHOW", function()
 	T.SafeCall("probe.menu", readMenu)
+end)
+
+-- Saved data from versions that collected for every player is trimmed once at load.
+T:On("ADDON_LOADED", function(name)
+	if name == T.addon and not Probe:Collecting() then
+		trim()
+	end
 end)

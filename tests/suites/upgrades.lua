@@ -31,9 +31,11 @@ local function item(kind, stats, extra)
 	return link
 end
 
+-- Puts an item on, and tells Trailhead the way the game does.
 local function wear(slot, link)
 	Stub.world.equipped = Stub.world.equipped or {}
 	Stub.world.equipped[slot] = link
+	Stub.fire("PLAYER_EQUIPMENT_CHANGED", slot)
 end
 
 -- Hovers the item and returns the lines Trailhead added.
@@ -277,4 +279,46 @@ H.section("upgrades: build data agrees with the builds", function()
 			check(found, class .. " " .. id .. " is a real build")
 		end
 	end
+end)
+
+H.section("upgrades: the verdict is kept while the tooltip is hovered", function()
+	local T = H.load()
+	wear(1, item("cloth", { [INT] = 2, [STA] = 1, [ARMOR] = 10 }))
+	local better = item("cloth", { [INT] = 6, [STA] = 4, [ARMOR] = 12 })
+	local reads = 0
+	local real = C_Item.GetItemStats
+	C_Item.GetItemStats = function(...)
+		reads = reads + 1
+		return real(...)
+	end
+	Stub.world.now = 5000
+	local first = said(hover(better))
+	local after = reads
+	for _ = 1, 5 do
+		hover(better)
+	end
+	check(first:find("Upgrade for you", 1, true) ~= nil and reads == after, "hovered again within a second: worked out once")
+	Stub.world.now = 5001
+	hover(better)
+	check(reads > after, "a second later it is worked out again")
+	after = reads
+	wear(1, item("cloth", { [INT] = 9, [STA] = 9, [ARMOR] = 20 }))
+	check(said(hover(better)):find("Not better", 1, true) ~= nil and reads > after, "new gear: the verdict follows at once")
+	after = reads
+	hover(better)
+	Stub.fire("PLAYER_LEVEL_UP", 15)
+	hover(better)
+	check(reads > after + 1, "a level up forgets it")
+	after = reads
+	T:Fire("TH_SKILLS_CHANGED")
+	hover(better)
+	check(reads > after, "a change in skills forgets it")
+	after = reads
+	T:Fire("TH_BUILD_CHANGED")
+	hover(better)
+	check(reads > after, "another build forgets it")
+	C_Item.GetItemStats = real
+	Stub.world.now = nil
+	check(T.Upgrades.Wanted() == T.Upgrades.Wanted(), "the class's merged stat list is made once")
+	H.noErrors(T, "verdict cache")
 end)

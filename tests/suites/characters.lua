@@ -224,6 +224,20 @@ H.section("characters: since you last played", function()
 	Stub.world.durability[1] = { 3, 40 }
 	found = card(T)
 	check(found and found.title == "Welcome back after 10 hours", "hours away")
+	check(found and found.body == "You were 62% of the way to level 15.\nGear nearly broken.", "gear; the spells are left to the training card")
+	check(found and found.action == "Find repair", "the button goes to a repairer")
+	local ids = {}
+	for index, item in ipairs(T.Advisor.Cards(20)) do
+		ids[index] = item.id
+	end
+	check(table.concat(ids, ","):find("train", 1, true) ~= nil, "the training card says how many spells")
+	-- With the training card dismissed, the welcome card names the spells again.
+	for _, item in ipairs(T.Advisor.Cards(20)) do
+		if item.id == "train" then
+			T.Advisor.Dismiss(item)
+		end
+	end
+	found = card(T)
 	check(found and found.body == "You were 62% of the way to level 15.\n2 new spells at your trainer. Gear nearly broken.", "trainer and gear")
 	check(found and found.action == "Find trainer", "the button goes to the trainer")
 	found.run()
@@ -231,6 +245,19 @@ H.section("characters: since you last played", function()
 	Stub.world.durability[1] = { 0, 40 }
 	found = card(T)
 	check(found and found.body:find("Some gear is broken.", 1, true), "broken gear")
+	-- Half an hour into the login it is no longer news.
+	Stub.skew = 31 * 60
+	check(card(T) == nil, "gone 30 minutes after login")
+	Stub.skew = 0
+	Stub.world.durability[1] = nil
+
+	-- Only spells to tell: the training card says it, no welcome card.
+	T = relog(T, opts, 10, function(saved)
+		saved.chars[KEY].rested = 2100
+	end)
+	H.visit("Jennea Cannon", H.MAGE_TRAINER)
+	H.leave()
+	check(card(T) == nil, "spells alone are left to the training card")
 
 	-- A record from another level is not compared.
 	T = relog(T, opts, 20, function(saved)

@@ -80,7 +80,7 @@ function M.SellJunk()
 	if junk.count == 0 then
 		return 0
 	end
-	if C.Call("C_MerchantFrame.IsSellAllJunkEnabled") == true and C.Has("C_MerchantFrame.SellAllJunkItems") then
+	if C.Plain(C.Call("C_MerchantFrame.IsSellAllJunkEnabled"), false) == true and C.Has("C_MerchantFrame.SellAllJunkItems") then
 		C.Call("C_MerchantFrame.SellAllJunkItems")
 	elseif C.Has("C_Container.UseContainerItem") then
 		-- Using an item while a vendor window is open sells it.

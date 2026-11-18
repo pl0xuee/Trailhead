@@ -14,6 +14,7 @@ T.Characters = Chars
 
 Chars.AWAY = 8 * 3600 -- seconds away before "since you last played" has anything to say
 Chars.GEAR_LOW = 0.25 -- the same line as Home's repair card
+Chars.SINCE_FOR = 30 * 60 -- seconds after login the "welcome back" card stays news
 local REST_WORTH = 5 -- rested experience worth less than this % of a level is not news
 local DELAY = 2 -- seconds to wait after a change, so a burst of events writes once
 
@@ -309,9 +310,20 @@ function Chars.Since()
 	return out
 end
 
--- The Home card (Services/Advisor.lua), or nil.
+-- The Home card (Services/Advisor.lua), or nil. Only in the first half hour of a login: after
+-- that it is no longer news. Spells waiting at the trainer are left to the training card,
+-- which says the same with prices; with nothing else to tell, there is no card.
 function Chars.SinceCard()
+	if loginAt and time() - loginAt > Chars.SINCE_FOR then
+		return nil
+	end
 	local since = Chars.Since()
+	if since and since.train and T.Advisor and T.Advisor.TrainCardShows and T.Advisor.TrainCardShows(since.train) then
+		since.train = nil
+		if not (since.rested or since.gear) then
+			since = nil
+		end
+	end
 	if not since then
 		return nil
 	end
