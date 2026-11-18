@@ -141,10 +141,12 @@ page("zones-hubs-stranglethorn", "zones", { hubs = 1434, name = "Stranglethorn V
 -- Guide: every topic, for a low mage and for a warrior further on.
 page("guide", "guide")
 for _, id in ipairs({ "class", "talents", "levels", "gear", "weapons", "professions", "screen", "firststeps", "rest", "services",
-	"supplies", "travel", "mount", "dying", "grouping", "danger", "words", "money", "reputation", "forever", "week" }) do
+	"supplies", "travel", "mount", "dying", "grouping", "danger", "words", "money", "reputation", "forever", "week",
+	"fighting", "quests", "pet", "camping", "choosing" }) do
 	page("guide-" .. id, "guide", id)
 	page("guide-" .. id .. "-warrior", "guide", id, nil, { class = "WARRIOR", level = 38 })
 end
+page("guide-pet-hunter", "guide", "pet", nil, { class = "HUNTER", level = 12 })
 
 page("guide-firststeps-some", "guide", "firststeps", function(T)
 	H.visit("Jennea Cannon", H.MAGE_TRAINER)

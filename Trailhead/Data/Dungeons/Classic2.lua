@@ -209,7 +209,7 @@ T.DungeonGuides[429] = {
 -- Raids: shorter, boss order with one tip for a first timer.
 
 T.DungeonGuides[409] = {
-	summary = L["A fire raid for 40 players deep in Blackrock Mountain. It ends with Ragnaros. Plan on a long evening. Not yet announced for Forever."],
+	summary = L["A fire raid for 40 players deep in Blackrock Mountain. It ends with Ragnaros. Plan on a long evening."],
 	door = L["Deep inside Blackrock Depths, past the lava lake. Reach it through the Blackrock Mountain entrance in the Burning Steppes or Searing Gorge."],
 	tips = { L["Raids are for large groups. Join a guild run."], L["Bring fire resistance gear if your guild has some."] },
 	steps = {
@@ -239,7 +239,7 @@ T.DungeonGuides[249] = {
 }
 
 T.DungeonGuides[469] = {
-	summary = L["A big dragon raid for 40 players at the top of Blackrock Spire. It ends with Nefarian. Not yet announced for Forever."],
+	summary = L["A big dragon raid for 40 players at the top of Blackrock Spire. It ends with Nefarian."],
 	door = L["Go through Upper Blackrock Spire to the raid door. You need an attunement quest to enter."],
 	tips = { L["Do the attunement quest before raid night."], L["Bring fire and shadow resistance gear if you have some."] },
 	steps = {
@@ -256,7 +256,7 @@ T.DungeonGuides[469] = {
 }
 
 T.DungeonGuides[309] = {
-	summary = L["A troll raid for 20 players in the jungle of Stranglethorn Vale. It ends with Hakkar. Not yet announced for Forever."],
+	summary = L["A troll raid for 20 players in the jungle of Stranglethorn Vale. It ends with Hakkar."],
 	door = L["In the north of Stranglethorn Vale. Walk up the path from the village into the stone gate."],
 	tips = { L["You can kill the troll priests in many orders. Ask your raid leader for the plan."] },
 	steps = {
@@ -275,7 +275,7 @@ T.DungeonGuides[309] = {
 }
 
 T.DungeonGuides[509] = {
-	summary = L["A bug raid for 20 players in the Silithus sand dunes. It ends with Ossirian. Not yet announced for Forever."],
+	summary = L["A bug raid for 20 players in the Silithus sand dunes. It ends with Ossirian."],
 	door = L["In the far south of Silithus, outside the big gate to the Ahn'Qiraj temple. Ask the raid leader if the door is open."],
 	tips = { L["Do not stand in damage on the ground. Move out of it."] },
 	steps = {
@@ -290,7 +290,7 @@ T.DungeonGuides[509] = {
 }
 
 T.DungeonGuides[531] = {
-	summary = L["A giant raid for 40 players in Silithus under the Temple of Ahn'Qiraj. It ends with C'Thun. Not yet announced for Forever."],
+	summary = L["A giant raid for 40 players in Silithus under the Temple of Ahn'Qiraj. It ends with C'Thun."],
 	door = L["In the far south of Silithus, at the big gate to the Ahn'Qiraj temple. Ask the raid leader if the door is open."],
 	tips = { L["Ask your raid leader for the plan before each boss."] },
 	steps = {
@@ -308,7 +308,7 @@ T.DungeonGuides[531] = {
 }
 
 T.DungeonGuides[533] = {
-	summary = L["A huge undead raid for 40 players in a floating fortress above the Eastern Plaguelands. It has four wings and ends with Kel'Thuzad. Not yet announced for Forever."],
+	summary = L["A huge undead raid for 40 players in a floating fortress above the Eastern Plaguelands. It has four wings and ends with Kel'Thuzad."],
 	door = L["The floating fortress hangs over the Eastern Plaguelands. The raid door is on the ground below it."],
 	tips = { L["Each wing is a separate part. You can try them in any order."] },
 	steps = {

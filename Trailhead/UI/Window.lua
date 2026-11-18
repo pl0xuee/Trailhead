@@ -599,10 +599,13 @@ function Window:Select(id, arg)
 end
 
 -- Draws the page on screen again, as it is now.
+local KEEPS_SCROLL = { find = true, spells = true, setup = true, characters = true, zones = true }
+
 function Window:RefreshPage()
 	local module = self.current and T.modules[self.current]
 	if frame and frame:IsShown() and module and module.page and module.Refresh then
-		T.SafeCall(module.id .. ".Refresh", module.Refresh, module)
+		-- Lists keep their scroll position (their Refresh takes keep = true for that).
+		T.SafeCall(module.id .. ".Refresh", module.Refresh, module, KEEPS_SCROLL[module.id] or nil)
 	end
 end
 

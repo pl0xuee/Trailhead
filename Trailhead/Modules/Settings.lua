@@ -9,6 +9,7 @@ local C = T.Compat
 local Settings = T:NewModule("settings")
 
 local ROW_H = 60 -- a name, a line of explanation and air around them
+local NOTE_ROOM = 170 -- room kept for a row's controls (a switch); rows with wider ones pass their own
 local TOP = 84 -- where the rows start, under the title and the section buttons
 local ui = { themeButtons = {}, sections = {}, pills = {}, section = "window" }
 Settings.ui = ui -- for the tests
@@ -23,13 +24,14 @@ local SECTIONS = {
 
 -- One row: a name and a line of explanation on the left; the caller adds a control on the
 -- right at the height returned. Rows sit in a section, so only a handful show at a time.
-local function row(section, index, name, hint)
+local function row(section, index, name, hint, room)
 	local y = -((index - 1) * ROW_H)
 	local label = W.Text(section, "body", 13.5, "ink")
 	label:SetPoint("TOPLEFT", section, "TOPLEFT", 0, y - 11)
 	label:SetLabel(name)
 	local note = W.Text(section, "body", 11, "muted")
 	note:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -6)
+	note:SetPoint("RIGHT", section, "RIGHT", -(room or NOTE_ROOM), 0) -- never under the row's buttons
 	note:SetLabel(hint)
 	local rule = W.Fill(section, "tipLine")
 	rule:SetHeight(1)
@@ -109,7 +111,7 @@ function Settings:Build(page)
 	local window, vendors, help = ui.sections.window, ui.sections.vendors, ui.sections.help
 
 	-- Look.
-	local y = row(window, 1, L["Look"], L["Three looks for the same window. Changes at once."])
+	local y = row(window, 1, L["Look"], L["Three looks for the same window. Changes at once."], 310)
 	local anchor
 	for index = #Theme.order, 1, -1 do
 		local id = Theme.order[index]
@@ -180,7 +182,8 @@ function Settings:Build(page)
 
 	-- Minimap button.
 	local without = L["Without it, type /th or use the addons menu under the minimap."]
-	y = row(window, 6, L["Minimap button"], L["The round Trailhead button on the edge of the minimap."] .. " " .. without)
+	-- The way back in without it is said in chat as it goes; the row stays one line in every language.
+	y = row(window, 6, L["Minimap button"], L["The round Trailhead button on the edge of the minimap."])
 	ui.minimap = toggle(window, y, function()
 		return T.db.minimap.show
 	end, function(value)

@@ -1195,7 +1195,7 @@ local function camping()
 	end
 	out.total = #rows
 	paged("camping", out, pages)
-	out.next = L["A campfire holds three camp items, one per player, and each has an hour's cooldown. Trainers teach the first ones at skill 20. On a PvP ruleset, enemies can find your camp."]
+	out.next = L["A basic campfire holds three camp items, one per player, and each has an hour's cooldown. Trainers teach the first ones at skill 20. On a PvP ruleset, enemies can find your camp."]
 	if cook then
 		out.action = { label = L["Find a vendor"], run = findRun("vendor") }
 	else
@@ -1237,10 +1237,13 @@ local function fighting()
 				T.Window:Select("guide", "supplies")
 			end, tag = L["Read"], tagRole = "accentText" }
 	end
-	for _, row in ipairs(plainRows(D.fighting and D.fighting.rows)) do
-		out.rows[#out.rows + 1] = row
-	end
-	out.total = #out.rows
+	-- Two pages, so every tip is shown: the Guide has room for seven rows.
+	local now = out.rows
+	paged("fighting", out, {
+		{ title = L["Right now"], rows = now },
+		{ title = L["Fighting safely"], rows = plainRows(D.fighting and D.fighting.rows) },
+	})
+	out.total = #out.rows -- each page is shown whole; the pager says there is more
 	local low = health and health < LOW_HEALTH or mana and mana < LOW_HEALTH
 	out.next = (low and L["Eat or drink before your next fight: it brings you back far faster than waiting."] .. " " or "")
 		.. L["Look at what is around an enemy before you pull it, and if a fight goes wrong, run early."]

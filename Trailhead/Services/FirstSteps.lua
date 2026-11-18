@@ -100,14 +100,17 @@ function F.Scan()
 	local mem = memory()
 	local bind = G.BindLocation()
 	if bind then
-		if not mem.bind then
-			mem.bind = bind
+		-- Records from 0.13.0 have no bindLevel: they are judged once more by the same rule.
+		if not mem.bind or (not mem.bound and mem.bindLevel == nil) then
+			mem.bind = mem.bind or bind
+			mem.bindLevel = G.Level()
 			-- Where the stone was first seen set is the start only for a new character. One met
 			-- later (Trailhead installed at level 20, say) has long chosen an inn of its own.
 			if G.Level() > F.NEW_LEVEL or type(T.cdb.trainer) == "table" then
 				mem.bound = true
 			end
-		elseif bind ~= mem.bind then
+		end
+		if not mem.bound and bind ~= mem.bind then
 			mem.bound = true
 		end
 	end

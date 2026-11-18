@@ -87,7 +87,7 @@ T.GuideTopics = {
 			{ L["Legacy trees"], L["Spend them in three trees: Professions, Adventure, Resourcefulness."] },
 			{ L["Camping"], L["Light a campfire and sit by it for bonuses from camp items."] },
 			{ L["Rulesets"], L["Yours decides who you meet. You only play with the same ruleset."] },
-			{ L["Hardcore"], L["A ruleset where death is permanent. It opens after launch."] },
+			{ L["Hardcore"], L["A ruleset where death is permanent."] },
 		},
 	},
 
