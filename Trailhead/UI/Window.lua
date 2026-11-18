@@ -149,7 +149,7 @@ local function buildStrip()
 	strip.title:SetWidth(STRIP_W - 12 - 22 - 9 - 36)
 	local close = W.IconButton(strip, "x", 24, "barIcon", function()
 		Window:Close()
-	end)
+	end, { tip = L["Close"] })
 	close:SetPoint("TOPRIGHT", strip, "TOPRIGHT", -8, -8)
 
 	local body = W.Panel(strip, { shape = "page", fill = "page", line = "pageLine" })
@@ -423,28 +423,6 @@ function Window:Beside(name, part)
 	return docked ~= nil
 end
 
--- Opens one of the game's windows (a function named by its path, as for C.Call) without
--- Trailhead being closed by it. When a centred window such as the talents opens, the game
--- closes every window that Escape closes, and Trailhead is on that list; it steps off the
--- list for that moment.
-function Window:Keep(path, ...)
-	local index
-	for i, name in ipairs(UISpecialFrames) do
-		if name == "TrailheadWindow" then
-			index = i
-			break
-		end
-	end
-	if index then
-		table.remove(UISpecialFrames, index)
-	end
-	local result = C.Call(path, ...)
-	if index then
-		tinsert(UISpecialFrames, "TrailheadWindow")
-	end
-	return result
-end
-
 function Window:IsBeside()
 	return docked and docked.name or nil
 end
@@ -496,13 +474,13 @@ local function build()
 	local title = W.Text(bar, "head", 17, "barText")
 	title:SetPoint("TOPLEFT", logo, "TOPRIGHT", 11, 1)
 	title:SetLabel("Trailhead")
-	local subtitle = W.Text(bar, "label", 8.5, "barMuted")
+	local subtitle = W.Text(bar, "label", 10, "barMuted")
 	subtitle:SetPoint("BOTTOMLEFT", logo, "BOTTOMRIGHT", 11, 0)
 	subtitle:SetLabel(L["New player companion"])
 
 	local close = W.IconButton(bar, "x", 28, "barIcon", function()
 		Window:Close()
-	end)
+	end, { tip = L["Close"] })
 	close:SetPoint("RIGHT", bar, "RIGHT", -14, -1)
 	local gear = W.IconButton(bar, "gear", 28, "barIcon", function()
 		if Window.current == "settings" then
@@ -510,7 +488,7 @@ local function build()
 		else
 			Window:Select("settings")
 		end
-	end)
+	end, { tip = L["Settings"] })
 	gear:SetPoint("RIGHT", close, "LEFT", -4, 0)
 
 	-- Search: typing anywhere here opens Find it with the results.
@@ -598,10 +576,15 @@ function Window:Select(id, arg)
 	if module.tab then
 		self.lastTab = module.id
 		T.cdb.tab = module.id
+	elseif not self.lastTab then
+		-- Opened straight onto a tab-less page: the tab saved from last time stands in.
+		local saved = T.modules[T.cdb.tab]
+		self.lastTab = saved and saved.tab and saved.id or "home"
 	end
 	for tabId, tab in pairs(tabs) do
-		-- A route has no tab of its own: the page it was opened from stays lit.
-		tab.active = tabId == module.id or ((module.id == "route" or module.id == "dungeon") and tabId == self.lastTab)
+		-- A page with no tab of its own (a route, a dungeon, This week, Settings...): the tab
+		-- it was opened from stays lit, and the page's Back button goes there.
+		tab.active = tabId == module.id or (not module.tab and tabId == self.lastTab)
 		tabLook(tab)
 	end
 	if module.id ~= "find" and module.id ~= "route" and module.id ~= "dungeon" then
@@ -613,6 +596,19 @@ function Window:Select(id, arg)
 	if module.Refresh then
 		T.SafeCall(module.id .. ".Refresh", module.Refresh, module)
 	end
+end
+
+-- Draws the page on screen again, as it is now.
+function Window:RefreshPage()
+	local module = self.current and T.modules[self.current]
+	if frame and frame:IsShown() and module and module.page and module.Refresh then
+		T.SafeCall(module.id .. ".Refresh", module.Refresh, module)
+	end
+end
+
+-- The tab-less pages' Back button: back to the tab that was on show before.
+function Window:Back()
+	self:Select(self.lastTab or "home")
 end
 
 function Window:Open(id, arg)
@@ -721,9 +717,14 @@ T:On("PLAYER_REGEN_DISABLED", function()
 	end
 end)
 
+-- Pages skip their refreshes during a fight. When it ends the page on screen is drawn again
+-- (a boss killed, experience gained), and TH_COMBAT_ENDED tells anything else that waited.
 T:On("PLAYER_REGEN_ENABLED", function()
 	if Window.reopen then
 		Window.reopen = false
-		Window:Open()
+		Window:Open() -- Open refreshes the page itself
+	elseif frame and frame:IsShown() then
+		Window:RefreshPage()
 	end
+	T:Fire("TH_COMBAT_ENDED")
 end)

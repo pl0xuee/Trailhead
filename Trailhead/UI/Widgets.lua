@@ -357,6 +357,38 @@ local function buttonSetKind(button, kind, role)
 	buttonLook(button)
 end
 
+-- Tooltips for buttons: button.tip is a text, or a function returning one (or nil for none).
+-- Only the game's shared GameTooltip is used, and only to show text.
+function W.TipText(button)
+	local tip = button.tip
+	if type(tip) == "function" then
+		local ok, text = pcall(tip, button)
+		tip = ok and text or nil
+	end
+	return type(tip) == "string" and tip ~= "" and tip or nil
+end
+
+function W.ShowTip(button)
+	local text = W.TipText(button)
+	local tooltip = _G.GameTooltip
+	if not text or type(tooltip) ~= "table" then
+		return
+	end
+	tooltip:SetOwner(button, "ANCHOR_BOTTOM")
+	tooltip:SetText(text, 1, 1, 1, 1, true)
+	tooltip:Show()
+	button.tipShown = true
+end
+
+function W.HideTip(button)
+	local tooltip = _G.GameTooltip
+	if button.tipShown and type(tooltip) == "table" then
+		button.tipShown = nil
+		tooltip:Hide()
+	end
+end
+
+-- A labelled button. opts: role, height, size, icon, width, onClick, tip.
 function W.Button(parent, text, kind, opts)
 	opts = opts or {}
 	local button = W.Panel(parent, nil, "Button")
@@ -378,13 +410,16 @@ function W.Button(parent, text, kind, opts)
 	button.AfterRestyle = buttonAfterRestyle
 	button.SetLabel = buttonSetLabel
 	button.SetKind = buttonSetKind
+	button.tip = opts.tip
 	button:SetScript("OnEnter", function(self)
 		self.hover = true
 		buttonLook(self)
+		W.ShowTip(self)
 	end)
 	button:SetScript("OnLeave", function(self)
 		self.hover = false
 		buttonLook(self)
+		W.HideTip(self)
 	end)
 	button:SetScript("OnEnable", buttonLook)
 	button:SetScript("OnDisable", buttonLook)
@@ -400,18 +435,22 @@ function W.Button(parent, text, kind, opts)
 	return button
 end
 
--- A small square button that is only an icon (settings, close, steppers).
-function W.IconButton(parent, icon, size, role, onClick)
+-- A small square button that is only an icon (settings, close, steppers). opts.tip names it
+-- in a tooltip, which an icon alone cannot; button.tip can also be set afterwards.
+function W.IconButton(parent, icon, size, role, onClick, opts)
 	local button = W.Panel(parent, { shape = "small" }, "Button")
 	button:SetSize(size, size)
 	button.icon = W.Icon(button, icon, math.floor(size * 0.58), role or "barIcon")
 	button.icon:SetPoint("CENTER")
 	button.onClick = onClick
+	button.tip = type(opts) == "table" and opts.tip or nil
 	button:SetScript("OnEnter", function(self)
 		self:SetStyle({ fill = self.hoverRole or "barHover" })
+		W.ShowTip(self)
 	end)
 	button:SetScript("OnLeave", function(self)
 		self:SetStyle({ fill = false })
+		W.HideTip(self)
 	end)
 	button:SetScript("OnClick", function(self)
 		C.Sound("IG_MAINMENU_OPTION_CHECKBOX_ON")

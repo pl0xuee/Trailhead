@@ -107,7 +107,7 @@ local function makeRow(list, width)
 	row.state = W.Text(row, "body", 10.5, "muted")
 	row.state:SetPoint("TOPLEFT", row, "TOPLEFT", 16, -46)
 	row.state:SetWidth(fullW)
-	row.more = W.Text(row, "body", 10.5, "faint")
+	row.more = W.Text(row, "body", 10.5, "muted")
 	row.more:SetPoint("TOPLEFT", row, "TOPLEFT", 16, -62)
 	row.more:SetWidth(fullW)
 	row.forget = W.Button(row, L["Forget"], "ghost", {
@@ -158,14 +158,22 @@ function Page:Build(page)
 	local title = W.Text(page, "head", 20, "ink")
 	title:SetPoint("TOPLEFT", page, "TOPLEFT", 0, 0)
 	title:SetLabel(L["Your characters"])
+	-- No tab of its own: Back returns to the page it was opened from.
+	local back = W.Button(page, L["Back"], "ghost", {
+		role = "muted", height = 24, size = 10.5,
+		onClick = function()
+			T.Window:Back()
+		end,
+	})
+	back:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, 0)
 	local sub = W.Text(page, "body", 11.5, "muted", { width = 520 })
 	sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
 	sub:SetLabel(L["Every character you play with Trailhead, saved each time you log out."])
 	ui.total = W.Text(page, "body", 11.5, "muted")
-	ui.total:SetPoint("TOPRIGHT", page, "TOPRIGHT", -12, -4) -- in line with the rows, clear of the scroll bar
+	ui.total:SetPoint("RIGHT", back, "LEFT", -14, 0)
 	ui.total:SetJustifyH("RIGHT")
 	ui.count = W.Text(page, "head", 13, "ink")
-	ui.count:SetPoint("TOPRIGHT", ui.total, "BOTTOMRIGHT", 0, -6)
+	ui.count:SetPoint("TOPRIGHT", page, "TOPRIGHT", -12, -32) -- in line with the rows, clear of the scroll bar
 	ui.count:SetJustifyH("RIGHT")
 
 	ui.list = W.List(page, PAGE_W, 496 - LIST_TOP, ROW_H, ROW_GAP, makeRow)

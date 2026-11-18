@@ -2,6 +2,7 @@ local _, T = ...
 local L = T.L
 local W = T.Widgets
 local Theme = T.Theme
+local C = T.Compat
 
 -- Settings page, opened with the gear in the title bar or /th settings.
 
@@ -10,6 +11,8 @@ local Settings = T:NewModule("settings")
 local ROW_H = 60 -- a name, a line of explanation and air around them
 local TOP = 84 -- where the rows start, under the title and the section buttons
 local ui = { themeButtons = {}, sections = {}, pills = {}, section = "window" }
+Settings.ui = ui -- for the tests
+local DISARM = 5 -- seconds a clicked "Forget all" waits for its second click
 
 local SECTIONS = {
 	{ id = "window", label = L["Window"] },
@@ -35,13 +38,33 @@ local function row(section, index, name, hint)
 	return y - 15, note
 end
 
+-- A switch, drawn the way Screen setup draws its rows: the state in a small caption and a
+-- button that says what a click does. Clicking the caption flips it too, like a label.
 local function toggle(page, y, get, set)
 	local button = W.Button(page, "", "ghost", { width = 96, role = "muted" })
 	button:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, y)
+	local caption = CreateFrame("Button", nil, page)
+	caption:SetSize(56, 30)
+	caption:SetPoint("RIGHT", button, "LEFT", 0, 0)
+	caption:SetScript("OnClick", function()
+		C.Sound("IG_MAINMENU_OPTION_CHECKBOX_ON")
+		T.SafeCall("toggle", button.onClick, button)
+	end)
+	button.state = W.Text(caption, "body", 10.5, "go")
+	button.state:SetJustifyH("RIGHT")
+	button.state:SetWidth(44)
+	button.state:SetPoint("RIGHT", caption, "RIGHT", -6, 0)
 	button.Sync = function(self)
-		local on = get()
-		self:SetKind(on and "primary" or "ghost", "muted")
-		self:SetLabel(on and L["On"] or L["Off"])
+		local on = get() and true or false
+		self.state:SetLabel(on and L["On"] or L["Off"])
+		self.state:SetRole(on and "go" or "muted")
+		if on then
+			self:SetKind("ghost", "muted")
+			self:SetLabel(L["Turn off"])
+		else
+			self:SetKind("primary", "go")
+			self:SetLabel(L["Turn on"])
+		end
 	end
 	button.onClick = function(self)
 		set(not get())
@@ -55,7 +78,16 @@ function Settings:Build(page)
 	title:SetPoint("TOPLEFT", page, "TOPLEFT", 0, 0)
 	title:SetLabel(L["Settings"])
 
-	-- Three sections, one shown at a time, chosen with the buttons under the title.
+	-- No tab of its own: Back returns to the page it was opened from.
+	local back = W.Button(page, L["Back"], "ghost", {
+		role = "muted", height = 24, size = 10.5,
+		onClick = function()
+			T.Window:Back()
+		end,
+	})
+	back:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, 0)
+
+	-- Four sections, one shown at a time, chosen with the buttons under the title.
 	local last
 	for _, def in ipairs(SECTIONS) do
 		local pill = W.Pill(page, def.label, nil, function()
@@ -101,7 +133,7 @@ function Settings:Build(page)
 	local plus = W.IconButton(window, "plus", 30, "ink", function()
 		T.Window:SetScale(T.db.scale + T.SCALE_STEP)
 		Settings:Refresh()
-	end)
+	end, { tip = L["Larger"] })
 	plus:SetStyle({ line = "muted" })
 	plus:SetPoint("TOPRIGHT", window, "TOPRIGHT", 0, y)
 	ui.scale = W.Text(window, "body", 13, "ink")
@@ -111,10 +143,11 @@ function Settings:Build(page)
 	local minus = W.IconButton(window, "minus", 30, "ink", function()
 		T.Window:SetScale(T.db.scale - T.SCALE_STEP)
 		Settings:Refresh()
-	end)
+	end, { tip = L["Smaller"] })
 	minus:SetStyle({ line = "muted" })
 	minus:SetPoint("RIGHT", ui.scale, "LEFT", -4, 0)
 	plus.hoverRole, minus.hoverRole = "ghostHover", "ghostHover"
+	ui.plus, ui.minus = plus, minus
 
 	-- Position.
 	y = row(window, 3, L["Window position"], L["Drag the title bar to move the window. This puts it back in the middle."])
@@ -146,12 +179,16 @@ function Settings:Build(page)
 	end)
 
 	-- Minimap button.
-	y = row(window, 6, L["Minimap button"], L["The round Trailhead button on the edge of the minimap."])
+	local without = L["Without it, type /th or use the addons menu under the minimap."]
+	y = row(window, 6, L["Minimap button"], L["The round Trailhead button on the edge of the minimap."] .. " " .. without)
 	ui.minimap = toggle(window, y, function()
 		return T.db.minimap.show
 	end, function(value)
 		T.db.minimap.show = value
 		T:UpdateMinimapButton()
+		if not value then
+			T:Print(without) -- the way back in, said once as the button goes
+		end
 	end)
 
 	-- Vendors.
@@ -213,26 +250,34 @@ function Settings:Build(page)
 	advice:SetPoint("TOPRIGHT", help, "TOPRIGHT", 0, y)
 
 	-- Found places.
+	local note
 	y, note = row(help, 4, L["Found places"], "")
 	ui.placesNote = note
 	ui.forget = W.Button(help, L["Forget all"], "ghost", {
 		role = "muted",
 		onClick = function(self)
-			-- Asks once more before throwing the list away.
+			-- Asks once more before throwing the list away; the question lapses on its own.
 			if self.sure then
-				self.sure = false
+				Settings.Disarm()
 				T.Places.Forget()
 			else
 				self.sure = true
+				self.armedAt = (self.armedAt or 0) + 1
+				local mine = self.armedAt
+				C.Call("C_Timer.After", DISARM, function()
+					if self.sure and self.armedAt == mine then
+						Settings.Disarm()
+						Settings:Refresh(true)
+					end
+				end)
 			end
-			Settings:Refresh()
+			Settings:Refresh(true)
 		end,
 	})
 	ui.forget:SetPoint("TOPRIGHT", help, "TOPRIGHT", 0, y)
 
-	-- Game check.
-	local note
-	y, note = row(help, 5, L["Game check"], "")
+	-- The game check: it records what the game tells Trailhead, for bug reports.
+	y, note = row(help, 5, L["For bug reports"], "")
 	ui.checkNote = note
 	local check = W.Button(help, L["Run check"], "ghost", {
 		role = "accentText",
@@ -255,9 +300,21 @@ function Settings:Build(page)
 	self.built = true
 end
 
-function Settings:Refresh()
+-- Puts a clicked "Forget all" back to asking.
+function Settings.Disarm()
+	if ui.forget then
+		ui.forget.sure = false
+	end
+end
+
+-- keep = true when the Forget button itself asks for the refresh: only then does a first
+-- click stay armed. A section change, a theme change or opening the page disarms it.
+function Settings:Refresh(keep)
 	if not self.built then
 		return
+	end
+	if not keep then
+		Settings.Disarm()
 	end
 	for id, section in pairs(ui.sections) do
 		section:SetShown(id == ui.section)
@@ -267,6 +324,10 @@ function Settings:Refresh()
 		button:SetKind(Theme.current.id == id and "primary" or "ghost", "muted")
 	end
 	ui.scale:SetLabel(("%d%%"):format(math.floor(T.db.scale * 100 + 0.5)))
+	ui.minus:SetEnabled(T.db.scale > T.SCALE_MIN + 0.001)
+	ui.plus:SetEnabled(T.db.scale < T.SCALE_MAX - 0.001)
+	ui.minus:SetAlpha(ui.minus:IsEnabled() and 1 or 0.35)
+	ui.plus:SetAlpha(ui.plus:IsEnabled() and 1 or 0.35)
 	ui.minimap:Sync()
 	ui.combat:Sync()
 	ui.dock:Sync()
@@ -282,8 +343,8 @@ function Settings:Refresh()
 	ui.forget:SetEnabled(count > 0)
 	local last = T.Probe:LastRun()
 	if last then
-		ui.checkNote:SetLabel(L["Last run: %s. Reload the interface afterwards so it is saved."]:format(date("%d %b %H:%M", last)))
+		ui.checkNote:SetLabel(L["Game check"] .. ": " .. L["Last run: %s. Reload the interface afterwards so it is saved."]:format(date("%d %b %H:%M", last)))
 	else
-		ui.checkNote:SetLabel(L["Records what this version of the game can tell Trailhead. Not run yet."])
+		ui.checkNote:SetLabel(L["Game check"] .. ": " .. L["Records what this version of the game can tell Trailhead. Not run yet."])
 	end
 end
