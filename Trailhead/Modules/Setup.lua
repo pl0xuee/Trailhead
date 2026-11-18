@@ -44,6 +44,41 @@ local function later()
 	end)
 end
 
+-- A text the game itself has, else the given one.
+local function game(tag, fallback)
+	local value = _G[tag]
+	return type(value) == "string" and value ~= "" and value or fallback
+end
+
+-- The experience preset picked at first login: "classic", "enhanced", or nil when the game does
+-- not say. C_GameRules.GetForeverExperiencePreset returns Enum.ForeverExperiencePreset
+-- (0 Classic, 1 Modern, which the game's own screens call Enhanced).
+function Setup.Preset()
+	local value = C.Plain(C.Call("C_GameRules.GetForeverExperiencePreset"), nil)
+	if type(value) ~= "number" then
+		return nil
+	end
+	local enum = type(Enum) == "table" and type(Enum.ForeverExperiencePreset) == "table" and Enum.ForeverExperiencePreset or {}
+	if value == (type(enum.Classic) == "number" and enum.Classic or 0) then
+		return "classic"
+	elseif value == (type(enum.Modern) == "number" and enum.Modern or 1) then
+		return "enhanced"
+	end
+	return nil
+end
+
+-- The preset row's advice for a player on the Classic preset, else nil. The names are the
+-- game's own (EXPERIENCE_PRESET_CLASSIC, EXPERIENCE_PRESET_ENHANCED and the button
+-- SET_PRESET_OPTION_BUTTON_ENHANCED_LABEL in Options > System > Preset, build 1.60.1).
+function Setup.PresetAdvice()
+	if Setup.Preset() ~= "classic" then
+		return nil
+	end
+	return L["You play with the %s preset. %s turns on quest markers on the map and a single bag. The %s button in this menu switches."]:format(
+		game("EXPERIENCE_PRESET_CLASSIC", L["Classic"]), game("EXPERIENCE_PRESET_ENHANCED", L["Enhanced"]),
+		game("SET_PRESET_OPTION_BUTTON_ENHANCED_LABEL", L["Set to Enhanced"]))
+end
+
 local function makeRow(list, width)
 	local row = W.Panel(list, { shape = "card", fill = "card", line = "cardLine", top = "cardTop" })
 	row:SetSize(width, ROW_H)
@@ -133,6 +168,14 @@ function Setup:Build(page)
 	local title = W.Text(page, "head", 20, "ink")
 	title:SetPoint("TOPLEFT", page, "TOPLEFT", 0, 0)
 	title:SetLabel(L["Screen setup"])
+	-- No tab of its own: Back returns to the page it was opened from.
+	local back = W.Button(page, L["Back"], "ghost", {
+		role = "muted", height = 24, size = 10.5,
+		onClick = function()
+			T.Window:Back()
+		end,
+	})
+	back:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, 0)
 	local sub = W.Text(page, "body", 11.5, "muted", { width = PAGE_W })
 	sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
 	sub:SetSpacing(2)
@@ -199,9 +242,17 @@ function Setup:Refresh(keep)
 		items[#items + 1] = { kind = "set", id = def.id, group = def.group, name = def.name,
 			menu = def.menu, why = def.why, note = def.note }
 	end
+	local advice = Setup.PresetAdvice()
 	for _, item in ipairs(T.Interface.manual) do
-		items[#items + 1] = { kind = "manual", id = item.id, name = item.name, menu = item.menu,
+		local entry = { kind = "manual", id = item.id, name = item.name, menu = item.menu,
 			why = item.why, button = item.button, can = item.can or function() return false end }
+		if item.id == "preset" and advice then
+			-- On the Classic preset: say what Enhanced would add, at the top of the list.
+			entry.why = advice
+			table.insert(items, 1, entry)
+		else
+			items[#items + 1] = entry
+		end
 	end
 	ui.list:SetItems(items, keep)
 

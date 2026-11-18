@@ -191,6 +191,14 @@ function Weekly:Build(page)
 	local title = W.Text(page, "head", 20, "ink")
 	title:SetPoint("TOPLEFT", page, "TOPLEFT", 0, 0)
 	title:SetLabel(L["This week"])
+	-- No tab of its own: Back returns to the page it was opened from.
+	local back = W.Button(page, L["Back"], "ghost", {
+		role = "muted", height = 24, size = 10.5,
+		onClick = function()
+			T.Window:Back()
+		end,
+	})
+	back:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, 0)
 	local sub = W.Text(page, "body", 11.5, "muted", { width = PAGE_W })
 	sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
 	sub:SetLabel(L["What starts over once a week in Forever, read from your game where it can be."])
