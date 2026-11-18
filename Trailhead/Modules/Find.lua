@@ -46,6 +46,19 @@ local function yardsText(yards)
 end
 Find.YardsText = yardsText
 
+-- Puts the marker on a found place or flight point; nil for a row that has no spot (a zone).
+-- `quiet` when the caller says how to open the map instead.
+local function markItem(item, quiet)
+	if item and (item.kind == "place" or item.kind == "flight") then
+		return (P.Go(item, quiet)) and true or false
+	end
+	return nil
+end
+
+local function opensMap(item)
+	return item ~= nil and (item.kind == "place" or item.kind == "flight" or item.kind == "zone")
+end
+
 local function makeRow(list, width)
 	local row = W.Panel(list, { shape = "card", fill = "card", line = "cardLine", top = "cardTop" })
 	row:SetSize(width, ROW_H)
@@ -59,6 +72,9 @@ local function makeRow(list, width)
 	row.detail:SetWidth(width - TEXT_ROOM)
 	row.button = W.Button(row, L["Set marker"], "ghost", {
 		role = "accentText", height = 28, size = 11,
+		tip = L["Puts the game's map marker on this place"],
+		-- Only reached when the game's map cannot be opened the safe way (UI/Secure.lua): a row
+		-- with a spot gets the marker, and the chat says how to open the map.
 		onClick = function()
 			local item = row.item
 			if not item then
@@ -67,16 +83,21 @@ local function makeRow(list, width)
 				T.Window:Select("find", item.category)
 			elseif item.kind == "dungeon" then
 				T.Window:Select("dungeon", item.title)
-			elseif item.kind == "zone" then
-				P.ShowMap(item.map)
-			else
-				-- Set the marker and show it: the game's map opens on the place.
-				local _, mapID = P.Go(item)
-				P.ShowMap(mapID)
+			elseif opensMap(item) then
+				P.MarkOnly(function(quiet)
+					return markItem(item, quiet)
+				end)
 				Find:Refresh(true) -- show "Remove marker" at once
 			end
 		end,
 	})
+	-- The marker goes on just before the game's map opens, so the map shows it.
+	local function mark(quiet)
+		return markItem(row.item, quiet)
+	end
+	local function refresh()
+		Find:Refresh(true) -- show "Remove marker" at once
+	end
 	row.button:SetPoint("RIGHT", row, "RIGHT", -12, 0)
 	row.route = W.Button(row, L["How to get there"], "ghost", {
 		role = "muted", height = 28, size = 11,
@@ -87,8 +108,12 @@ local function makeRow(list, width)
 			end
 		end,
 	})
-	row.tag = W.Text(row, "label", 8.5, "go")
+	row.tag = W.Text(row, "label", 10, "go")
 	row.tag:SetJustifyH("RIGHT")
+	-- How far: what players compare down the list, so in plain words at a readable size.
+	row.dist = W.Text(row, "body", 10.5, "muted")
+	row.dist:SetJustifyH("RIGHT")
+	row.dist:SetPoint("RIGHT", row.tag, "RIGHT", 0, 0)
 
 	function row:Fill(item)
 		self.tile.icon:SetTexture(Theme.MEDIA .. "icon-" .. (item.icon or "pin"))
@@ -99,22 +124,24 @@ local function makeRow(list, width)
 		end
 		self.detail:SetLabel(detail)
 		local state = item.state and STATES[item.state]
+		self.tag:SetLabel("")
+		self.dist:SetLabel("")
 		if state then
 			self.tag:SetLabel(state[1])
 			self.tag:SetRole(state[2])
 		elseif item.yards and (item.kind == "place" or item.kind == "flight") then
 			-- How far it is, so the order of the list explains itself; green when it is in this zone.
-			self.tag:SetLabel(yardsText(item.yards))
-			self.tag:SetRole(item.here and "go" or "muted")
+			self.dist:SetLabel(yardsText(item.yards))
+			self.dist:SetRole(item.here and "go" or "muted")
 		elseif item.here and (item.kind == "place" or item.kind == "flight") then
 			self.tag:SetLabel(L["In this zone"])
 			self.tag:SetRole("go")
-		else
-			self.tag:SetLabel("")
 		end
-		-- A dungeon the index knows has a route page; its button sits where "Set marker" would.
+		-- A dungeon the index knows has a guide page; its button sits where "Set marker" would.
 		local routed = item.kind == "dungeon" and T.Dungeons.Has(item.title)
 		self.button:SetShown(item.kind ~= "dungeon" or routed)
+		-- Places, flight points and zones open the game's map from the click itself (UI/Secure.lua).
+		P.MapButton(self.button, mark, not opensMap(item), refresh)
 		-- The route button sits left of the main one, or in its place when there is none.
 		self.route:SetShown(item.kind ~= "category")
 		self.route:ClearAllPoints()
@@ -128,12 +155,14 @@ local function makeRow(list, width)
 		if item.kind == "category" then
 			self.button:SetLabel(L["Show"])
 		elseif routed then
-			self.button:SetLabel(L["Route"])
+			self.button:SetLabel(L["Dungeon guide"])
 		elseif item.kind == "zone" then
 			self.button:SetLabel(L["Open map"])
 		else
 			self.button:SetLabel(L["Set marker"])
 		end
+		-- The hover text belongs to "Set marker" only (W.Button shows it when it supports one).
+		self.button.tip = (item.kind == "place" or item.kind == "flight") and L["Puts the game's map marker on this place"] or nil
 	end
 	return row
 end

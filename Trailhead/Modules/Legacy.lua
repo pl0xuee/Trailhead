@@ -115,6 +115,16 @@ function Legacy:Build(page)
 	-- button, so Trailhead leaves it to the Legacy window's own tab.
 	ui.window = W.Button(mine, L["Open Legacy window"], "primary", {
 		height = 28, size = 11.5, width = 190,
+		-- Only reached when the game's Legacy button cannot be pressed: the game keeps it greyed
+		-- out until the account's first Legacy Point (and in a pet battle or a vehicle).
+		onClick = function()
+			if C.InCombat() then
+				return
+			end
+			local locked = C.Plain(_G.LEGACY_MICRO_BUTTON_LOCKED_TOOLTIP, nil)
+			T:Print(type(locked) == "string" and locked ~= "" and locked
+				or L["The Legacy window is locked for now. The game opens it with your first Legacy Point."])
+		end,
 	})
 	ui.window:SetPoint("TOPRIGHT", mine, "TOPRIGHT", -16, -14)
 	T.Secure.Set(ui.window, "legacy")
@@ -196,5 +206,6 @@ function Legacy:Refresh()
 			ui.pointsBody:SetLabel(L["Open the Legacy window to spend them."])
 		end
 	end
-	ui.window:SetEnabled(T.Secure.Can("legacy"))
+	-- Pressable whenever the game has a Legacy button: greyed out there, the click says why.
+	ui.window:SetEnabled(T.Secure.Exists("legacy"))
 end

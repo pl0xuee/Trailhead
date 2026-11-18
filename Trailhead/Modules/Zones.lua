@@ -58,12 +58,13 @@ local function startLine(map)
 	return ""
 end
 
--- Puts the game's marker on a hub and opens the map there.
-local function markHub(hub)
+-- Puts the game's marker on a hub. Nil when there is no hub to mark. The map itself opens
+-- from the button's click (P.MapButton), never from Trailhead's code.
+local function markHub(hub, quiet)
 	if hub then
-		P.SetMarker(hub.map, hub.x, hub.y, hub.name)
-		P.ShowMap(hub.map)
+		return P.SetMarker(hub.map, hub.x, hub.y, hub.name, quiet)
 	end
+	return nil
 end
 
 local function makeRow(list, width)
@@ -84,8 +85,17 @@ local function makeRow(list, width)
 	row.start = W.Text(row, "body", 10.5, "accentText")
 	row.start:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", 84, 8)
 	row.start:SetWidth(TEXT_W)
+	-- With a hub to start at, the marker goes there before the game's map opens.
+	local function markStart(quiet)
+		local item = row.item
+		if not (item and item.map and T.Hubs) then
+			return nil
+		end
+		return markHub(T.Hubs.Start(item.map), quiet)
+	end
 	row.button = W.Button(row, L["Open map"], "ghost", {
 		role = "accentText", height = 26, size = 10.5,
+		-- On a zone, only reached when the game's map cannot be opened the safe way (UI/Secure.lua).
 		onClick = function()
 			local item = row.item
 			if not item then
@@ -93,12 +103,11 @@ local function makeRow(list, width)
 			elseif item.dungeon then
 				T.Window:Select("dungeon", item.name)
 			elseif item.map then
-				-- With a hub to start at, the marker goes there and the map opens on the zone.
-				markHub(T.Hubs and T.Hubs.Start(item.map))
-				P.ShowMap(item.map)
+				P.MarkOnly(markStart)
 			end
 		end,
 	})
+	row.markStart = markStart
 	row.route = W.Button(row, L["How to get there"], "ghost", {
 		role = "muted", height = 26, size = 10.5,
 		onClick = function()
@@ -118,7 +127,7 @@ local function makeRow(list, width)
 		end,
 	})
 	row.button:SetPoint("BOTTOMRIGHT", row, "BOTTOMRIGHT", -12, 9)
-	row.tag = W.Text(row, "label", 8.5, "go")
+	row.tag = W.Text(row, "label", 10, "go")
 	row.tag:SetJustifyH("RIGHT")
 	row.tag:SetPoint("TOPRIGHT", row, "TOPRIGHT", -14, -11)
 
@@ -128,13 +137,15 @@ local function makeRow(list, width)
 		self.detail:SetLabel(item.detail or "")
 		self.start:SetLabel(item.start or "")
 		self:SetStyle({ line = item.here and "accent" or "cardLine" })
-		local state = STATES[item.state or ""]
+		-- In "For my level" every zone fits: the tag only marks the ones that stand out.
+		local state = not (item.quietFit and item.state == "fit") and STATES[item.state or ""] or nil
 		self.tag:SetLabel(state and state[1] or "")
 		self.tag:SetRole(state and state[2] or "faint")
-		-- The main button is "Open map" on a zone and "Route" on a dungeon that has a route page.
+		-- The main button is "Open map" on a zone and "Dungeon guide" on a dungeon that has one.
 		local main = item.map ~= nil or item.routed
 		self.button:SetShown(main and true or false)
-		self.button:SetLabel(item.dungeon and L["Route"] or L["Open map"])
+		self.button:SetLabel(item.dungeon and L["Dungeon guide"] or L["Open map"])
+		P.MapButton(self.button, self.markStart, item.map == nil)
 		self.hubs:SetShown(item.hubs and true or false)
 		-- From the right: main button, then "How to get there", then "Quest hubs".
 		self.route:ClearAllPoints()
@@ -165,13 +176,19 @@ local function makeHubRow(list, width)
 	row.detail = W.Text(row, "body", 10.5, "muted")
 	row.detail:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", 84, 8)
 	row.detail:SetWidth(TEXT_W)
+	local function mark(quiet)
+		return markHub(row.item and row.item.hub, quiet)
+	end
 	row.marker = W.Button(row, L["Set marker"], "ghost", {
 		role = "accentText", height = 26, size = 10.5,
+		tip = L["Puts the game's map marker on this place"],
+		-- Only reached when the game's map cannot be opened the safe way (UI/Secure.lua).
 		onClick = function()
-			markHub(row.item and row.item.hub)
+			P.MarkOnly(mark)
 		end,
 	})
 	row.marker:SetPoint("RIGHT", row, "RIGHT", -12, 0)
+	P.MapButton(row.marker, mark)
 	row.route = W.Button(row, L["How to get there"], "ghost", {
 		role = "muted", height = 26, size = 10.5,
 		onClick = function()
@@ -185,7 +202,7 @@ local function makeHubRow(list, width)
 	row.flight:SetPoint("RIGHT", row.route, "LEFT", -14, 0)
 	row.inn = W.Icon(row, "bed", 14, "go")
 	row.inn:SetPoint("RIGHT", row.flight, "LEFT", -8, 0)
-	row.tag = W.Text(row, "label", 8.5, "go")
+	row.tag = W.Text(row, "label", 10, "go")
 	row.tag:SetJustifyH("RIGHT")
 	row.tag:SetPoint("RIGHT", row.inn, "LEFT", -14, 0)
 
@@ -296,14 +313,23 @@ local function zoneItems(filter, level)
 			items[#items + 1] = {
 				name = zone.name, lo = zone.lo, hi = zone.hi, map = zone.map, state = state,
 				detail = detail, here = zone == current, away = away,
-				start = startLine(zone.map), hubs = #hubs > 0,
+				start = startLine(zone.map), hubs = #hubs > 0, quietFit = filter == "fit",
+				-- Strictly true or false, like `away`.
+				starts = (T.Hubs and T.Hubs.Start(zone.map)) and true or false,
 			}
 		end
 	end
 	if filter == "fit" then
-		-- Zones your side can reach easily first, and among those the ones you are in range of.
+		-- The zone you are in first; then zones with a place for your side to start, those your
+		-- side can reach easily, and among those the ones you are in range of.
 		local order = { fit = 1, soon = 2 }
 		table.sort(items, function(a, b)
+			if a.here ~= b.here then
+				return a.here
+			end
+			if a.starts ~= b.starts then
+				return a.starts
+			end
 			if a.away ~= b.away then
 				return not a.away
 			end
@@ -330,13 +356,27 @@ local function dungeonItems(level, raids)
 		if spot and spot.zone then
 			detail = detail .. "  \194\183  " .. L["Entrance in %s"]:format(spot.zone)
 		end
-		-- T.Dungeons is another page's service: the Route button is simply absent without it.
+		-- A door among the other side's flight points (T.Readiness.Side: 0) is in enemy land.
+		local enemy = T.Readiness and T.Readiness.Side and T.Dungeons and T.Dungeons.Find
+			and T.Readiness.Side(dungeon.name) == 0 or false
+		if enemy then
+			detail = detail .. "  \194\183  " .. L["Enemy territory"]
+		end
+		-- T.Dungeons is another page's service: the guide button is simply absent without it.
 		local routed = T.Dungeons and T.Dungeons.Has and T.Dungeons.Has(dungeon.name) or false
 		items[#items + 1] = {
 			name = dungeon.name, lo = dungeon.lo, hi = dungeon.hi, dungeon = true, routed = routed,
-			state = G.RangeState(dungeon.lo, dungeon.hi, level), detail = detail,
+			state = G.RangeState(dungeon.lo, dungeon.hi, level), detail = detail, enemy = enemy,
+			index = #items + 1,
 		}
 	end
+	-- The game's order, with the ones behind enemy lines last.
+	table.sort(items, function(a, b)
+		if a.enemy ~= b.enemy then
+			return not a.enemy
+		end
+		return a.index < b.index
+	end)
 	return items
 end
 

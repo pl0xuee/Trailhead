@@ -275,12 +275,15 @@ function R.ForResult(item)
 	return nil
 end
 
--- Puts the marker on a step's spot and opens the map on it.
+-- Puts the marker on a step's spot and says how to open the map (Trailhead never opens the
+-- game's map from its own code: see P.ShowMap).
 function R.Mark(step)
 	if not step or type(step.map) ~= "number" then
 		return false
 	end
-	local ok = P.SetMarker(step.map, step.x, step.y, step.mark)
-	P.ShowMap(step.map)
+	local ok = P.SetMarker(step.map, step.x, step.y, step.mark, true)
+	if ok then
+		P.ShowMap(step.map, true)
+	end
 	return ok
 end

@@ -104,8 +104,19 @@ H.section("hubs: the service", function()
 
 	T = loaded("Horde")
 	barrens = T.Hubs.ForZone(10)
-	check(#barrens == 3 and barrens[1].name == "The Crossroads" and barrens[1].start and barrens[2].name == "Camp Taurajo" and barrens[3].name == "Ratchet"
-		and not barrens[3].start, "a Horde character sees other hubs in a shared zone, starting at the Crossroads")
+	check(#barrens == 3 and barrens[1].name == "The Crossroads" and barrens[1].start and barrens[2].name == "Ratchet" and barrens[3].name == "Camp Taurajo"
+		and not barrens[2].start, "a Horde character sees other hubs in a shared zone, starting at the Crossroads, then by the levels shown")
+	-- Ordered by what the list shows: lowest level, then the usual level, then the name.
+	T.HubData[11] = {
+		{ "Eastvale", 100, 100, 0, 1, 10, 5, 0 }, { "Fargodeep", 200, 200, 0, 6, 6, 5, 0 },
+		{ "Jerod's Landing", 300, 300, 0, 1, 6, 5, 0 }, { "Abbey", 400, 400, 0, 1, 6, 5, 0 },
+	}
+	T.Hubs.Reset()
+	local names = {}
+	for _, hub in ipairs(T.Hubs.ForZone(11)) do
+		names[#names + 1] = hub.name
+	end
+	check(table.concat(names, " | ") == "Abbey | Jerod's Landing | Eastvale | Fargodeep", "hubs run by the levels shown, so the numbers only go up")
 	check(T.Hubs.Start(10).name ~= allianceStart, "the two sides start at different hubs in a shared zone")
 	check(#T.Hubs.ForZone(37) == 0 and T.Hubs.Start(37) == nil and T.Hubs.Known(37), "a zone of the other side has hubs, but none for this one")
 
@@ -146,9 +157,12 @@ H.section("hubs: the Zones page", function()
 	check(Stub.sees("Levels 1 to about 4  \194\183  22 quests") and Stub.sees("Levels 7 to about 10  \194\183  26 quests  \194\183  Inn"), "with levels, quests, inn and flight master")
 	check(Stub.sees("START HERE") and Stub.sees("Start at the first one, Northshire Valley.") == false and
 		Stub.sees("Towns and camps where several quests start, for your side. Start at the first one, Northshire Valley."), "the start hub is marked and named")
+	Stub.opened.map, Stub.mapMarkerWhenOpened = nil, nil
 	Stub.click("Set marker", 1)
-	check(Stub.waypoint and Stub.waypoint.uiMapID == 37 and Stub.waypoint.position.x == 0.49 and Stub.waypoint.position.y == 0.41 and Stub.mapOpened == 37,
-		"a hub's Set marker puts the marker there and opens the map")
+	check(Stub.waypoint and Stub.waypoint.uiMapID == 37 and Stub.waypoint.position.x == 0.49 and Stub.waypoint.position.y == 0.41
+		and Stub.opened.map and Stub.mapMarkerWhenOpened == Stub.waypoint,
+		"a hub's Set marker puts the marker there, then the game's own map button opens the map")
+	WorldMapFrame:Hide()
 	Stub.click("How to get there", 2)
 	local route = T.modules.route
 	check(T.Window.current == "route" and route.plan.title == "Goldshire" and route.plan.where == "Quest hub in Elwynn Forest", "How to get there opens the route to that hub")
@@ -158,7 +172,7 @@ H.section("hubs: the Zones page", function()
 	check(zones.view == nil and Stub.sees("Zones and the levels they are meant for. You are level 14."), "and Back again returns to the zones")
 
 	-- Open map points at the start hub
-	Stub.waypoint, Stub.mapOpened = nil, nil
+	Stub.waypoint, Stub.opened.map, Stub.mapMarkerWhenOpened = nil, nil, nil
 	T.Window:Select("zones", "all")
 	for index, item in ipairs(zones.Items("all", 14)) do
 		if item.name == "Westfall" then
@@ -166,8 +180,10 @@ H.section("hubs: the Zones page", function()
 			break
 		end
 	end
-	check(Stub.waypoint and Stub.waypoint.uiMapID == 52 and Stub.waypoint.position.x == 0.56 and Stub.waypoint.position.y == 0.48 and Stub.mapOpened == 52,
-		"Open map puts the marker on the start hub and opens the zone")
+	check(Stub.waypoint and Stub.waypoint.uiMapID == 52 and Stub.waypoint.position.x == 0.56 and Stub.waypoint.position.y == 0.48
+		and Stub.opened.map and Stub.mapMarkerWhenOpened == Stub.waypoint,
+		"Open map puts the marker on the start hub and opens the game's map")
+	WorldMapFrame:Hide()
 
 	-- the other side
 	T = loaded("Horde")
@@ -180,14 +196,14 @@ H.section("hubs: the Zones page", function()
 	check(Stub.sees("No quest hub listed for your side\nTrailhead has no quest hubs listed for your side in this zone."), "its hub list explains itself")
 	H.noErrors(T, "zones page hubs")
 
-	-- dungeon rows: a Route button only when the route page knows the dungeon
+	-- dungeon rows: a Dungeon guide button only when the dungeon page knows the dungeon
 	T = loaded("Alliance")
 	local dungeons = T.Dungeons
 	T.Game.Entrance = function() return nil end -- the entrance lookup belongs to the dungeon service
 	T.Dungeons = nil
 	H.slash("")
 	T.Window:Select("zones", "dungeons")
-	check(Stub.sees("Deadmines") and not Stub.sees("Route"), "without a dungeon service there is no Route button")
+	check(Stub.sees("Deadmines") and not Stub.sees("Dungeon guide"), "without a dungeon service there is no Dungeon guide button")
 	T.Dungeons = { Has = function(name) return name == "Deadmines" end }
 	local picked
 	local select = T.Window.Select
@@ -199,12 +215,12 @@ H.section("hubs: the Zones page", function()
 		return select(self, id, arg)
 	end
 	T.Window:Select("zones", "dungeons")
-	check(Stub.sees("Route"), "a dungeon the service knows gets a Route button")
+	check(Stub.sees("Dungeon guide") and not Stub.sees("Route"), "a dungeon the service knows gets a Dungeon guide button")
 	for _, item in ipairs(T.modules.zones.DungeonItems(14)) do
 		check(item.routed == (item.name == "Deadmines"), item.name .. " is routed only when the service knows it")
 	end
-	Stub.click("Route", 1)
-	check(picked == "Deadmines", "the Route button opens that dungeon's page")
+	Stub.click("Dungeon guide", 1)
+	check(picked == "Deadmines", "the Dungeon guide button opens that dungeon's page")
 	T.Window.Select = select
 	T.Dungeons = dungeons
 	Stub.world.faction = nil

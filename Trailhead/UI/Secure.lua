@@ -1,8 +1,8 @@
 local _, T = ...
 local C = T.Compat
 
--- Secure: opens the game's own talent, spellbook and Legacy windows by pressing the game's own
--- menu bar button through a secure button, never by calling Blizzard's window code.
+-- Secure: opens the game's own talent, spellbook, Legacy and map windows by pressing the game's
+-- own menu bar button through a secure button, never by calling Blizzard's window code.
 --
 -- Why: code that an addon calls runs "tainted". When Trailhead itself opened the talent window,
 -- that window loaded and showed tainted, its spell marks on the action buttons were tainted,
@@ -19,10 +19,13 @@ local S = {}
 T.Secure = S
 
 -- tab: the game's PlayerSpellsUtil.FrameTabs entry the window must be on to count as open.
+-- Forever has no map button on its menu bar: its "Map and Quest Log" button (QuestLogMicroButton,
+-- Blizzard_MicroMenu) opens the world map on the zone the player is in.
 S.TARGETS = {
 	talents = { button = "TalentMicroButton", frame = "PlayerSpellsFrame", tab = "ClassTalents" },
 	spellbook = { button = "SpellbookMicroButton", frame = "PlayerSpellsFrame", tab = "SpellBook" },
 	legacy = { button = "LegacyMicroButton", frame = "LegacySystemFrame" },
+	map = { button = "QuestLogMicroButton", frame = "WorldMapFrame" },
 }
 
 local ABOVE = {
@@ -54,9 +57,26 @@ local function target(id)
 	return nil
 end
 
+-- True while the game's own button can be pressed. The game greys its buttons out at times
+-- (talents before the first talent point, Legacy before the first Legacy Point, every one of them
+-- in a pet battle or a vehicle); pressing a greyed-out button does nothing at all.
+local function usable(micro)
+	if type(micro.IsEnabled) ~= "function" then
+		return true
+	end
+	local ok, on = pcall(micro.IsEnabled, micro)
+	return ok and C.Plain(on, false) == true
+end
+
+-- True if the game has the button for this window at all, greyed out or not.
+function S.Exists(id)
+	return target(id) ~= nil
+end
+
 -- True if this window can be opened the safe way.
 function S.Can(id)
-	return target(id) ~= nil and type(CreateFrame) == "function" and type(InCombatLockdown) == "function"
+	local _, micro = target(id)
+	return micro ~= nil and usable(micro) and type(CreateFrame) == "function" and type(InCombatLockdown) == "function"
 end
 
 -- True if the window is already up on the right tab. The game's button toggles, and
@@ -133,6 +153,7 @@ local function offEscapeList()
 end
 
 local wasOnList = false
+local pressed = false -- whether this click went to a game button that can be pressed
 
 local function make()
 	if cover ~= nil then
@@ -186,8 +207,22 @@ local function make()
 		if C.InCombat() then
 			return
 		end
-		local def = owner and S.TARGETS[owner.secureId]
-		self:SetAttribute("type1", (def and not alreadyOpen(def)) and "click" or nil)
+		local def, micro = nil, nil
+		if owner then
+			def, micro = target(owner.secureId)
+		end
+		pressed = micro ~= nil and usable(micro)
+		if not pressed then
+			-- Greyed out since the mouse came on: nothing opens, and nothing may act as if it had.
+			note("not pressed: no game button or greyed out")
+			self:SetAttribute("type1", nil)
+			return
+		end
+		-- What must be ready before the window opens (the map marker, so the map shows it).
+		if owner.secureBefore then
+			T.SafeCall("secure", owner.secureBefore, owner)
+		end
+		self:SetAttribute("type1", not alreadyOpen(def) and "click" or nil)
 		wasOnList = offEscapeList()
 	end)
 	made:SetScript("PostClick", function(self)
@@ -199,7 +234,9 @@ local function make()
 			return
 		end
 		self:SetAttribute("type1", "click")
-		if owner and owner.secureAfter then
+		local went = pressed
+		pressed = false
+		if went and owner and owner.secureAfter then
 			T.SafeCall("secure", owner.secureAfter, owner)
 		end
 	end)
@@ -217,6 +254,14 @@ function S.Cover(button)
 	local _, micro = target(button.secureId)
 	if not micro then
 		note("not covered: no game button for " .. tostring(button.secureId))
+		return false
+	end
+	if not usable(micro) then
+		-- Left uncovered, so the Trailhead button's own click runs and says what to do.
+		note("not covered: game button greyed out for " .. tostring(button.secureId))
+		if owner == button then
+			release()
+		end
 		return false
 	end
 	local made = make()
@@ -267,15 +312,17 @@ function S.Report()
 	for id, def in pairs(S.TARGETS) do
 		local button = _G[def.button]
 		local shown = type(button) == "table" and type(button.IsShown) == "function" and button:IsShown()
-		out.buttons[id] = type(button) ~= "table" and "missing" or (shown and "shown" or "hidden")
+		out.buttons[id] = type(button) ~= "table" and "missing"
+			or ((shown and "shown" or "hidden") .. (usable(button) and "" or ", greyed out"))
 	end
 	return out
 end
 
 -- Makes a Trailhead button open a game window the safe way: `id` is a key of S.TARGETS (nil
--- for a button that does something else), `after` runs once the game's window has opened.
--- The button's own click stays as the fallback for when the safe way is not there.
-function S.Set(button, id, after)
+-- for a button that does something else), `after` runs once the game's window has opened and
+-- `before` just before the game's button is pressed. The button's own click stays as the
+-- fallback for when the safe way is not there or the game's button is greyed out.
+function S.Set(button, id, after, before)
 	if not button.secureHooked then
 		button.secureHooked = true
 		button:HookScript("OnEnter", function(self)
@@ -284,6 +331,7 @@ function S.Set(button, id, after)
 	end
 	button.secureId = id
 	button.secureAfter = after
+	button.secureBefore = id and before or nil
 	if owner == button and not id then
 		release()
 	end

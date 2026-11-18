@@ -35,9 +35,14 @@ local function usable(row, mine)
 	return mine == nil or row[4] == 0 or (row[4] == HORDE and mine == HORDE) or (row[4] == ALLIANCE and mine == ALLIANCE)
 end
 
+-- The start hub first, then by the levels the list shows ("1-4" before "1-6" before "6"), so
+-- the numbers down the list only go up.
 local function order(a, b)
 	if a.start ~= b.start then
 		return a.start
+	end
+	if a.lo ~= b.lo then
+		return a.lo < b.lo
 	end
 	if a.typical ~= b.typical then
 		return a.typical < b.typical

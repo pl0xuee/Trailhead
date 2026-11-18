@@ -20,41 +20,92 @@ local SAME_SPOT = 0.012 -- map units; closer than this is the same place
 -- ---------------------------------------------------------------------------
 -- Remembering.
 
+-- Class trainers found before 0.14 were kept as "Warrior: Frang" without the class itself, so
+-- every class was offered every class's trainer. The class is read back from the name once.
+local function classOfName(name)
+	if type(name) ~= "string" then
+		return nil
+	end
+	local prefix = name:match("^([^:]+):")
+	if not prefix then
+		return nil
+	end
+	for _, path in ipairs({ "LOCALIZED_CLASS_NAMES_MALE", "LOCALIZED_CLASS_NAMES_FEMALE" }) do
+		local names = C.Plain(C.Resolve(path), nil)
+		if type(names) == "table" then
+			for file, label in pairs(names) do
+				if C.Plain(label, nil) == prefix then
+					return file
+				end
+			end
+		end
+	end
+	return nil
+end
+P.ClassOfName = classOfName
+
+local function addClasses(db)
+	if db.placesClassed or not (C.Resolve("LOCALIZED_CLASS_NAMES_MALE") or C.Resolve("LOCALIZED_CLASS_NAMES_FEMALE")) then
+		return
+	end
+	for _, place in ipairs(db.places) do
+		if place.c == "trainer" and place.e == nil then
+			place.e = classOfName(place.n)
+		end
+	end
+	db.placesClassed = true
+end
+
 local function store()
 	local db = T.db
 	if type(db.places) ~= "table" then
 		db.places = {}
 	end
+	addClasses(db)
 	return db.places
+end
+
+-- True when this character may use a found place: own side, and for a class trainer its own class.
+local function mineToUse(place, faction, class)
+	if not (place.f == nil or faction == nil or place.f == faction) then
+		return false
+	end
+	return place.c ~= "trainer" or place.e == nil or class == nil or place.e == class
 end
 
 local function zoneLabel(mapID)
 	return G.MapName(mapID) or C.Plain(C.Call("GetRealZoneText"), nil) or ""
 end
 
--- Adds a place, or refreshes the one already known at that spot. Returns the record.
-function P.Remember(categoryId, name, mapID, x, y, source)
+-- Adds a place, or refreshes the one already known at that spot. Returns the record. A class
+-- trainer carries the class it trains (`class`, the class file name): a Mage and a Warrior
+-- trainer standing side by side are two places.
+function P.Remember(categoryId, name, mapID, x, y, source, class)
 	if not T.CategoryById[categoryId] or type(mapID) ~= "number" or type(x) ~= "number" or type(y) ~= "number" then
 		return nil
 	end
 	if type(name) ~= "string" or name == "" then
 		name = T.CategoryById[categoryId].label
 	end
+	if categoryId ~= "trainer" then
+		class = nil
+	end
 	local list = store()
 	local faction = G.Faction()
 	for _, place in ipairs(list) do
-		if place.c == categoryId and place.m == mapID
+		-- An old trainer record whose class could not be read back is taken over by the next visit.
+		if place.c == categoryId and place.m == mapID and (place.e == class or place.e == nil)
 			and math.abs(place.x - x) < SAME_SPOT and math.abs(place.y - y) < SAME_SPOT then
 			-- A name read from the person in front of you beats a guard's description.
 			if source == "seen" or place.s ~= "seen" then
 				place.n, place.s = name, source
 				place.x, place.y = x, y
 			end
-			place.t, place.f = time(), faction
+			place.t, place.f, place.e = time(), faction, class
 			return place
 		end
 	end
-	local place = { c = categoryId, n = name, m = mapID, x = x, y = y, z = zoneLabel(mapID), f = faction, s = source, t = time() }
+	local place = { c = categoryId, n = name, m = mapID, x = x, y = y, z = zoneLabel(mapID), f = faction, s = source, t = time(), e = class }
 	list[#list + 1] = place
 	while #list > MAX_PLACES do
 		table.remove(list, 1)
@@ -118,7 +169,7 @@ local function onTrainerRead(class)
 		name = mine .. ": " .. name
 	end
 	dropOther(mapID, x, y)
-	P.Remember("trainer", name, mapID, x, y, "seen")
+	P.Remember("trainer", name, mapID, x, y, "seen", G.ClassFile())
 	T:Fire("TH_PLACES_CHANGED")
 end
 
@@ -242,7 +293,8 @@ local function onGuardFlag()
 	while #P.guardLog > 8 do
 		table.remove(P.guardLog, 1)
 	end
-	P.Remember(category, label, mapID, x, y, "guard")
+	-- A guard only says "trainer" for the class the player asked about, which is their own.
+	P.Remember(category, label, mapID, x, y, "guard", category == "trainer" and G.ClassFile() or nil)
 end
 
 -- ---------------------------------------------------------------------------
@@ -526,6 +578,10 @@ local function isSame(rec, other, mine)
 	if other.c ~= rec.c or not (other.f == nil or mine == nil or other.f == mine) then
 		return false
 	end
+	-- Another class's trainer found by an alt does not hide this class's built-in one.
+	if rec.c == "trainer" and other.e ~= nil and rec.e ~= nil and other.e ~= rec.e then
+		return false
+	end
 	if other.m == rec.m and math.abs(other.x - rec.x) < NEAR_SEED and math.abs(other.y - rec.y) < NEAR_SEED then
 		return true
 	end
@@ -651,9 +707,9 @@ function P.Find(categoryId)
 	end
 	setFrame(mapID, px, py)
 	out = {}
-	local mine = G.Faction()
+	local mine, class = G.Faction(), G.ClassFile()
 	for _, place in ipairs(store()) do
-		if place.c == categoryId and (place.f == nil or mine == nil or place.f == mine) then
+		if place.c == categoryId and mineToUse(place, mine, class) then
 			out[#out + 1] = placeResult(place, mapID, px, py)
 		end
 	end
@@ -688,10 +744,10 @@ function P.Search(query)
 		end
 	end
 	local mapID, px, py = G.PlayerMap()
-	local mine = G.Faction()
+	local mine, class = G.Faction(), G.ClassFile()
 	setFrame(mapID, px, py)
 	for _, place in ipairs(store()) do
-		if (place.f == nil or mine == nil or place.f == mine) and matches(place.n .. " " .. (place.z or ""), words) then
+		if mineToUse(place, mine, class) and matches(place.n .. " " .. (place.z or ""), words) then
 			local result = placeResult(place, mapID, px, py)
 			result.rank = 2
 			out[#out + 1] = result
@@ -803,8 +859,9 @@ function P.FlightSpot(continent, node)
 end
 
 -- Puts the game's own map marker on a spot and points the on-screen arrow at it.
--- Returns true when the marker was placed.
-function P.SetMarker(mapID, x, y, title)
+-- Returns true when the marker was placed. `quiet` leaves out the chat line (the caller says
+-- something better).
+function P.SetMarker(mapID, x, y, title, quiet)
 	if type(mapID) ~= "number" or type(x) ~= "number" or type(y) ~= "number" then
 		return false
 	end
@@ -821,18 +878,20 @@ function P.SetMarker(mapID, x, y, title)
 		return false
 	end
 	C.Call("C_SuperTrack.SetSuperTrackedUserWaypoint", true)
-	T:Print(L["Marker set: %s. Follow the arrow on your screen."]:format(title or ""))
+	if not quiet then
+		T:Print(L["Marker set: %s. Follow the arrow on your screen."]:format(title or ""))
+	end
 	T:Fire("TH_MARKER_CHANGED")
 	return true
 end
 
 -- Marks a search result. Returns true when the marker was placed, and the map it is on.
-function P.Go(result)
+function P.Go(result, quiet)
 	if result.kind == "flight" then
 		local mapID, x, y = flightOnZone(result)
-		return P.SetMarker(mapID, x, y, result.title), mapID
+		return P.SetMarker(mapID, x, y, result.title, quiet), mapID
 	elseif result.kind == "place" then
-		return P.SetMarker(result.map, result.x, result.y, result.title), result.map
+		return P.SetMarker(result.map, result.x, result.y, result.title, quiet), result.map
 	end
 	return false
 end
@@ -846,23 +905,76 @@ function P.HasMarker()
 	return C.Plain(C.Call("C_Map.HasUserWaypoint"), false) == true
 end
 
--- Opens the game's world map on a zone.
-function P.ShowMap(mapID)
-	if C.InCombat() or type(mapID) ~= "number" then
+-- The key the player opens the map with ("M" unless they changed it).
+function P.MapKey()
+	local key = C.Plain(C.Call("GetBindingKey", "TOGGLEWORLDMAP"), nil)
+	if type(key) ~= "string" or key == "" then
+		return "M"
+	end
+	local text = C.Plain(C.Call("GetBindingText", key), nil)
+	return type(text) == "string" and text ~= "" and text or key
+end
+
+-- Trailhead never opens the game's map from its own code: the game's map opened that way runs
+-- tainted, the same as the talent window that broke the action bars. The map opens from a
+-- button's click through UI/Secure.lua ("map"); without it, this says how to open it. Returns
+-- false: nothing was opened. `marked` is true when a marker was just placed.
+function P.ShowMap(_, marked)
+	if C.InCombat() then
 		return false
 	end
-	if C.Has("OpenWorldMap") then
-		if T.Window and T.Window.Keep then
-			T.Window:Keep("OpenWorldMap", mapID)
-		else
-			C.Call("OpenWorldMap", mapID)
-		end
-		if T.Window and T.Window.Beside then
-			T.Window:Beside("WorldMapFrame")
-		end
-		return true
+	if marked then
+		T:Print(L["Marker set. Press %s to open your map."]:format(P.MapKey()))
+	elseif marked == nil then
+		T:Print(L["Press %s to open your map."]:format(P.MapKey()))
 	end
 	return false
+end
+
+-- After the game's map opened from a Trailhead button: Trailhead goes beside it.
+function P.AfterMap()
+	if not C.InCombat() and T.Window and T.Window.Beside then
+		T.Window:Beside("WorldMapFrame")
+	end
+end
+
+-- Makes a Trailhead button put the marker somewhere and open the game's map the safe way.
+-- `mark(quiet)` places the marker and returns true when it did (nil when it has no spot to
+-- mark). The button's own click, the fallback for when the game's map button cannot be
+-- pressed, calls P.MarkOnly(mark). `off` makes the button an ordinary one again; `after` runs
+-- once the map is up.
+function P.MapButton(button, mark, off, after)
+	if not (T.Secure and T.Secure.Set) then
+		return
+	end
+	if off then
+		T.Secure.Set(button, nil)
+		return
+	end
+	T.Secure.Set(button, "map", function()
+		P.AfterMap()
+		if after then
+			after()
+		end
+	end, mark and function()
+		mark(false)
+	end)
+end
+
+-- The fallback click of a map button: the marker, and how to open the map.
+function P.MarkOnly(mark)
+	if C.InCombat() then
+		return false
+	end
+	local placed = nil
+	if mark then
+		placed = mark(true)
+	end
+	-- A marker that could not be placed has said why already.
+	if placed ~= false then
+		P.ShowMap(nil, placed and true or nil)
+	end
+	return placed
 end
 
 -- ---------------------------------------------------------------------------
@@ -897,6 +1009,7 @@ end
 -- ---------------------------------------------------------------------------
 
 T:On("PLAYER_LOGIN", function()
+	store() -- gives old class trainer records their class
 	T:On("MERCHANT_SHOW", onMerchant)
 	T:On("TRAINER_SHOW", onTrainer)
 	T:On("TH_TRAINER_READ", onTrainerRead)

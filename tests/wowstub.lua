@@ -324,6 +324,7 @@ function Stub.install(opts)
 	Stub.eventFrames, Stub.unknownEvents = {}, { HEARTHSTONE_BOUND = opts.bare or nil }
 	Stub.textures, Stub.timers, Stub.chat, Stub.errors, Stub.combat, Stub.sounds = {}, {}, {}, {}, false, 0
 	Stub.waypoint, Stub.fontstrings, Stub.mapOpened, Stub.opened = nil, {}, nil, {}
+	Stub.forbiddenCalls = {}
 	Stub.tooltipPostCalls = {}
 	-- The fake game's state. Tests change it and fire the matching event.
 	local world = {
@@ -388,6 +389,10 @@ function Stub.install(opts)
 		end
 		return "Mage", "MAGE", 8
 	end
+	-- The game's class names by class file, as UnitClass gives them (German has female forms).
+	G.LOCALIZED_CLASS_NAMES_MALE = { WARRIOR = "Warrior", PALADIN = "Paladin", HUNTER = "Hunter", ROGUE = "Rogue",
+		PRIEST = "Priest", SHAMAN = "Shaman", MAGE = "Mage", WARLOCK = "Warlock", DRUID = "Druid" }
+	G.LOCALIZED_CLASS_NAMES_FEMALE = G.LOCALIZED_CLASS_NAMES_MALE
 	-- world.race = { name, file }, world.faction = "Horde": a human of the Alliance by default.
 	G.UnitRace = function()
 		local race = Stub.world.race or { "Human", "Human" }
@@ -581,7 +586,13 @@ function Stub.install(opts)
 			SetSuperTrackedUserWaypoint = noop,
 			IsSuperTrackingUserWaypoint = function() return true end,
 		}
-		G.OpenWorldMap = function(id) Stub.mapOpened = id; WorldMapFrame:Show() end
+		-- The game's map code. Trailhead must never call it: the map would open tainted, like the
+		-- talent window that broke the action bars. It opens through QuestLogMicroButton instead.
+		-- Noted as well as refused: Compat's pcall would otherwise swallow the error.
+		G.OpenWorldMap = function()
+			Stub.forbiddenCalls[#Stub.forbiddenCalls + 1] = "OpenWorldMap"
+			error("Trailhead called the game's OpenWorldMap itself")
+		end
 		local function node(id, name, faction, x, y)
 			return { nodeID = id, name = name, faction = faction, position = { x = x, y = y }, isUndiscovered = false }
 		end
@@ -713,6 +724,27 @@ function Stub.install(opts)
 			Stub.opened.legacy = true
 			if ToggleLegacySystemUI then ToggleLegacySystemUI() end
 		end }
+		-- Forever's "Map and Quest Log" button: opens the world map on the player's zone.
+		G.QuestLogMicroButton = { Click = function()
+			Stub.opened.map = true
+			Stub.mapMarkerWhenOpened = Stub.waypoint
+			if WorldMapFrame:IsShown() then WorldMapFrame:Hide() return end
+			Stub.closeSpecial()
+			WorldMapFrame:Show()
+		end }
+		-- The game greys its buttons out (talents before the first point, Legacy before the first
+		-- Legacy Point, all of them in a pet battle): Stub.greyed[name] = true. A greyed-out
+		-- button's click does nothing, as in the game.
+		Stub.greyed = {}
+		for _, name in ipairs({ "TalentMicroButton", "SpellbookMicroButton", "LegacyMicroButton", "QuestLogMicroButton" }) do
+			local button = G[name]
+			local click = button.Click
+			button.IsEnabled = function() return not Stub.greyed[name] end
+			button.Click = function(...)
+				if Stub.greyed[name] then return end
+				return click(...)
+			end
+		end
 		G.C_ClassTalents = { HasUnspentTalentPoints = function() return world.talents end }
 		-- The talent tree, the way the game's own talent window reads it.
 		G.C_SpecializationInfo = {
