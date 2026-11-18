@@ -68,20 +68,32 @@ function R.Best(level)
 	return { name = best.name, lo = best.lo, hi = best.hi, id = T.Dungeons and T.Dungeons.Find(best.name) }
 end
 
--- The level the first dungeon opens at, from the group finder, or nil.
+-- The first dungeon on the character's side in the group finder's list (it is in level
+-- order), or nil: { name, lo, hi }. Ragefire Chasm leads the list, but its door is in
+-- Orgrimmar, so the Alliance's first is another one.
+function R.First()
+	for _, dungeon in ipairs(G.World().dungeons or {}) do
+		if side(dungeon.name) ~= THEIRS then
+			return dungeon
+		end
+	end
+	return nil
+end
+
+-- The level the character's first dungeon opens at, or nil.
 function R.FirstLevel()
-	local first = G.World().dungeons[1]
+	local first = R.First()
 	return first and first.lo or nil
 end
 
--- What the class can be in a group, in the game's own role order: "tank, damage", or nil.
+-- What the class can be in a group, in the game's own role order: "Tank, Damage", or nil.
 function R.Roles()
 	local mask = T.ClassRoles and T.ClassRoles[G.ClassFile() or ""] or 0
 	local names = T.GuideTopics and T.GuideTopics.roleNames or {}
 	local out = {}
 	for _, bit in ipairs({ 2, 4, 8 }) do
 		if math.floor(mask / bit) % 2 == 1 and names[bit] then
-			out[#out + 1] = names[bit]:lower()
+			out[#out + 1] = names[bit]
 		end
 	end
 	return #out > 0 and table.concat(out, ", ") or nil
@@ -115,7 +127,7 @@ function R.Card()
 		id = "dungeon", tone = "info", icon = "gate", key = "dungeon:" .. best.name, persist = true,
 		title = L["Ready for %s"]:format(best.name),
 		body = L["Levels %d to %d. Dungeons need a group of five."]:format(best.lo, best.hi)
-			.. (roles and "\n" .. L["Your class can be: %s."]:format(roles) or ""),
+			.. (roles and "\n" .. L["Roles your class can fill: %s."]:format(roles) or ""),
 		action = action,
 		run = run,
 	}

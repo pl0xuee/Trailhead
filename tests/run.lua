@@ -278,30 +278,29 @@ end)
 section("advice cards", function()
 	local T = load()
 	slash("")
-	check(cardIds(T, 3) == "check,talents,train", "a new player sees the check, talents and training first")
-	check(Stub.sees("Teach Trailhead about your game") and Stub.sees("You have talent points to spend")
-		and Stub.sees("Visit your class trainer"), "the three cards are on Home")
-	Stub.click("Run check")
-	Stub.flush()
-	check(T.db.probe ~= nil and T.db.probe.v == T.Probe.VERSION, "Run check runs the game check")
-	check(Stub.sees("Check complete") and Stub.sees("Reload now"), "the card then asks for a reload")
-	Stub.click("Reload now")
-	check(Stub.reloaded == true, "Reload now reloads the interface")
-	Stub.reloaded = nil
+	check(cardIds(T, 3) == "talents,train,bars", "a new player sees talents, training and the action bars first")
+	check(Stub.sees("You have talent points to spend") and Stub.sees("Visit your class trainer")
+		and Stub.sees("2 spells not on your action bars"), "the three cards are on Home")
+	check(not Stub.sees("Teach Trailhead about your game") and not Stub.sees("Run check"), "no card asks a player to run the game check")
+	local before = #Stub.chat
+	slash("check")
+	check(T.db.probe ~= nil and T.db.probe.v == T.Probe.VERSION, "/th check still runs the game check")
+	check(#Stub.chat > before and Stub.chat[#Stub.chat]:find("/reload", 1, true) ~= nil, "and asks for a reload in chat, not on a card")
+	check(not cardIds(T):find("check", 1, true), "no card after the check either")
 
 	T = load(nil, { firstRun = false, probe = { at = 1700000000, failed = 0, report = {} } })
 	slash("")
-	check(Stub.sees("Trailhead has new questions"), "a check from an older version is asked again")
+	check(not cardIds(T):find("check", 1, true), "a check from an older version brings no card")
 
 	T = load(nil, checked())
 	slash("")
 	check(cardIds(T) == "talents,train,bars,dungeon", "with the check done: talents, training, bars, dungeon")
-	check(Stub.sees("2 spells are not on your action bars"), "off-bar spells are counted")
+	check(Stub.sees("2 spells not on your action bars"), "off-bar spells are counted")
 	local cards = T.Advisor.Cards(20)
 	check(cards[2].title == "Visit your class trainer" and cards[2].key == "train:first"
 		and cards[2].body == "Trainers sell your new spells as you level.\nAfter one visit Trailhead lists them here with prices.", "before the first visit the training card sends you to the trainer")
 	check(cards[3].body == "Counterspell, Blink\nDrag them from your spellbook to a bar.", "bars card names the spells")
-	check(cards[4].title == "Ready for Ragefire Chasm" and cards[4].body == "Levels 13 to 18. Dungeons need a group of five.\nYour class can be: damage.", "dungeon card names the dungeon")
+	check(cards[4].title == "Ready for Ragefire Chasm" and cards[4].body == "Levels 13 to 18. Dungeons need a group of five.\nRoles your class can fill: Damage.", "dungeon card names the dungeon")
 	Stub.click("Open talents")
 	check(Stub.opened.talents == true, "Open talents opens the game's talent window")
 	Stub.click("Find trainer")
@@ -1938,6 +1937,7 @@ end)
 
 section("game check: words, mounts, ability tooltips and guard menus", function()
 	local T = load()
+	slash("check collect")
 	local world = Stub.world
 	world.mounts = { { 14, "Timber Wolf", 580, false, "|cffffd200Vendor:|r Ogunaro Wolfrunner\n|cffffd200Zone:|r Orgrimmar" } }
 	world.spellTips = { [116] = { "Frostbolt", "25 Mana / Reagents: Rune of Frost" } }
@@ -1970,9 +1970,10 @@ section("game check: words, mounts, ability tooltips and guard menus", function(
 		tips[#tips + 1] = line
 	end
 	check(table.concat(tips, ";"):find("Frostbolt|116|Frostbolt / 25 Mana / Reagents: Rune of Frost", 1, true) ~= nil, "the top of each ability's tooltip is recorded")
-	check(#r.visits == 2 and r.visits[1].kind == "menu", "and the menus are in the report")
+	check(r.visits == nil and #T.db.visits == 2, "the menus stay in the visits, not copied into the report")
 	noErrors(T, "game check 8")
 	T = load({ bare = true })
+	slash("check collect")
 	Stub.fire("GOSSIP_SHOW")
 	slash("check")
 	r = T.db.probe.report
@@ -1982,6 +1983,7 @@ end)
 
 section("game check: rest, bags and visits", function()
 	local T = load()
+	slash("check collect")
 	Stub.world.carried = { { 4540, 5, "Tough Hunk of Bread", 0, 5 } }
 	Stub.world.npc = "Ogunaro Wolfrunner"
 	Stub.world.merchant = { { "Horn of the Dire Wolf", 800000, 1, 5665, "Requires Level 40" }, { "Horn of the Timber Wolf", 800000, 1, 1132, "Requires Level 40" } }
@@ -2010,9 +2012,10 @@ section("game check: rest, bags and visits", function()
 		and r.rest.stone.count == 1 and r.rest.stone.text == "Hearthstone / Use: Returns you to your inn.", "rest and the hearthstone are recorded")
 	check(r.bags.count == 1 and r.bags.items[1] == "0|1|4540|5|Tough Hunk of Bread|0|5|Consumable|Food & Drink|" and #r.bags.worn == 1
 		and r.bags.worn[1]:find("^16|2092|Gnarled Staff|2|10|") ~= nil, "what is carried and worn is recorded the way the game files it")
-	check(#r.visits == 16 and r.visits[16].npc == "Vendor 20", "and the visits are in the report")
+	check(r.visits == nil, "the visits are not copied into the report")
 	noErrors(T, "game check 7")
 	T = load({ bare = true })
+	slash("check collect")
 	Stub.fire("MERCHANT_SHOW")
 	Stub.fire("TRAINER_SHOW")
 	Stub.flush()
@@ -2025,13 +2028,21 @@ section("game check", function()
 	local T = load()
 	visit("Jennea Cannon", MAGE_TRAINER)
 	leave()
+	check(T.db.visits == nil, "a player who never switched collection on: no visits are written down")
 	check(not T.Probe:IsCurrent(), "not current before it has run")
 	slash("check")
 	local probe = T.db.probe
 	check(type(probe) == "table" and probe.failed == 0 and probe.v == T.Probe.VERSION and T.Probe:IsCurrent(), "check ran with no failed sections")
 	local r = probe.report
+	check(r.words == nil and r.talents == nil and r.mounts == nil and r.visits == nil, "without collection the large developer dumps are left out")
+	check(type(r.spellbook) == "table" and type(r.rest) == "table", "and the rest of the check is still there")
+	slash("check collect")
+	check(T.db.collect == true and Stub.chat[#Stub.chat]:find("Developer collection is on", 1, true) ~= nil, "/th check collect switches collection on")
+	slash("check")
+	probe = T.db.probe
+	r = probe.report
 	for _, name in ipairs({ "build", "player", "apis", "character", "map", "zones", "taxi", "dungeons",
-		"tracking", "spellbook", "talents", "skills", "rest", "bags", "visits", "words", "mounts", "spelltips", "routes", "groupFinder", "learned" }) do
+		"tracking", "spellbook", "talents", "skills", "rest", "bags", "words", "mounts", "spelltips", "routes", "groupFinder", "learned" }) do
 		check(type(r[name]) == "table" and r[name].error == nil, "section " .. name)
 	end
 	check(r.build.toc == 16001 and r.player.class == "MAGE", "build and class recorded")
@@ -2127,7 +2138,7 @@ section("a client without the optional APIs", function()
 	Stub.click("Dungeons")
 	T.Window:Select("spells")
 	Stub.click("Open spellbook")
-	check(cardIds(T) == "check", "only the check card is offered")
+	check(cardIds(T) == "clear", "nothing to advise: the all-set card")
 	slash("check")
 	check(T.db.probe and T.db.probe.failed == 0, "check still completes")
 	check(T.missingEvents.HEARTHSTONE_BOUND == true, "an unknown event is noted, not fatal")

@@ -27,6 +27,8 @@ local TIPS = {
 	L["Dungeons need a group of five and you travel to the entrance yourselves."],
 	L["Lost in a city? Ask a guard. Trailhead remembers the directions for next time."],
 	L["Every trainer, vendor and mailbox you use is remembered. Find it again from the Find it tab."],
+	L["Fighting two enemies at once is dangerous. Pull one at a time."],
+	L["Quest rewards and drops cover most early gear. Save gold for training and riding."],
 }
 
 local ui = {}
@@ -76,7 +78,7 @@ local function buildHero(page)
 	local badge = W.Panel(hero, { shape = "small", fill = "accent" })
 	badge:SetHeight(16)
 	badge:SetPoint("CENTER", disc, "BOTTOM", 0, -3)
-	ui.class = W.Text(badge, "label", 8.5, "accentInk")
+	ui.class = W.Text(badge, "label", 10, "accentInk")
 	ui.class:SetPoint("CENTER", badge, "CENTER", 0, 0)
 	ui.classBadge = badge
 	badge.AfterRestyle = function(self)
@@ -191,7 +193,7 @@ local function buildCards(page, top)
 		}))
 		card.dismiss = W.IconButton(card, "x", 18, "faint", function()
 			T.Advisor.Dismiss(card.advice)
-		end)
+		end, { tip = L["Hide this suggestion until next login"] })
 		card.dismiss:SetPoint("TOPRIGHT", card, "TOPRIGHT", -5, -5)
 		card:Hide()
 		ui.cards[index] = card
@@ -281,17 +283,18 @@ end
 local STEPS = 4
 
 local function milestones()
+	local talents = G.FIRST_TALENT_LEVEL
 	local list = {
-		{ level = 10, label = L["Talents"], title = L["Level 10: first talent point"],
+		{ level = talents, label = L["Talents"], title = L["Level %d: first talent point"]:format(talents),
 			note = L["Talents let you shape your class."] },
 		{ level = 40, label = L["Mount"], title = L["Level 40: first mount"],
 			note = L["Riding is expensive. Start saving gold now."] },
 		{ level = 60, label = L["Level 60"], title = L["Level 60: the top"],
 			note = L["Raids and the hardest dungeons open up."] },
 	}
-	-- The first dungeon comes from the game's own list, so it is right for either side.
-	local first = G.World().dungeons[1]
-	if first and first.lo > 10 and first.lo < 40 then
+	-- The first dungeon on the character's side, from the game's own list.
+	local first = T.Readiness and T.Readiness.First()
+	if first and first.lo > talents and first.lo < 40 then
 		table.insert(list, 2, {
 			level = first.lo, label = L["Dungeons"], title = L["Level %d: first dungeon"]:format(first.lo),
 			note = L["%s. Dungeons need a group of five."]:format(first.name),
@@ -323,12 +326,12 @@ local function buildMilestone(page, top, height)
 		step.ring = W.Tint(card, "circle-line", "tileLine", "ARTWORK", 1)
 		step.ring:SetSize(22, 22)
 		step.ring:SetPoint("CENTER", step.disc, "CENTER", 0, 0)
-		step.number = W.Text(card, "body", 9, "faint")
+		step.number = W.Text(card, "body", 10, "faint")
 		step.number:SetPoint("CENTER", step.disc, "CENTER", 0, 0)
 		step.number:SetJustifyH("CENTER")
 		step.check = W.Icon(card, "check", 12, "accentInk", "OVERLAY")
 		step.check:SetPoint("CENTER", step.disc, "CENTER", 0, 0)
-		step.label = W.Text(card, "body", 9, "muted")
+		step.label = W.Text(card, "body", 10, "muted")
 		step.label:SetPoint("TOP", step.disc, "BOTTOM", 0, -4)
 		step.label:SetJustifyH("CENTER")
 		ui.steps[index] = step

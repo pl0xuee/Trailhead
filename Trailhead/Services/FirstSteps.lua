@@ -11,6 +11,8 @@ local G = T.Game
 local F = {}
 T.FirstSteps = F
 
+F.NEW_LEVEL = 5 -- up to this level, a character first seen is taken to be new
+
 -- The skills that count as a profession: every main profession, and these secondary ones
 -- (the game's SkillLine table puts riding, Lockpicking and racials in the same list).
 local SECONDARY = { [129] = true, [185] = true, [356] = true } -- First Aid, Cooking, Fishing
@@ -99,7 +101,12 @@ function F.Scan()
 	local bind = G.BindLocation()
 	if bind then
 		if not mem.bind then
-			mem.bind = bind -- where the stone was first seen set: the start, for a new character
+			mem.bind = bind
+			-- Where the stone was first seen set is the start only for a new character. One met
+			-- later (Trailhead installed at level 20, say) has long chosen an inn of its own.
+			if G.Level() > F.NEW_LEVEL or type(T.cdb.trainer) == "table" then
+				mem.bound = true
+			end
 		elseif bind ~= mem.bind then
 			mem.bound = true
 		end

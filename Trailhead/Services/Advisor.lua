@@ -36,40 +36,6 @@ end
 
 local rules = {}
 
--- The game check, shown until it has been run with this version's questions.
-rules[#rules + 1] = function()
-	if A.checkedNow then
-		return {
-			id = "check", tone = "go", icon = "spark", keep = true,
-			title = L["Check complete"],
-			body = L["Reload the interface once so the results are saved."],
-			action = L["Reload now"],
-			run = function()
-				local reload = C.Resolve("C_UI.Reload") or ReloadUI
-				if reload then
-					reload()
-				end
-			end,
-		}
-	end
-	if T.Probe:IsCurrent() then
-		return nil
-	end
-	local again = T.Probe:LastRun() ~= nil
-	return {
-		id = "check", tone = "go", icon = "spark", keep = true,
-		title = again and L["Trailhead has new questions"] or L["Teach Trailhead about your game"],
-		body = again and L["This version can learn more. Run the quick check once more."]
-			or L["A quick check of what your game can tell Trailhead. It changes nothing."],
-		action = L["Run check"],
-		run = function()
-			if T.Probe:Run() then
-				A.checkedNow = true
-			end
-		end,
-	}
-end
-
 -- Inside a dungeon or raid Trailhead knows: the route is one click away.
 rules[#rules + 1] = function()
 	local here = T.Dungeons and T.Dungeons.Current()
@@ -125,7 +91,7 @@ rules[#rules + 1] = function()
 	}
 end
 
-rules[#rules + 1] = function()
+local function trainCard()
 	local training = G.Training()
 	local count = #training.now
 	if not training.source and G.Level() >= 2 and C.Has("GetNumTrainerServices") then
@@ -154,7 +120,17 @@ rules[#rules + 1] = function()
 		body = body,
 		action = L["Find trainer"],
 		run = open("find", "trainer"),
+		count = count,
 	}
+end
+rules[#rules + 1] = trainCard
+
+-- Whether Home's training card is up with this many spells (not switched off or dismissed):
+-- the "welcome back" card then leaves the spells to it (Services/Characters.lua).
+function A.TrainCardShows(count)
+	local ok, card = pcall(trainCard)
+	local off = T.db and T.db.cardsOff or {}
+	return ok and type(card) == "table" and card.count == count and not off[card.id] and not dismissed[card.key] or false
 end
 
 -- Several screen settings that suit a new player are not set: one card, gone once they are.
@@ -184,11 +160,12 @@ rules[#rules + 1] = function()
 	end
 	return {
 		id = "bars", tone = "warn", icon = "bars", key = "bars:" .. #spells .. ":" .. spells[1].name,
-		title = #spells == 1 and L["1 spell is not on your action bars"]
-			or L["%d spells are not on your action bars"]:format(#spells),
+		title = #spells == 1 and L["1 spell not on your action bars"]
+			or L["%d spells not on your action bars"]:format(#spells),
 		body = G.NameList(spells, 2) .. "\n" .. L["Drag them from your spellbook to a bar."],
-		action = L["Show me"],
+		action = L["Open spellbook"],
 		run = open("spells"),
+		secure = "spellbook",
 	}
 end
 

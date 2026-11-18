@@ -97,7 +97,9 @@ end
 
 -- The stats the character's build looks for: { stats = { key ... }, dps = true | "ranged" | nil }.
 -- With no build chosen, every stat any of the class's builds looks for, so a "better" holds
--- whichever way the character plays.
+-- whichever way the character plays. The merged list is made once per class.
+local mergedFor = {}
+
 function U.Wanted()
 	local class = G.ClassFile()
 	local builds = class and U.PRIORITY[class]
@@ -107,6 +109,9 @@ function U.Wanted()
 	local chosen = T.cdb and T.cdb.build
 	if chosen and builds[chosen] then
 		return builds[chosen]
+	end
+	if mergedFor[class] then
+		return mergedFor[class]
 	end
 	local out, seen, order = { stats = {} }, {}, {}
 	for id in pairs(builds) do
@@ -130,6 +135,7 @@ function U.Wanted()
 			out.dps = build.dps
 		end
 	end
+	mergedFor[class] = out
 	return out
 end
 
@@ -246,7 +252,12 @@ local function stats(link)
 end
 
 -- The start of every tooltip line that adds something stats cannot show ("Equip:", "Use:").
+-- The game's texts do not change while it runs: worked out once, when first found.
+local startsCache
 local function effectStarts()
+	if startsCache then
+		return startsCache
+	end
 	local out = {}
 	for _, name in ipairs({ "ITEM_SPELL_TRIGGER_ONEQUIP", "ITEM_SPELL_TRIGGER_ONUSE", "ITEM_SPELL_TRIGGER_ONPROC", "ITEM_SET_BONUS" }) do
 		local text = str(_G[name])
@@ -256,6 +267,9 @@ local function effectStarts()
 				out[#out + 1] = text
 			end
 		end
+	end
+	if #out > 0 then
+		startsCache = out
 	end
 	return out
 end
@@ -367,7 +381,35 @@ end
 -- What to say about an item for this character:
 --   { kind = "unusable", what } | { kind = "upgrade", text, level } | { kind = "worse", text } | nil
 -- data: the tooltip's data, for its lines (effects); may be nil.
+local judge
+
+-- The game refreshes a tooltip several times a second while it is hovered: each item's
+-- verdict is kept, and forgotten when the gear, skills, build or level change, or after a second.
+local VERDICT_AGE = 1
+local verdicts, verdictsAt = {}, nil
+
+function U.Forget()
+	verdicts, verdictsAt = {}, nil
+end
+
 function U.Judge(link, data)
+	local now = num(C.Call("GetTime"))
+	if not now or not verdictsAt or now - verdictsAt >= VERDICT_AGE or now < verdictsAt then
+		verdicts, verdictsAt = {}, now
+	end
+	local key = tostring(link) .. (type(data) == "table" and "|d" or "|n")
+	local kept = verdicts[key]
+	if kept ~= nil then
+		return kept or nil
+	end
+	local say = judge(link, data)
+	if now then
+		verdicts[key] = say or false
+	end
+	return say
+end
+
+function judge(link, data)
 	local item = info(link)
 	if not item or (item.classID ~= ARMOR_CLASS and item.classID ~= WEAPON_CLASS) then
 		return nil
@@ -504,6 +546,10 @@ end
 
 local hooked = false
 local Module = T:NewModule("upgrades")
+
+for _, event in ipairs({ "PLAYER_EQUIPMENT_CHANGED", "TH_SKILLS_CHANGED", "TH_BUILD_CHANGED", "PLAYER_LEVEL_UP" }) do
+	T:On(event, U.Forget)
+end
 
 function Module:OnInit()
 	local itemType = C.Resolve("Enum.TooltipDataType.Item")

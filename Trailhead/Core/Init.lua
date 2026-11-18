@@ -30,7 +30,10 @@ function T:Print(text)
 end
 
 -- Errors are kept in the saved variables (newest 40) so they can be read from disk later,
--- and are also handed to the game's error handler so they show while developing.
+-- and are also handed to the game's error handler so they show while developing. Errors from
+-- another version are dropped at load (T.DropOldErrors): they say nothing about this one.
+T.MAX_ERRORS = 40
+
 function T:LogError(where, err)
 	local text = tostring(err)
 	local db = TrailheadDB
@@ -47,9 +50,23 @@ function T:LogError(where, err)
 		return
 	end
 	list[#list + 1] = { at = time(), where = tostring(where), err = text, v = T.version }
-	while #list > 40 do
+	while #list > T.MAX_ERRORS do
 		table.remove(list, 1)
 	end
+end
+
+function T.DropOldErrors()
+	local db = TrailheadDB
+	if type(db) ~= "table" or type(db.errors) ~= "table" then
+		return
+	end
+	local kept = {}
+	for _, entry in ipairs(db.errors) do
+		if type(entry) == "table" and entry.v == T.version then
+			kept[#kept + 1] = entry
+		end
+	end
+	db.errors = kept
 end
 
 local function fail(where, err)
@@ -122,6 +139,7 @@ T:On("ADDON_LOADED", function(name)
 		return
 	end
 	T:InitDB()
+	T.DropOldErrors()
 	T.Theme:Set(T.db.theme, true)
 end)
 
@@ -165,6 +183,8 @@ SlashCmdList["TRAILHEAD"] = function(message)
 		else
 			T:Print(L["Themes: night, journal, ember"])
 		end
+	elseif (command == "check" or command == "probe") and rest == "collect" then
+		T.Probe:SetCollect(not T.Probe:Collecting())
 	elseif command == "check" or command == "probe" then
 		T.Probe:Run()
 	elseif command == "clear" then
@@ -183,7 +203,7 @@ SlashCmdList["TRAILHEAD"] = function(message)
 		T:Print(#list .. " " .. L["errors recorded"])
 		local last = list[#list]
 		if last then
-			T:Print(last.where .. ": " .. last.err)
+			T:Print("[" .. tostring(last.v or "?") .. "] " .. last.where .. ": " .. last.err)
 		end
 	else
 		help()

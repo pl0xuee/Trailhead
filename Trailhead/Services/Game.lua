@@ -719,14 +719,49 @@ function G.TalentText(entryID, rank)
 	return last
 end
 
--- The level the next talent point comes at. Only answered when this character's own count
--- fits one point a level since level 10; otherwise nil rather than a guess.
-local FIRST_TALENT_LEVEL = 10
-G.FIRST_TALENT_LEVEL = FIRST_TALENT_LEVEL
+-- The level talents open at, worked out the way the game's own talent button does it on
+-- Forever (PlayerSpellsMicroButtonMixin:GetTalentUnlockLevel in Blizzard_MicroMenu's Camelot
+-- overrides): Constants.LevelConstsExposed.MIN_TALENT_LEVEL (10 in build 1.60.1), lowered by
+-- each rank of the "Talented" node in the Legacy Adventure tree, never below 1. Anything the
+-- game does not say, or says as a secret, leaves the default of 10.
+local DEFAULT_TALENT_LEVEL = 10
 
+function G.TalentUnlockLevel()
+	local base = C.Plain(C.Resolve("Constants.LevelConstsExposed.MIN_TALENT_LEVEL"), nil)
+	if type(base) ~= "number" then
+		base = DEFAULT_TALENT_LEVEL
+	end
+	local tree = C.Plain(C.Resolve("Constants.LegacyConsts.LEGACY_TREE_ADVENTURE_ID"), nil)
+	local nodeID = C.Plain(C.Resolve("Constants.LegacyConsts.LEGACY_TREE_ADVENTURE_TALENTED_NODE_ID"), nil)
+	if type(tree) ~= "number" or type(nodeID) ~= "number" then
+		return base
+	end
+	local configID = C.Plain(C.Call("C_Traits.GetConfigIDByTreeID", tree), nil)
+	if type(configID) ~= "number" then
+		return base
+	end
+	local node = C.Plain(C.Call("C_Traits.GetNodeInfo", configID, nodeID), nil)
+	local rank = type(node) == "table" and C.Plain(node.activeRank, nil) or nil
+	if type(rank) ~= "number" then
+		return base
+	end
+	return math.max(1, base - rank)
+end
+
+-- Kept up to date (login, level up, a change in the trees) so readers need no call.
+G.FIRST_TALENT_LEVEL = DEFAULT_TALENT_LEVEL
+
+function G.UpdateTalentUnlock()
+	local ok, level = pcall(G.TalentUnlockLevel)
+	G.FIRST_TALENT_LEVEL = ok and type(level) == "number" and level or DEFAULT_TALENT_LEVEL
+	return G.FIRST_TALENT_LEVEL
+end
+
+-- The level the next talent point comes at. Only answered when this character's own count
+-- fits one point a level since talents opened; otherwise nil rather than a guess.
 function G.NextTalentLevel(info)
 	local level = G.Level()
-	if info.unspentUnknown or level >= G.MaxLevel() or info.spent + info.unspent ~= level - FIRST_TALENT_LEVEL + 1 then
+	if info.unspentUnknown or level >= G.MaxLevel() or info.spent + info.unspent ~= level - G.FIRST_TALENT_LEVEL + 1 then
 		return nil
 	end
 	return level + 1
@@ -1439,6 +1474,7 @@ function G.WeaponsBehind(points, skills)
 end
 
 local function onLogin()
+	G.UpdateTalentUnlock()
 	local function spells()
 		G.SpellsChanged()
 		T:Fire("TH_SPELLS_CHANGED")
@@ -1451,6 +1487,7 @@ local function onLogin()
 		if type(level) == "number" then
 			levelSeen = level
 		end
+		G.UpdateTalentUnlock()
 		spells()
 	end)
 	T:On("TRAINER_SHOW", onTrainerShow)
@@ -1461,6 +1498,7 @@ local function onLogin()
 		T:Fire("TH_SKILLS_CHANGED")
 	end
 	T:On("SKILL_LINES_CHANGED", skillsChanged)
+	T:On("TRAIT_CONFIG_UPDATED", G.UpdateTalentUnlock)
 	T:On("TRAIT_CONFIG_UPDATED", skillsChanged)
 	T:On("PLAYER_EQUIPMENT_CHANGED", skillsChanged)
 	T:On("PLAYER_ENTERING_WORLD", watchDoor)

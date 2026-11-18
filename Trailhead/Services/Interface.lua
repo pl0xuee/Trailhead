@@ -96,7 +96,7 @@ end
 -- (the settings panel does the same, see ActionBars.lua). Only the first is read and changed.
 local function barsAdapter(def)
 	def.read = function()
-		if not (C.Has("GetActionBarToggles") and C.Has("SetActionBarToggles")) or C.Call("C_GameRules.IsMultiActionBarVisibilityForced") == true then
+		if not (C.Has("GetActionBarToggles") and C.Has("SetActionBarToggles")) or C.Plain(C.Call("C_GameRules.IsMultiActionBarVisibilityForced"), false) == true then
 			return nil
 		end
 		local toggles = { C.Call("GetActionBarToggles") }
