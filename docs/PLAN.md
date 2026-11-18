@@ -61,7 +61,7 @@ Phase 0 settles all four with a probe (section 7).
 
 - Class spells and ranks are bought from class trainers; trainers are race and faction specific and some are sparse (Alliance shaman, Horde paladin, Skyborne).
 - Weapon skills are the Classic system, with weapon masters in capitals.
-- Talents start at level 10 (9 with a Legacy perk). Dual spec: level 40, 50 gold, from the class trainer.
+- Talents start at level 10 (9 with a Legacy perk). Dual spec: level 40, from the class trainer; its price is unconfirmed (the "50 gold" seen early is not backed by a source), so the Guide does not state one. Resetting talents starts at 1 gold and rises each time.
 - Riding: level 40, about 100g training plus 20g mount; level 60, about 1,000g plus 200g. Sources disagree on whether the mount is included.
 - No flying, no level scaling, no summoning stones, no automatic group finder: players walk to dungeons.
 - Rested XP: accrues in inns and capitals, caps at 150% of a level, doubles kill XP only.

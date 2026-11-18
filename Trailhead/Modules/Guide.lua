@@ -17,12 +17,16 @@ local PANEL_X = LIST_W + 14
 local PANEL_W, PANEL_H = PAGE_W - PANEL_X, 496 - TOP
 local TOPIC_H, TOPIC_GAP = 38, 5
 local ROW_H, MAX_ROWS = 24, 9
+local MAX_PAGE_ROWS = 6 -- rows a paged topic shows at once, leaving room for its words
 local ROW_PAD = 6 -- above and below the words in a row
-local NOTE_W, TAG_W = PANEL_W - 40 - 104, 44 -- a row of words, and the room a tag takes from it
+local NOTE_W, TAG_W = PANEL_W - 40 - 104, 62 -- a row of words, and the room a tag and arrow take from it
+local ROW_INSET, ARROW = 8, 10 -- a row's hover fill reaches this far past its words; the arrow's size
 local LABEL_H, GAP = 10, 14 -- a small section label, and the space above one
 local FOOT = 18 -- under the last line or button
 local MAX_USE_ROWS = 3
+local MAX_QUEST_ROWS = 2 -- class quests shown in the Your class topic, the next ones first
 local LEGACY_LEVEL = 25 -- the game: Legacy opens when a first character reaches it
+local DUAL_SPEC_LEVEL = 40 -- the guides: the class trainer offers dual spec from this level
 
 local ui = { topics = {}, rows = {} }
 Guide.topic = "talents"
@@ -56,15 +60,54 @@ local function mySide()
 	return faction == 1 and "H" or faction == 2 and "A" or nil
 end
 
+-- The game's own name for a spell or an item, in the player's language; the English name
+-- from the shipped tables when the game gives none.
+local function spellName(id, fallback)
+	local name = id and C.Plain(C.Call("C_Spell.GetSpellName", id), nil)
+	return type(name) == "string" and name ~= "" and name or fallback
+end
+
+local function itemName(id, fallback)
+	local name = id and C.Plain(C.Call("C_Item.GetItemNameByID", id), nil)
+	return type(name) == "string" and name ~= "" and name or fallback
+end
+
+-- Whether the character knows a spell: true, false, or nil when the game will not say.
+local function knows(id)
+	for _, path in ipairs({ "C_SpellBook.IsSpellKnown", "IsSpellKnown", "IsPlayerSpell" }) do
+		if C.Has(path) then
+			local known = C.Plain(C.Call(path, id), nil)
+			if known ~= nil then
+				return known == true
+			end
+		end
+	end
+	return nil
+end
+
+-- The class quests (Data/ClassQuests.lua) by the spells they teach.
+local function questSpells(class)
+	local by = {}
+	for _, quest in ipairs((T.ClassQuests and T.ClassQuests[class]) or {}) do
+		for _, id in ipairs(quest.spells or {}) do
+			by[id] = quest
+		end
+	end
+	return by
+end
+
 local function shippedSpells(class)
 	local key = (class or "") .. (mySide() or "")
 	if not parsed.spells[key] then
-		local list, side = {}, mySide()
+		local list, side, quests = {}, mySide(), questSpells(class)
 		for line in ((T.ClassSpells and T.ClassSpells[class]) or ""):gmatch("[^;]+") do
-			local level, name, rank, only = line:match("^(%d+)|([^|]*)|(%d+)|(.*)$")
+			local level, name, rank, only, id = line:match("^(%d+)|([^|]*)|(%d+)|([AH]?)|?(%d*)$")
 			if level and (only == "" or only == side) then
-				rank = tonumber(rank)
-				list[#list + 1] = { name = rank > 1 and L["%s (Rank %d)"]:format(name, rank) or name, level = tonumber(level), cost = 0, shipped = true }
+				rank, id = tonumber(rank), tonumber(id)
+				name = spellName(id, name)
+				-- A spell a class quest teaches is marked, so it is not promised at the trainer.
+				list[#list + 1] = { name = rank > 1 and L["%s (Rank %d)"]:format(name, rank) or name, level = tonumber(level), cost = 0,
+					shipped = true, id = id, quest = id and quests[id] ~= nil or nil }
 			end
 		end
 		parsed.spells[key] = list
@@ -72,29 +115,78 @@ local function shippedSpells(class)
 	return parsed.spells[key]
 end
 
--- What the class's abilities use up: { item, spell, level, count }, one per item, by level.
+-- What the class's abilities use up: { item, itemID, spell, spellID, level, count }, one per
+-- item, by level. Names are the game's own when it gives them.
 local function shippedUses(class)
 	local key = (class or "") .. (mySide() or "")
 	if not parsed.uses[key] then
 		local list, side, seen = {}, mySide(), {}
 		for line in ((T.ClassUses and T.ClassUses[class]) or ""):gmatch("[^;]+") do
-			local level, spell, item, count, only = line:match("^(%d+)|([^|]*)|([^|]*)|(%d+)|(.*)$")
+			local level, spell, item, count, only, spellID, itemID = line:match("^(%d+)|([^|]*)|([^|]*)|(%d+)|([AH]?)|?(%d*)|?(%d*)$")
 			if level and (only == "" or only == side) and not seen[item] then
 				seen[item] = true
-				list[#list + 1] = { item = item, spell = spell, level = tonumber(level), count = tonumber(count) }
+				spellID, itemID = tonumber(spellID), tonumber(itemID)
+				list[#list + 1] = { item = itemName(itemID, item), itemID = itemID, english = item, spell = spellName(spellID, spell),
+					spellID = spellID, level = tonumber(level), count = tonumber(count) }
 			end
 		end
 		table.sort(list, function(a, b)
 			if a.level ~= b.level then
 				return a.level < b.level
 			end
-			return a.item < b.item
+			return a.english < b.english
 		end)
 		parsed.uses[key] = list
 	end
 	return parsed.uses[key]
 end
 Guide.ShippedSpells, Guide.ShippedUses = shippedSpells, shippedUses
+
+-- Items the class makes or earns itself rather than buys: Soul Shards and the four totems.
+local MADE = { [6265] = true, [5175] = true, [5176] = true, [5177] = true, [5178] = true }
+
+-- The class quests for this character: { level, name, done, from, quest = true }, by level.
+-- done is true, false, or nil when the game cannot tell; from says who starts it.
+local function classQuests(class)
+	local list, race, side = {}, G.RaceFile(), mySide()
+	for _, quest in ipairs((T.ClassQuests and T.ClassQuests[class]) or {}) do
+		local entry = { level = quest.level, quest = true, cost = 0 }
+		if quest.racial then
+			entry.name = L["a spell of your race's own"]
+		elseif quest.item then
+			entry.name = itemName(quest.item, quest.name)
+			local held = C.Plain(C.Call("C_Item.GetItemCount", quest.item, true), nil)
+			entry.done = type(held) == "number" and held > 0 or nil
+			entry.item = true
+		else
+			entry.name = spellName(quest.spells[1], quest.name)
+			for _, id in ipairs(quest.spells) do
+				local known = knows(id)
+				if known then
+					entry.done = true
+					break
+				elseif known == false then
+					entry.done = false
+				end
+			end
+		end
+		local place = quest.where and (race and quest.where[race] or side and quest.where[side])
+		local trainer = quest.trainer == true or type(quest.trainer) == "table" and race and quest.trainer[race]
+		if place then
+			entry.from = L["%s: in %s"]:format(entry.name, G.MapName(place) or (T.ClassQuestPlaces or {})[place] or "?")
+		elseif trainer then
+			entry.from = L["%s: from your class trainer"]:format(entry.name)
+		else
+			entry.from = L["%s: ask your class trainer"]:format(entry.name)
+		end
+		list[#list + 1] = entry
+	end
+	table.sort(list, function(a, b)
+		return a.level < b.level
+	end)
+	return list
+end
+Guide.ClassQuests = classQuests
 
 local SOON = 10 -- levels ahead that count as "soon"
 
@@ -160,6 +252,60 @@ local function weapons()
 	return out
 end
 
+-- The main professions by the game's skill line IDs, with what each makes or gathers and the
+-- one it pairs with. A main profession the character has is not suggested again.
+local MAIN_PROFESSIONS = {
+	{ 171, L["Alchemy"], L["Potions and elixirs. Pairs with Herbalism."] },
+	{ 164, L["Blacksmithing"], L["Weapons and mail armor. Pairs with Mining."] },
+	{ 333, L["Enchanting"], L["Enchants gear with what you break down. Needs no gatherer."] },
+	{ 202, L["Engineering"], L["Gadgets, guns and bombs. Pairs with Mining."] },
+	{ 182, L["Herbalism"], L["Gathers herbs. Pairs with Alchemy, or sell what you pick."] },
+	{ 165, L["Leatherworking"], L["Leather and mail armor. Pairs with Skinning."] },
+	{ 186, L["Mining"], L["Gathers ore and stone. Pairs with Blacksmithing or Engineering."] },
+	{ 393, L["Skinning"], L["Skins the beasts you kill. Pairs with Leatherworking."] },
+	{ 197, L["Tailoring"], L["Cloth armor and bags, from cloth enemies drop. Needs no gatherer."] },
+}
+local MAIN_SLOTS = 2 -- a character can learn two main professions
+local GATHERING = { [182] = true, [186] = true, [393] = true, [129] = true, [356] = true, [185] = true } -- and the everyday ones
+
+-- A topic whose rows come in pages ({ title, rows }), empty pages left out: the page shown,
+-- its title in the heading and a button to the next. One page shows plainly under its heading.
+local function paged(id, out, pages)
+	local kept = {}
+	for _, page in ipairs(pages) do
+		if #page.rows > 0 then
+			kept[#kept + 1] = page
+		end
+	end
+	if #kept == 0 then
+		return out
+	end
+	local at = Guide.pageOf[id] or 1
+	if at > #kept then
+		at = 1
+	end
+	out.rows = kept[at].rows
+	if #kept > 1 then
+		local following = at % #kept + 1
+		out.heading = L["Page %d of %d: %s"]:format(at, #kept, kept[at].title)
+		out.pager = { label = L["Next: %s"]:format(kept[following].title), run = function()
+			Guide.pageOf[id] = following
+			Guide:Refresh()
+		end }
+	end
+	return out
+end
+
+local function mainCount(skills)
+	local mains = 0
+	for _, profession in ipairs(MAIN_PROFESSIONS) do
+		if skills.byId[profession[1]] then
+			mains = mains + 1
+		end
+	end
+	return mains
+end
+
 local function professions()
 	local skills = G.Skills()
 	local out = { rows = {}, attention = 0 }
@@ -189,15 +335,50 @@ local function professions()
 		out.next = L["%s is close to its limit: %d of %d. A skill stops rising at its limit, so see its trainer for the next step."]
 			:format(near.name, near.rank, near.max)
 		out.action = find
+	elseif skills.complete and mainCount(skills) < MAIN_SLOTS then
+		out.next = L["You have room for another main profession. Pick professions, under Gold and more, says what each one does and which pairs well."]
+		out.action = find
 	else
 		out.next = L["Nothing needs doing. Your skills rise as you gather and make things."]
 	end
 	return out
 end
 
+-- Choosing professions: each main one the character could still learn, what it makes or
+-- gathers and its partner. Hidden once both main professions are chosen.
+local function choosing()
+	local skills = G.Skills()
+	local mains = mainCount(skills)
+	local out = { rows = {}, attention = 0, hidden = skills.complete and mains >= MAIN_SLOTS, heading = L["The main professions"] }
+	out.what = L["You can learn two main professions, and Cooking, First Aid and Fishing on top of them for free. A gatherer brings in materials; a crafter turns them into gear, potions and more."]
+	local gather, craft = {}, {}
+	for _, profession in ipairs(MAIN_PROFESSIONS) do
+		if not skills.byId[profession[1]] then
+			local list = GATHERING[profession[1]] and gather or craft
+			list[#list + 1] = { name = profession[2], text = profession[3], run = findRun("professions"),
+				tag = L["Find"], tagRole = "accentText" }
+		end
+	end
+	out.total = #gather + #craft
+	if out.total <= MAX_PAGE_ROWS then
+		for _, row in ipairs(gather) do
+			craft[#craft + 1] = row
+		end
+		out.rows = craft
+	else
+		paged("choosing", out, { { title = L["Gathering"], rows = gather }, { title = L["Crafting"], rows = craft } })
+	end
+	out.next = L["Two gathering professions, such as Herbalism and Mining, earn the most gold early. Every profession also makes a camp item: see Camping."]
+	out.action = { label = L["Find a profession trainer"], run = findRun("professions") }
+	return out
+end
+
 local function talents()
 	local out = { rows = {}, attention = 0 }
 	out.what = L["Talent points make your abilities stronger. Your class has three trees to put them in, and the deeper rows of a tree open as you put more points into it."]
+		-- A wrong point can be undone, as the guides agree (no price for dual spec: they do not).
+		.. " " .. L["A wrong point is not forever: your class trainer can reset your talents for a fee that starts at 1 gold and grows each time."]
+		.. (G.Level() >= DUAL_SPEC_LEVEL and " " .. L["From level 40 the trainer also offers a second set of talents to switch between."] or "")
 	local info = G.Talents()
 	if not info then
 		out.next = L["The game has not listed your talents yet. Try again in a moment."]
@@ -238,11 +419,11 @@ local function talents()
 end
 
 -- What the next levels bring, from what the game itself has listed: the class trainer's
--- full list (saved at the last visit), and the levels the group finder gives for dungeons
--- and zones. Levels with nothing new are left out.
+-- full list (saved at the last visit), the class quests (Data/ClassQuests.lua), and the
+-- levels the group finder gives for dungeons and zones. Levels with nothing new are left out.
 local function coming()
 	local out = { rows = {}, attention = 0 }
-	out.what = L["What your next levels bring: new abilities at your class trainer, and the dungeons and zones that open up. Levels with nothing new are left out."]
+	out.what = L["What your next levels bring: new abilities from your class trainer and your class quests, and the dungeons and zones that open up. Levels with nothing new are left out."]
 	local level, top = G.Level(), G.MaxLevel()
 	if level >= top then
 		out.next = L["You are at the top level. Nothing more unlocks by levelling."]
@@ -252,7 +433,7 @@ local function coming()
 	local byLevel, levels = {}, {}
 	local function at(need)
 		if not byLevel[need] then
-			byLevel[need] = { level = need, spells = {}, dungeons = {}, zones = {}, cost = 0 }
+			byLevel[need] = { level = need, spells = {}, quests = {}, dungeons = {}, zones = {}, cost = 0 }
 			levels[#levels + 1] = byLevel[need]
 		end
 		return byLevel[need]
@@ -262,7 +443,7 @@ local function coming()
 	if not training.source then
 		upcoming = {}
 		for _, item in ipairs(shippedSpells(G.ClassFile())) do
-			if item.level > level then
+			if item.level > level and not item.quest then
 				upcoming[#upcoming + 1] = item
 			end
 		end
@@ -272,6 +453,13 @@ local function coming()
 			local entry = at(item.level)
 			entry.spells[#entry.spells + 1] = item
 			entry.cost = entry.cost + item.cost
+		end
+	end
+	-- Abilities a class quest teaches come from the quest, not from the trainer.
+	for _, quest in ipairs(classQuests(G.ClassFile())) do
+		if quest.level > level and quest.level <= top then
+			local entry = at(quest.level)
+			entry.quests[#entry.quests + 1] = quest
 		end
 	end
 	for _, dungeon in ipairs(world.dungeons) do
@@ -295,6 +483,9 @@ local function coming()
 		local entry, parts = levels[index], {}
 		if #entry.spells > 0 then
 			parts[#parts + 1] = L["Trainer: %s"]:format(G.NameList(entry.spells, 2))
+		end
+		if #entry.quests > 0 then
+			parts[#parts + 1] = L["Class quest: %s"]:format(G.NameList(entry.quests, 2))
 		end
 		if #entry.dungeons > 0 then
 			parts[#parts + 1] = L["Dungeon: %s"]:format(G.NameList(entry.dungeons, 2))
@@ -335,6 +526,12 @@ local function coming()
 		end
 	elseif #levels == 0 then
 		lines[#lines + 1] = L["The game lists nothing new for the levels you have left."]
+	end
+	for _, entry in ipairs(levels) do
+		if #entry.quests > 0 then
+			lines[#lines + 1] = L["At level %d a class quest teaches %s, not the trainer."]:format(entry.level, G.NameList(entry.quests, 2))
+			break
+		end
 	end
 	local info = G.Talents()
 	local talentLevel = info and G.NextTalentLevel(info)
@@ -411,8 +608,9 @@ local function supplies()
 	for _, use in ipairs(shippedUses(G.ClassFile())) do
 		if use.level <= level + SOON and shown < MAX_USE_ROWS then
 			shown = shown + 1
-			local held = C.Plain(C.Call("C_Item.GetItemCount", use.item), nil)
-			local made = use.item == "Soul Shard" or use.item:find(" Totem$") ~= nil
+			-- Counted by the item's ID, so it works in every language.
+			local held = use.itemID and C.Plain(C.Call("C_Item.GetItemCount", use.itemID), nil) or nil
+			local made = MADE[use.itemID] or false
 			out.rows[#out.rows + 1] = {
 				name = use.level <= level and L["Uses up"] or L["Level %d"]:format(use.level),
 				text = type(held) == "number" and L["%s for %s (you carry %d)"]:format(use.item, use.spell, held) or L["%s for %s"]:format(use.item, use.spell),
@@ -452,7 +650,7 @@ local function gear()
 	if #state.can > 0 then
 		out.rows[#out.rows + 1] = { name = L["You can wear"], text = table.concat(state.can, ", ") }
 	elseif state.canFolded then
-		out.rows[#out.rows + 1] = { name = L["You can wear"], text = L["Open Armor Proficiencies in the game's skills window to see"] }
+		out.rows[#out.rows + 1] = { name = L["You can wear"], text = L["Your character window's skills list shows it under Armor Proficiencies."] }
 	end
 	if #state.worn > 0 then
 		local parts = {}
@@ -647,15 +845,56 @@ local function classNotes()
 			roles[#roles + 1] = D.roleNames[bit]
 		end
 	end
+	local level = G.Level()
 	out.rows = {
 		{ name = L["Power"], text = def.resource },
 		{ name = L["Good at"], text = def.good },
 		{ name = L["Roles"], text = #roles > 0 and table.concat(roles, ", ") or L["Not listed"] },
 		{ name = L["Needs"], text = def.needs },
-		soonRow(class, G.Level()),
 	}
+	-- Class quests (Data/ClassQuests.lua): the ones still to do first, then the ones done.
+	-- A quest the character can do now whose reward the game says it lacks wants attention.
+	local quests, open = classQuests(class), nil
+	local shownQuests, done = 0, 0
+	for _, wanted in ipairs({ false, true }) do
+		for _, quest in ipairs(quests) do
+			if (quest.done == true) == wanted then
+				done = done + (quest.done and 1 or 0)
+				if quest.done == false and quest.level <= level then
+					open = open or quest
+				end
+				if shownQuests < MAX_QUEST_ROWS then
+					shownQuests = shownQuests + 1
+					local row = { name = L["Level %d"]:format(quest.level), text = quest.from }
+					if quest.done then
+						row.tag, row.tagRole, row.tone = L["Done"], "go", "faint"
+					else
+						row.run, row.tag, row.tagRole = findRun("trainer"), L["Find"], "accentText"
+						row.tone = quest.level > level and "faint" or nil
+					end
+					out.rows[#out.rows + 1] = row
+				end
+			end
+		end
+	end
+	out.rows[#out.rows + 1] = soonRow(class, level)
 	out.total = #out.rows
-	out.next = L["The Supplies topic counts what your abilities use up. Coming up lists what each level brings, and the Builds page helps with talents."]
+	-- Only quests whose reward the game can confirm are counted.
+	local checked = 0
+	for _, quest in ipairs(quests) do
+		checked = checked + (quest.done ~= nil and 1 or 0)
+	end
+	if checked > 0 then
+		out.heading = L["Your class: %d of %d class quests done"]:format(done, checked)
+	end
+	if open then
+		out.attention = 1
+		out.next = L["Your class quest for %s is open now. It teaches what no trainer sells; your class trainer can tell you where it starts."]:format(open.name)
+	elseif #quests > 0 then
+		out.next = L["Some of your abilities come from class quests, listed here by level. Coming up shows what each level brings."]
+	else
+		out.next = L["The Supplies topic counts what your abilities use up. Coming up lists what each level brings, and the Builds page helps with talents."]
+	end
 	out.action = { label = L["Find your trainer"], run = findRun("trainer") }
 	return out
 end
@@ -703,6 +942,16 @@ local function grouping()
 	return out
 end
 
+-- The kinds of place the game's zone PvP info names.
+local ZONE_KINDS = {
+	sanctuary = L["A sanctuary: nobody can fight here"],
+	friendly = L["Your side's land: its guards help you"],
+	hostile = L["The other side's land: their guards attack you"],
+	contested = L["Contested: both sides meet here"],
+	combat = L["A battle zone: anyone can attack you"],
+	arena = L["An arena: everyone fights"],
+}
+
 local function danger()
 	local def = D.danger
 	local level = G.Level()
@@ -710,6 +959,15 @@ local function danger()
 	-- The game's own colour rule: orange from 3 levels above you, red from 5.
 	out.rows[3].text = L["Level %d or %d: 3 or 4 above you. Hard."]:format(level + 3, level + 4)
 	out.rows[4].text = L["Level %d and up: 5 or more above. Very risky."]:format(level + 5)
+	-- What kind of place the character is in, as the game reports it.
+	local kind = C.Plain(C.Call("C_PvP.GetZonePVPInfo"), nil)
+	if kind == nil and not C.Has("C_PvP.GetZonePVPInfo") then
+		kind = C.Plain(C.Call("GetZonePVPInfo"), nil)
+	end
+	local here = type(kind) == "string" and ZONE_KINDS[kind]
+	if here then
+		out.rows[#out.rows + 1] = { name = L["Here"], text = here, tone = (kind == "hostile" or kind == "combat") and "warn" or nil }
+	end
 	out.total = #out.rows
 	out.next = def.pvp
 	return out
@@ -887,6 +1145,169 @@ local function week()
 	return out
 end
 
+-- Camping, Forever's own: a cook's campfire and one camp item from each profession. Facts from
+-- Blizzard's "Gather Around the Campfire" article, with the Mining item from Warcraft Tavern's
+-- and RankedBoost's lists (Blizzard's table leaves Mining out). No durations: sources differ.
+local CAMPFIRE_SPELL = 818 -- Basic Campfire
+local CAMP_ITEMS = {
+	{ 129, L["First Aid"], 279968, L["First Aid Kit"], L["%s: more Stamina"] },
+	{ 356, L["Fishing"], 279967, L["Fish Bowl"], L["%s: more of all your stats"] },
+	{ 171, L["Alchemy"], 279956, L["Mana Well"], L["%s: your mana comes back faster"] },
+	{ 164, L["Blacksmithing"], 279944, L["Sharpening Wheel"], L["%s: more Strength"] },
+	{ 333, L["Enchanting"], 279976, L["Enchanted Lute"], L["%s: more armor, stats and resistances"] },
+	{ 202, L["Engineering"], 279950, L["Reagent Bot"], L["%s: sells reagents at the camp, no buff"] },
+	{ 182, L["Herbalism"], 279962, L["Incense Candle"], L["%s: more Intellect"] },
+	{ 165, L["Leatherworking"], 279978, L["Camp Tent"], L["%s: rested experience, if you have little"] },
+	{ 186, L["Mining"], 279960, L["Lodestone"], L["%s: more attack power"] },
+	{ 393, L["Skinning"], 279979, L["Camp Chair"], L["%s: 2%% more critical strike chance"] },
+	{ 197, L["Tailoring"], 279972, L["Faction Banner"], L["%s: more Spirit, for your own side only"] },
+}
+local COOKING = 185
+
+local function camping()
+	local out = { rows = {}, attention = 0, heading = L["Camp items"] }
+	out.what = L["Camping is Forever's own system. A cook lights a campfire with Flint and Tinder and Simple Wood, and anyone who sits or crafts beside it for a minute gets the buffs of the camp items set up around it."]
+	local skills = G.Skills()
+	local pages = { { title = L["The fire and gathering"], mine = {}, others = {} }, { title = L["Crafting"], mine = {}, others = {} } }
+	local fire = spellName(CAMPFIRE_SPELL, L["Basic Campfire"])
+	local cook = skills.byId[COOKING]
+	local rows = { { COOKING, cook and cook.name or L["Cooking"], L["%s: the fire every camp needs"]:format(fire) } }
+	for _, item in ipairs(CAMP_ITEMS) do
+		local skill = skills.byId[item[1]]
+		rows[#rows + 1] = { item[1], skill and skill.name or item[2], item[5]:format(itemName(item[3], item[4])) }
+	end
+	-- Your own professions first on each page.
+	for _, row in ipairs(rows) do
+		local page = pages[GATHERING[row[1]] and 1 or 2]
+		local entry = { name = row[2], text = row[3] }
+		if skills.byId[row[1]] then
+			entry.tag, entry.tagRole = L["Yours"], "go"
+			page.mine[#page.mine + 1] = entry
+		else
+			page.others[#page.others + 1] = entry
+		end
+	end
+	for _, page in ipairs(pages) do
+		page.rows = page.mine
+		for _, entry in ipairs(page.others) do
+			page.rows[#page.rows + 1] = entry
+		end
+	end
+	out.total = #rows
+	paged("camping", out, pages)
+	out.next = L["A campfire holds three camp items, one per player, and each has an hour's cooldown. Trainers teach the first ones at skill 20. On a PvP ruleset, enemies can find your camp."]
+	if cook then
+		out.action = { label = L["Find a vendor"], run = findRun("vendor") }
+	else
+		out.next = out.next .. " " .. L["Any cooking trainer teaches the campfire."]
+		out.action = { label = L["Find a profession trainer"], run = findRun("professions") }
+	end
+	return out
+end
+
+-- Fighting safely: the habits that keep a new character alive, with health, mana and food
+-- read from the game.
+local LOW_HEALTH = 50
+
+local function percentOf(value, most)
+	value, most = C.Plain(value, nil), C.Plain(most, nil)
+	if type(value) == "number" and type(most) == "number" and most > 0 then
+		return math.floor(value / most * 100 + 0.5)
+	end
+	return nil
+end
+
+local function fighting()
+	local out = { rows = {}, attention = 0, heading = L["Before the next fight"] }
+	out.what = L["Most deaths early on come from fighting too many enemies at once. Take them one at a time, and start each fight with full health and mana."]
+	local health = percentOf(C.Call("UnitHealth", "player"), C.Call("UnitHealthMax", "player"))
+	if health then
+		out.rows[#out.rows + 1] = { name = L["Health"], text = L["%d%%"]:format(health), tone = health < LOW_HEALTH and "warn" or nil }
+	end
+	local mana = percentOf(C.Call("UnitPower", "player", 0), C.Call("UnitPowerMax", "player", 0))
+	if mana then
+		out.rows[#out.rows + 1] = { name = L["Mana"], text = L["%d%%"]:format(mana), tone = mana < LOW_HEALTH and "warn" or nil }
+	end
+	local carried = G.Supplies()
+	if carried.read then
+		local food = carried.food
+		out.rows[#out.rows + 1] = { name = L["Food and drink"], tone = food.count == 0 and "warn" or nil,
+			text = food.count == 0 and L["None"] or food.name and L["%d, mostly %s"]:format(food.count, food.name) or tostring(food.count),
+			run = function()
+				T.Window:Select("guide", "supplies")
+			end, tag = L["Read"], tagRole = "accentText" }
+	end
+	for _, row in ipairs(plainRows(D.fighting and D.fighting.rows)) do
+		out.rows[#out.rows + 1] = row
+	end
+	out.total = #out.rows
+	local low = health and health < LOW_HEALTH or mana and mana < LOW_HEALTH
+	out.next = (low and L["Eat or drink before your next fight: it brings you back far faster than waiting."] .. " " or "")
+		.. L["Look at what is around an enemy before you pull it, and if a fight goes wrong, run early."]
+	if carried.read and carried.food.count == 0 then
+		out.action = { label = L["Find a vendor"], run = findRun("vendor") }
+	end
+	return out
+end
+
+-- The hunter's pet, in words only (whether the game tells addons a pet's happiness on Forever
+-- is unchecked). Figures from Warcraft Tavern's Forever pet guide, matched by others.
+local TAME_BEAST = 1515
+
+local function pet()
+	local hunter = G.ClassFile() == "HUNTER"
+	local out = { rows = {}, attention = 0, hidden = not hunter, heading = L["Looking after it"] }
+	out.what = L["A hunter's pet fights beside you. Keep it fed and happy: a happy pet hits harder and an unhappy one hits softer."]
+	local tamed = knows(TAME_BEAST)
+	for _, row in ipairs(plainRows(D.pet and D.pet.rows)) do
+		out.rows[#out.rows + 1] = row
+	end
+	if out.rows[1] and tamed then
+		out.rows[1].tag, out.rows[1].tagRole, out.rows[1].tone = L["Done"], "go", "faint"
+	elseif out.rows[1] then
+		out.rows[1].run, out.rows[1].tag, out.rows[1].tagRole = findRun("trainer"), L["Find"], "accentText"
+	end
+	out.total = #out.rows
+	if hunter and tamed == false and G.Level() >= 10 then
+		out.attention = 1
+		out.next = L["You can tame a pet now. Your class trainer starts the class quest that teaches Tame Beast."]
+		out.action = { label = L["Find your trainer"], run = findRun("trainer") }
+	else
+		out.next = L["Feed your pet before a long fight. Before you tame a new one, leave your current pet with a stable master."]
+		out.action = { label = L["Find a stable master"], run = findRun("stable") }
+	end
+	return out
+end
+
+-- Quests: how they work, with how full the log is, as the game reports it.
+local function quests()
+	local out = { rows = {}, attention = 0, heading = L["Quest know-how"] }
+	out.what = L["Quests are the main way to level. People with a yellow ! above their heads have work for you; go back to a yellow ? to hand it in and get your reward."]
+	local _, count = C.Call("C_QuestLog.GetNumQuestLogEntries")
+	count = C.Plain(count, nil)
+	local most = C.Plain(C.Call("C_QuestLog.GetMaxNumQuestsCanAccept"), nil)
+	if most == nil then
+		most = C.Plain(C.Call("GetMaxNumQuestsCanAccept"), nil)
+	end
+	local full = false
+	if type(count) == "number" and type(most) == "number" and most > 0 then
+		full = count >= most
+		out.rows[#out.rows + 1] = { name = L["Your log"], text = L["%d of %d quests"]:format(count, most),
+			tone = most - count <= 2 and "warn" or nil }
+	end
+	for _, row in ipairs(plainRows(D.quests and D.quests.rows)) do
+		out.rows[#out.rows + 1] = row
+	end
+	out.total = #out.rows
+	if full then
+		out.attention = 1
+		out.next = L["Your quest log is full. Abandon grey quests first: they give little experience now."]
+	else
+		out.next = L["Take every quest in a town before you head out, and do the ones in the same area together."]
+	end
+	return out
+end
+
 local TOPICS = {
 	{ id = "class", group = "you", icon = "sword", label = L["Your class"], read = classNotes },
 	{ id = "talents", group = "you", icon = "spark", label = L["Talents"], read = talents },
@@ -894,6 +1315,7 @@ local TOPICS = {
 	{ id = "gear", group = "you", icon = "shield", label = L["Gear"], read = gear },
 	{ id = "weapons", group = "you", icon = "hammer", label = L["Weapon skills"], read = weapons },
 	{ id = "professions", group = "you", icon = "pick", label = L["Professions"], read = professions },
+	{ id = "fighting", group = "you", icon = "tri", label = L["Fighting"], read = fighting },
 	{ id = "screen", group = "you", icon = "gear", label = L["Screen setup"], read = screen },
 
 	{ id = "firststeps", group = "world", icon = "check", label = L["First steps"], read = firstSteps },
@@ -903,13 +1325,17 @@ local TOPICS = {
 	{ id = "travel", group = "world", icon = "wing", label = L["Travel"], read = travel },
 	{ id = "mount", group = "world", icon = "shoe", label = L["Mount"], read = mount },
 	{ id = "dying", group = "world", icon = "moon", label = L["Dying"], read = dying },
+	{ id = "quests", group = "world", icon = "pin", label = L["Quests"], read = quests },
 
 	{ id = "grouping", group = "others", icon = "plus", label = L["Grouping"], read = grouping },
 	{ id = "danger", group = "others", icon = "tri", label = L["Danger and PvP"], read = danger },
 	{ id = "words", group = "others", icon = "book", label = L["Words and chat"], read = words },
+	{ id = "pet", group = "others", icon = "bulb", label = L["Your pet"], read = pet },
 
 	{ id = "money", group = "gold", icon = "coin", label = L["Money"], read = money },
 	{ id = "reputation", group = "gold", icon = "bars", label = L["Reputation"], read = reputation },
+	{ id = "camping", group = "gold", icon = "bed", label = L["Camping"], read = camping },
+	{ id = "choosing", group = "gold", icon = "pick", label = L["Pick professions"], read = choosing },
 	{ id = "forever", group = "gold", icon = "mtn", label = L["Forever's systems"], read = forever },
 	{ id = "week", group = "gold", icon = "scroll", label = L["Each week"], read = week },
 }
@@ -1025,27 +1451,35 @@ local function makeTopic(page, topic)
 	return button
 end
 
+local function rowLook(row)
+	row:SetStyle({ fill = row.hover and row.run and "cardHover" or false })
+	row.name:SetRole(row.hover and row.run and "accentText" or "ink")
+end
+
 local function makeRow(panel, index)
-	-- A button, so a row that leads somewhere (a service, a vendor) can be clicked.
-	local row = CreateFrame("Button", nil, panel)
-	row:SetSize(PANEL_W - 40, ROW_H)
+	-- A button, so a row that leads somewhere (a service, a vendor) can be clicked. It reaches
+	-- ROW_INSET past the words on each side, so its hover fill frames them.
+	local row = W.Panel(panel, { shape = "card" }, "Button")
+	row:SetSize(PANEL_W - 40 + 2 * ROW_INSET, ROW_H)
 	row.name = W.Text(row, "body", 11.5, "ink")
-	row.name:SetPoint("TOPLEFT", row, "TOPLEFT", 0, -ROW_PAD)
+	row.name:SetPoint("TOPLEFT", row, "TOPLEFT", ROW_INSET, -ROW_PAD)
 	row.name:SetWidth(100)
 	row.bar = W.Bar(row, 150, 8, "accent", "accent")
-	row.bar:SetPoint("LEFT", row, "LEFT", 128, 0)
+	row.bar:SetPoint("LEFT", row, "LEFT", ROW_INSET + 128, 0)
 	row.value = W.Text(row, "body", 11, "muted")
 	row.value:SetPoint("LEFT", row.bar, "RIGHT", 12, 0)
 	-- A row of plain words instead of a bar (the "Coming up" topic).
 	-- It may run to a second line; the row grows with it (Guide:Refresh).
 	row.note = W.Text(row, "body", 11, "muted", { width = NOTE_W })
-	row.note:SetPoint("TOPLEFT", row, "TOPLEFT", 104, -ROW_PAD)
+	row.note:SetPoint("TOPLEFT", row, "TOPLEFT", ROW_INSET + 104, -ROW_PAD)
 	row.note:SetSpacing(2)
 	if row.note.SetMaxLines then
 		row.note:SetMaxLines(2)
 	end
-	row.tag = W.Text(row, "label", 8.5, "go")
-	row.tag:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+	-- A row that leads somewhere ends in an arrow, with its tag (Find, Read) before it.
+	row.arrow = W.Icon(row, "arrow", ARROW, "accentText")
+	row.arrow:SetPoint("RIGHT", row, "RIGHT", -ROW_INSET, 0)
+	row.tag = W.Text(row, "label", 10, "go")
 	row.tag:SetJustifyH("RIGHT")
 	row:SetScript("OnClick", function(self)
 		if self.run then
@@ -1054,12 +1488,12 @@ local function makeRow(panel, index)
 		end
 	end)
 	row:SetScript("OnEnter", function(self)
-		if self.run then
-			self.name:SetRole("accentText")
-		end
+		self.hover = true
+		rowLook(self)
 	end)
 	row:SetScript("OnLeave", function(self)
-		self.name:SetRole("ink")
+		self.hover = false
+		rowLook(self)
 	end)
 	return row
 end
@@ -1105,7 +1539,7 @@ function Guide:Build(page)
 	for index = 1, MAX_ROWS do
 		local row = makeRow(panel, index)
 		if index == 1 then
-			row:SetPoint("TOPLEFT", ui.standLabel, "BOTTOMLEFT", 0, -6)
+			row:SetPoint("TOPLEFT", ui.standLabel, "BOTTOMLEFT", -ROW_INSET, -6)
 		else
 			row:SetPoint("TOPLEFT", ui.rows[index - 1], "BOTTOMLEFT", 0, 0)
 		end
@@ -1125,7 +1559,6 @@ function Guide:Build(page)
 			end
 		end,
 	})
-	ui.action:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 20, FOOT)
 	-- The next page of a topic that has several (Words and chat).
 	ui.pager = W.Button(panel, "", "ghost", {
 		role = "accentText", height = 28, size = 11,
@@ -1135,7 +1568,6 @@ function Guide:Build(page)
 			end
 		end,
 	})
-	ui.pager:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -20, FOOT)
 	self.built = true
 end
 
@@ -1166,6 +1598,14 @@ local function fillRow(row, item)
 	end
 	row.tag:SetLabel(item.tag or "")
 	row.tag:SetRole(item.tagRole or item.tone or "go")
+	row.arrow:SetShown(item.run ~= nil)
+	row.tag:ClearAllPoints()
+	if item.run then
+		row.tag:SetPoint("RIGHT", row.arrow, "LEFT", -6, 0)
+	else
+		row.tag:SetPoint("RIGHT", row, "RIGHT", -ROW_INSET, 0)
+	end
+	rowLook(row)
 	local height = ROW_H
 	if item.text then
 		height = math.max(ROW_H, math.ceil(W.TextHeight(row.note)) + ROW_PAD * 2)
@@ -1199,15 +1639,28 @@ function Guide:Refresh()
 		end
 		topicLook(button)
 	end
-	-- A hidden topic is never the open one: the next one in its group opens instead.
+	-- A hidden topic is never the open one: the next one in its group opens instead, or the
+	-- one before it when it is the last (Your pet for a class without one).
+	local hiddenAt
 	for index, topic in ipairs(TOPICS) do
 		if topic == current and ui.topics[index].info.hidden then
-			for later = index + 1, #TOPICS do
-				if TOPICS[later].group == topic.group and not ui.topics[later].info.hidden then
-					current = TOPICS[later]
-					self.topic = current.id
-					break
-				end
+			hiddenAt = index
+		end
+	end
+	if hiddenAt then
+		local group = current.group
+		local order = {}
+		for later = hiddenAt + 1, #TOPICS do
+			order[#order + 1] = later
+		end
+		for earlier = hiddenAt - 1, 1, -1 do
+			order[#order + 1] = earlier
+		end
+		for _, other in ipairs(order) do
+			if TOPICS[other].group == group and not ui.topics[other].info.hidden then
+				current = TOPICS[other]
+				self.topic = current.id
+				break
 			end
 		end
 	end
@@ -1274,9 +1727,24 @@ function Guide:Refresh()
 	ui.nextLabel:SetShown(hasNext)
 	ui.nextLabel:ClearAllPoints()
 	if shown > 0 then
-		ui.nextLabel:SetPoint("TOPLEFT", ui.rows[shown], "BOTTOMLEFT", 0, -(GAP - ROW_PAD))
+		ui.nextLabel:SetPoint("TOPLEFT", ui.rows[shown], "BOTTOMLEFT", ROW_INSET, -(GAP - ROW_PAD))
 	else
 		ui.nextLabel:SetPoint("TOPLEFT", ui.what, "BOTTOMLEFT", 0, -GAP)
+	end
+	-- The buttons sit under the last block of words.
+	local last, lastGap = ui.what, GAP
+	if hasNext then
+		last = ui.next
+	elseif shown > 0 then
+		last, lastGap = ui.rows[shown], GAP - ROW_PAD
+	end
+	ui.action:ClearAllPoints()
+	ui.action:SetPoint("TOPLEFT", last, "BOTTOMLEFT", last == ui.rows[shown] and ROW_INSET or 0, -lastGap)
+	ui.pager:ClearAllPoints()
+	if info.action then
+		ui.pager:SetPoint("LEFT", ui.action, "RIGHT", 10, 0)
+	else
+		ui.pager:SetPoint("TOPLEFT", ui.action, "TOPLEFT", 0, 0)
 	end
 	ui.action:SetShown(info.action ~= nil)
 	if info.action then

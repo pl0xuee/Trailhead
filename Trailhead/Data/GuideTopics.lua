@@ -87,7 +87,44 @@ T.GuideTopics = {
 			{ L["Legacy trees"], L["Spend them in three trees: Professions, Adventure, Resourcefulness."] },
 			{ L["Camping"], L["Light a campfire and sit by it for bonuses from camp items."] },
 			{ L["Rulesets"], L["Yours decides who you meet. You only play with the same ruleset."] },
-			{ L["Hardcore"], L["A ruleset where death is permanent."] },
+			{ L["Hardcore"], L["A ruleset where death is permanent. It opens after launch."] },
+		},
+	},
+
+	-- Fighting safely: the habits the beginner guides list first.
+	fighting = {
+		rows = {
+			{ L["One at a time"], L["Pull a single enemy toward you, away from its friends."] },
+			{ L["Patrols"], L["Some enemies walk a route. Watch a moment before you pull."] },
+			{ L["Friends help"], L["Many enemies call others nearby to join the fight."] },
+			{ L["Between fights"], L["Eat and drink to full. It is far faster than waiting."] },
+			{ L["Run early"], L["Losing? Run back the way you came: enemies give up the chase."] },
+			{ L["They come back"], L["Enemies you kill return after a while, so do not linger."] },
+		},
+	},
+
+	-- The hunter's pet (Warcraft Tavern's Forever pet guide; the damage figures agree across guides).
+	pet = {
+		rows = {
+			{ L["Taming"], L["A class quest at level 10. Only beasts of your level or lower."] },
+			{ L["Happiness"], L["Happy: 125% damage. Content: 100%. Unhappy: 75%."] },
+			{ L["Feeding"], L["Feed Pet works out of combat. Its happiness icon shows its food."] },
+			{ L["If it dies"], L["Revive Pet brings it back, but it loses happiness."] },
+			{ L["Its level"], L["It learns from your kills and stops at your own level."] },
+			{ L["Training"], L["Loyalty brings training points to spend with Beast Training."] },
+			{ L["Stable"], L["One pet with you and two more at a stable master."], find = "stable" },
+		},
+	},
+
+	-- Quests: what the marks and words in the quest log mean.
+	quests = {
+		rows = {
+			{ L["Grey !"], L["A quest for a few levels from now."] },
+			{ L["Colours"], L["Quest names are coloured like enemies: red is hard, grey easy."] },
+			{ L["Grey quests"], L["Little experience now. Drop them when your log is full."] },
+			{ L["Elite, group"], L["Marked Elite, Group or Dungeon: bring other players."] },
+			{ L["Abandon"], L["Drop a quest from your quest log. You can take it again."] },
+			{ L["Share"], L["Share a quest with your party from your quest log."] },
 		},
 	},
 

@@ -5,11 +5,13 @@ local Stub, check = H.Stub, H.check
 
 local CLASSES = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID" }
 local NEW = { week = true, class = true, services = true, grouping = true, danger = true, words = true, money = true,
-	reputation = true, travel = true, forever = true }
+	reputation = true, travel = true, forever = true, camping = true, fighting = true, pet = true, quests = true,
+	choosing = true }
 local PANEL_H, ROW_H = 452, 24
 
 -- Whether a topic's text fits the panel, by the same layout the page uses (about 80
--- characters to a line of 15.5 points).
+-- characters to a line of 15.5 points): the heading, what it is, the rows, what to do next,
+-- then the button right under it.
 local function fits(info)
 	local problems = {}
 	if #info.what > 250 then
@@ -24,11 +26,15 @@ local function fits(info)
 			problems[#problems + 1] = "row " .. row.name .. ": " .. row.text
 		end
 	end
-	local top = shown > 0 and (162 + shown * ROW_H + 14) or 146
-	local bottom = (info.action or info.pager) and (PANEL_H - 18 - 28) or (PANEL_H - 12)
-	local lines = math.floor((bottom - (top + 19)) / 15.5)
-	if #(info.next or "") > lines * 80 then
-		problems[#problems + 1] = ("next is %d, room for %d"):format(#(info.next or ""), lines * 80)
+	local function lines(text)
+		return math.max(1, math.ceil(#text / 80))
+	end
+	local top = 72 + 16 + lines(info.what) * 15.5 + 14 + 16
+	top = top + shown * ROW_H + 8 + 16
+	local bottom = (info.action or info.pager) and (PANEL_H - 18 - 28 - 14) or (PANEL_H - 18)
+	local room = math.floor((bottom - top) / 15.5)
+	if (info.next or "") ~= "" and lines(info.next) > room then
+		problems[#problems + 1] = ("next is %d, room for %d"):format(#(info.next or ""), room * 80)
 	end
 	return problems
 end
@@ -67,7 +73,7 @@ end)
 H.section("guide: grouped list", function()
 	local T = H.load(nil, H.checked())
 	local guide = T.modules.guide
-	check(#T.GuideGroups == 4 and #guide.Topics >= 18, "four groups hold the topics")
+	check(#T.GuideGroups == 4 and #guide.Topics >= 24, "four groups hold the topics")
 	local perGroup, known = {}, {}
 	for _, group in ipairs(T.GuideGroups) do
 		known[group.id] = true
@@ -76,8 +82,9 @@ H.section("guide: grouped list", function()
 		perGroup[topic.group] = (perGroup[topic.group] or 0) + 1
 		check(known[topic.group], topic.id .. " is in a known group")
 	end
+	-- The page is 496 high; the list starts under the chips, 43 a topic.
 	for id, many in pairs(perGroup) do
-		check(many <= 7, "group " .. id .. " fits the list (" .. many .. ")")
+		check(116 + many * 43 - 5 <= 496, "group " .. id .. " fits the list (" .. many .. ")")
 	end
 	H.slash("")
 	T.Window:Select("guide", "talents")
@@ -162,7 +169,8 @@ H.section("guide: what abilities use up", function()
 	end
 	check(found and found.run ~= nil, "a rogue is shown Flash Powder for Vanish with a way to a vendor")
 	T = H.load({ class = "WARLOCK", level = 12 }, H.checked())
-	C_Item.GetItemCount = function(item) return item == "Soul Shard" and 3 or 0 end
+	-- Counted by the item's ID (6265, the Soul Shard), so it works in every language.
+	C_Item.GetItemCount = function(item) return item == 6265 and 3 or 0 end
 	info = T.modules.guide.Read("supplies")
 	found = nil
 	for _, row in ipairs(info.rows) do
@@ -184,4 +192,110 @@ H.section("guide: what abilities use up", function()
 	T = H.load({ class = "DRUID", level = 5 }, H.checked())
 	check(T.modules.guide.Read("class").rows[3].text == "Tank, Healer, Damage", "the druid can fill all three jobs")
 	H.noErrors(T, "what abilities use up")
+end)
+
+H.section("guide: class quests", function()
+	-- A warlock at 9 is told the Voidwalker comes from a class quest at 10, not the trainer.
+	local T = H.load({ class = "WARLOCK", level = 9 }, H.checked())
+	local text = ""
+	for _, row in ipairs(T.modules.guide.Read("levels").rows) do
+		text = text .. (row.text or "") .. " "
+	end
+	check(text:find("Class quest: Summon Voidwalker", 1, true) ~= nil, "coming up names the Voidwalker's class quest")
+	check(T.ClassQuests and T.ClassQuests.WARLOCK and T.ClassQuests.MAGE, "class quests ship for every class")
+
+	-- An orc warlock is sent to Orgrimmar; a learned summon counts as done.
+	T = H.load({ class = "WARLOCK", level = 12 }, H.checked())
+	Stub.world.race, Stub.world.faction = { "Orc", "Orc" }, "Horde"
+	Stub.world.known[688] = true -- the Imp, learned long ago
+	local info = T.modules.guide.Read("class")
+	local quest
+	for _, row in ipairs(info.rows) do
+		quest = quest or (row.text and row.text:find("Summon Voidwalker", 1, true) and row)
+	end
+	check(quest and quest.text:find("Orgrimmar", 1, true) and quest.tag ~= "Done", "the open Voidwalker quest points to Orgrimmar")
+	check(info.attention == 1 and info.next:find("Summon Voidwalker", 1, true), "an open class quest needs attention")
+	Stub.world.known[697] = true
+	info = T.modules.guide.Read("class")
+	quest = nil
+	for _, row in ipairs(info.rows) do
+		quest = quest or (row.text and row.text:find("Summon Voidwalker", 1, true) and row)
+	end
+	-- The quests still to do take the rows; the done ones are counted in the heading.
+	check(not quest and info.heading == "Your class: 2 of 6 class quests done" and info.attention == 0, "a learned summon is a done class quest")
+
+	-- A mage has no class quests and keeps the old words.
+	T = H.load({ class = "MAGE", level = 20 }, H.checked())
+	info = T.modules.guide.Read("class")
+	check(#info.rows <= 6 and info.attention == 0, "a mage's class topic has no quest rows")
+	H.noErrors(T, "class quests")
+end)
+
+H.section("guide: camping, professions and pets", function()
+	local T = H.load({ class = "WARRIOR", level = 20 }, H.checked())
+	local guide = T.modules.guide
+	Stub.world.professions = { { "Mining", 186, 50, 75 } }
+	local info = guide.Read("camping")
+	check(info.rows[1].name == "Mining" and info.rows[1].tag == "Yours", "your own profession's camp item comes first")
+	check(info.pager ~= nil and #info.rows <= 6, "camp items come in pages")
+	local seen = {}
+	for _ = 1, 2 do
+		for _, row in ipairs(guide.Read("camping").rows) do
+			seen[row.name] = true
+		end
+		guide.Read("camping").pager.run()
+	end
+	check(seen.Cooking and seen.Tailoring and seen.Skinning and seen["First Aid"], "every camp item is on a page")
+
+	info = guide.Read("choosing")
+	local mining = false
+	for _, row in ipairs(info.rows) do
+		mining = mining or row.name == "Mining"
+	end
+	check(not info.hidden and not mining and #info.rows <= 6, "picking professions leaves out the one you have")
+	Stub.world.professions = { { "Mining", 186, 50, 75 }, { "Herbalism", 182, 50, 75 } }
+	check(guide.Read("choosing").hidden, "with two main professions the topic is hidden")
+
+	check(guide.Read("pet").hidden, "a warrior has no pet topic")
+	H.slash("")
+	T.Window:Select("guide", "pet")
+	Stub.flush()
+	check(guide.topic == "words" and not Stub.sees("Looking after it"), "opening the hidden pet topic shows the one before it")
+	T = H.load({ class = "HUNTER", level = 12 }, H.checked())
+	info = T.modules.guide.Read("pet")
+	check(not info.hidden and info.attention == 1 and info.rows[1].tag ~= "Done", "a hunter at 12 without Tame Beast is told to tame")
+	Stub.world.known[1515] = true
+	info = T.modules.guide.Read("pet")
+	check(info.attention == 0 and info.rows[1].tag == "Done", "Tame Beast learned")
+	H.noErrors(T, "camping and pets")
+end)
+
+H.section("guide: fighting, quests, danger and talents", function()
+	local T = H.load({ class = "MAGE", level = 20 }, H.checked())
+	local guide = T.modules.guide
+	UnitHealth, UnitHealthMax = function() return 30 end, function() return 100 end
+	local info = guide.Read("fighting")
+	check(info.rows[1].name == "Health" and info.rows[1].text == "30%" and info.rows[1].tone == "warn", "low health is shown")
+	UnitHealth, UnitHealthMax = nil, nil
+
+	local saved = C_QuestLog
+	C_QuestLog = { GetNumQuestLogEntries = function() return 25, 20 end, GetMaxNumQuestsCanAccept = function() return 20 end }
+	info = guide.Read("quests")
+	check(info.rows[1].text == "20 of 20 quests" and info.attention == 1, "a full quest log needs attention")
+	C_QuestLog = saved
+
+	local savedPvP = C_PvP
+	C_PvP = { GetZonePVPInfo = function() return "hostile" end }
+	local here
+	for _, row in ipairs(guide.Read("danger").rows) do
+		here = here or (row.name == "Here" and row)
+	end
+	check(here and here.tone == "warn" and here.text:find("guards attack", 1, true), "danger names the zone you stand in")
+	C_PvP = savedPvP
+
+	check(guide.Read("talents").what:find("reset your talents", 1, true) and not guide.Read("talents").what:find("level 40", 1, true),
+		"talents explain the reset")
+	T = H.load({ class = "MAGE", level = 40 }, H.checked())
+	check(T.modules.guide.Read("talents").what:find("level 40", 1, true), "at 40 talents mention the second set")
+	H.noErrors(T, "fighting and quests")
 end)
