@@ -32,7 +32,7 @@ local function makeRow(list, width)
 	row.title = W.Text(row, "head", 13, "ink")
 	row.body = W.Text(row, "body", 11, "muted", { width = width - TEXT_LEFT - 20 })
 	row.body:SetSpacing(2)
-	row.tag = W.Text(row, "label", 8.5, "go")
+	row.tag = W.Text(row, "label", 10, "go")
 	row.tag:SetJustifyH("RIGHT")
 	row.tag:SetPoint("RIGHT", row, "RIGHT", -14, 0)
 	row.mark = W.Button(row, L["Set marker"], "ghost", {
@@ -76,7 +76,7 @@ local function makeRow(list, width)
 			self.title:SetPoint("TOPLEFT", self, "TOPLEFT", TEXT_LEFT, -9)
 			self.body:SetPoint("TOPLEFT", self.title, "BOTTOMLEFT", 0, -3)
 		else
-			self.body:SetPoint("LEFT", self, "LEFT", TEXT_LEFT, 0)
+			self.body:SetPoint("TOPLEFT", self, "TOPLEFT", TEXT_LEFT, -11)
 		end
 		self.body:SetWidth(room)
 		self.body:SetRole(item.title and "muted" or "ink")
@@ -141,8 +141,16 @@ local function items(dungeon, here)
 		door = L["Trailhead does not know where the door is yet. It learns it the first time one of your characters walks in."]
 	end
 	out[#out + 1] = { kind = "door", title = L["Finding the door"], body = door, spot = spot, name = dungeon.name }
-	for _, tip in ipairs(dungeon.tips) do
-		out[#out + 1] = { kind = "tip", title = L["Tip for the group"], body = tip }
+	-- The tips share one card, a line each, so the title is not repeated.
+	local tips = dungeon.tips
+	if #tips == 1 then
+		out[#out + 1] = { kind = "tip", title = L["Tip for the group"], body = tips[1] }
+	elseif #tips > 1 then
+		local lines = {}
+		for index, tip in ipairs(tips) do
+			lines[index] = "- " .. tip
+		end
+		out[#out + 1] = { kind = "tip", title = L["Tips for the group"], body = table.concat(lines, "\n") }
 	end
 	local nextBoss = here and D.Next(dungeon.id) or nil
 	local function boss(name, where, tip, optional)
@@ -161,7 +169,7 @@ local function items(dungeon, here)
 			if step.boss then
 				out[#out + 1] = boss(step.boss, step.where, step.tip, step.optional)
 			else
-				out[#out + 1] = { kind = "step", body = step.text }
+				out[#out + 1] = { kind = "step", title = L["Path"], body = step.text }
 			end
 		end
 	else

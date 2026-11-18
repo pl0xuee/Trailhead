@@ -123,7 +123,8 @@ H.section("builds: the page", function()
 			check(Stub.sees("14 of 51 points placed") and Stub.sees(B.Progress(build).next.name), label .. ": and the order, with the next point")
 			check(#lines > 0 and Stub.sees(table.concat(lines, "\n")), label .. ": and the fight lines")
 			check(not build.draft or Stub.sees("Draft: every point is checked against the game's talent data, but we have not played this build through yet."
-				.. "\n\nYou spend the points yourself in the game's talent window. Trailhead shows where each one goes."),
+				.. "\n\nYou spend the points yourself in the game's talent window. Trailhead shows where each one goes."
+				.. "\n\nYour class trainer can reset your talents for a fee."),
 				label .. ": a draft says it has not been played through")
 		end
 	end
@@ -160,4 +161,51 @@ H.section("builds: mutations fail safe", function()
 	steps[1], steps[#steps] = saved, last
 	empty()
 	check(spend(T, build, 51) == nil, "and with the order restored it is legal again")
+end)
+
+H.section("builds: a build the game's talents no longer match", function()
+	local T = H.load({ class = "ROGUE", level = 21 }, H.checked())
+	local B = T.BuildGuide
+	local build = B.List()[1]
+	local changed = "The game's talents have changed since this build was written, so Trailhead will not suggest points from it. An update will bring it back."
+	local pointer = "Until then, the Guide's Talents topic shows where your points are."
+	local notes = "You spend the points yourself in the game's talent window. Trailhead shows where each one goes."
+		.. "\n\nYour class trainer can reset your talents for a fee."
+	H.slash("")
+	T.Window:Select("builds")
+	Stub.flush()
+	check(Stub.sees(notes) or Stub.sees("Draft: every point is checked against the game's talent data, but we have not played this build through yet.\n\n" .. notes),
+		"the notes say the class trainer can reset talents")
+	Stub.click("Follow this build")
+	Stub.flush()
+	check(T.cdb.build == build.id and Stub.sees("Stop following"), "the build is followed")
+
+	-- the game changes a talent the build uses: the followed build can still be dropped
+	Stub.world.spellChanged = next(build.talents)
+	Stub.fire("TRAIT_CONFIG_UPDATED")
+	Stub.flush()
+	check(Stub.sees(changed) and Stub.sees(pointer) and Stub.sees("Open the Talents topic"),
+		"the page says why, points to the Guide's Talents topic and offers a button to it")
+	check(Stub.sees("Stop following"), "and Stop following stays for the build you follow")
+	Stub.click("Stop following")
+	Stub.flush()
+	check(T.cdb.build == nil and B.Chosen() == nil, "pressing it stops following the build")
+	check(Stub.sees(changed) and not Stub.sees("Follow this build") and not Stub.sees("Stop following"),
+		"and a build that does not match cannot be followed again")
+
+	-- the button leads to the Guide's Talents topic
+	T.modules.guide:Goto("money")
+	T.Window:Select("builds")
+	Stub.flush()
+	Stub.click("Open the Talents topic")
+	Stub.flush()
+	check(T.Window.current == "guide" and T.modules.guide.topic == "talents", "Open the Talents topic opens it in the Guide")
+
+	-- with the talents matching again the panel is whole and the pointer goes
+	Stub.world.spellChanged = nil
+	T.Window:Select("builds")
+	Stub.flush()
+	check(not Stub.sees(pointer) and not Stub.sees("Open the Talents topic") and Stub.sees("Follow this build"),
+		"once the talents match again the page shows the build and no pointer")
+	H.noErrors(T, "builds that no longer match")
 end)
