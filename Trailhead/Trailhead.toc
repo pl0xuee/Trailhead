@@ -28,6 +28,7 @@ Data\Dungeons\Classic1.lua
 Data\Dungeons\Classic2.lua
 Data\Dungeons\Forever.lua
 Data\ClassSpells.lua
+Data\ClassQuests.lua
 Data\GuideTopics.lua
 Data\Builds\ROGUE.lua
 Data\Builds\WARRIOR.lua
