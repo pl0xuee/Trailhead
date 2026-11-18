@@ -8,7 +8,7 @@ T.DungeonGuides = T.DungeonGuides or {}
 -- text says less rather than guess. Raids not yet announced for Forever say so in the summary.
 
 T.DungeonGuides[209] = {
-	summary = L["A sandy troll city in Tanaris, for levels 44 to 54. Its big event is the stairs fight in the middle."],
+	summary = L["A sandy troll city in Tanaris. Its big event is the stairs fight in the middle."],
 	door = L["In the north-west corner of Tanaris. Walk in through the big gate of the troll city."],
 	tips = { L["Several bosses cast spells that need interrupting. Agree who interrupts whom before you start."], L["Wait for the whole group before you start the stairs event."] },
 	steps = {
@@ -19,20 +19,20 @@ T.DungeonGuides[209] = {
 		{ text = L["Talk to Weegli Blastfuse first, so he sets charges on the far door. Then free Sergeant Bly at the stairs. This starts a long wave of fighters."] },
 		{ boss = "Nekrum Gutchewer", where = L["Comes with the last wave of the stairs event."], tip = L["Kill him first, then the priest. Healers stay far back."] },
 		{ boss = "Shadowpriest Sezz'ziz", where = L["Comes with the last wave of the stairs event."], tip = L["Interrupt his spells."] },
-		{ boss = "Chief Ukorz Sandscalp", where = L["Behind the door that the gnome Weegli blasts open."], tip = L["Weegli must set the door charges before the stairs event, or this door stays shut. Melee: avoid his sweeping hits."] },
+		{ boss = "Chief Ukorz Sandscalp", where = L["Behind the door that the gnome Weegli blasts open."], tip = L["Weegli must set the door charges before the stairs event, or this door stays shut. If you fight up close, avoid his sweeping hits."] },
 		{ boss = "Hydromancer Velratha", where = L["In the courtyard with the pool and the gong, tucked round a corner."], tip = L["Clear the area first. Interrupt her spells and kill her totems."] },
 		{ boss = "Gahz'rilla", where = L["Comes out of the pool when someone hits the gong with the Mallet of Zul'Farrak."], tip = L["Fight him inside the pool so his knockback hurts less."], optional = true },
 	},
 }
 
 T.DungeonGuides[349] = {
-	summary = L["A cave of living plants and earth spirits in Desolace, with an orange side, a purple side and a deeper part. For levels 46 to 55."],
+	summary = L["A cave of living plants and earth spirits in Desolace, with an orange side, a purple side and a deeper part."],
 	door = L["Walk into the Stone Door on the west side of the Valley of Spears in Desolace. At the fork, right is orange, left is purple and the middle gate leads to Earth Song Falls."],
 	tips = { L["Pick a side first. Both sides lead down to the deeper part."], L["Stay on the upper path on the purple side. The ramps down lead to strong monsters."] },
 	steps = {
 		{ text = L["Take the right path with orange crystals. This is the orange side."] },
 		{ boss = "Noxxion", where = L["First boss of the orange side, in a poison cave."], tip = L["When he splits into copies, kill them one at a time."] },
-		{ boss = "Razorlash", where = L["Further along the orange side."], tip = L["Melee should stay behind him."] },
+		{ boss = "Razorlash", where = L["Further along the orange side."], tip = L["Players who fight up close should stand behind him."] },
 		{ boss = "Celebras the Cursed", where = L["At the end of the orange side, in Poison Falls."], tip = L["Kill him, not the spirits around him. Killing one makes him call another."] },
 		{ text = L["Go back to the split and take the left path with purple crystals."] },
 		{ boss = "Lord Vyletongue", where = L["First boss of the purple side, on the upper level."], tip = L["Kill him before his helpers."] },
@@ -45,7 +45,7 @@ T.DungeonGuides[349] = {
 }
 
 T.DungeonGuides[109] = {
-	summary = L["A flooded troll temple in the Swamp of Sorrows, for levels 50 to 60 (you can enter at 45). It ends with a fight against the avatar of a snake god."],
+	summary = L["A flooded troll temple in the Swamp of Sorrows. It ends with a fight against the avatar of a snake god."],
 	door = L["Swim or walk to the temple island in the middle of the lake in the Swamp of Sorrows. The door is on the island. Strong monsters patrol the wet passages."],
 	tips = { L["Falling into the central pit hurts a lot. Use the stairs."], L["The last boss needs a quest chain that starts in Tanaris. The Shade of Eranikus needs none."] },
 	steps = {
@@ -57,7 +57,7 @@ T.DungeonGuides[109] = {
 		{ boss = "Dreamscythe", where = L["Appears in the Pit of Sacrifice with Weaver."], tip = L["Pull one dragon at a time and tank it against a wall."] },
 		{ boss = "Hazzas", where = L["Appears when Weaver and Dreamscythe are dead."], tip = L["This pair cannot be pulled apart. Tank them against a wall."] },
 		{ boss = "Morphaz", where = L["Appears with Hazzas."], tip = L["Same as Hazzas: they come together."] },
-		{ boss = "Shade of Eranikus", where = L["Deep in the temple, after the dragon fights. No ritual or quest is needed."], tip = L["Clear the dragonkin first or they join the fight. He puts the highest threat target to sleep."] },
+		{ boss = "Shade of Eranikus", where = L["Deep in the temple, after the dragon fights. No ritual or quest is needed."], tip = L["Clear the dragonkin first or they join the fight. He puts the player he is most angry at to sleep."] },
 		{ boss = "Avatar of Hakkar", where = L["A small room on the west side of the Pit of Sacrifice. Needs the Ancient Egg quest chain."], tip = L["Kill four Bloodkeepers and use their blood on four braziers to bring him out."], optional = true },
 		{ text = L["The five fights below come from the 20-player version of this temple in the game's files. Blizzard has not announced it for Forever, so you will probably not meet them."] },
 		{ boss = "Jammal'an and Ogom", where = L["Only in the 20-player version, in Jammal'an's room."], optional = true },
@@ -69,7 +69,7 @@ T.DungeonGuides[109] = {
 }
 
 T.DungeonGuides[230] = {
-	summary = L["A huge dwarf city inside Blackrock Mountain, for levels 52 to 60. It has many sections, and a full clear takes several hours. Many groups skip parts."],
+	summary = L["A huge dwarf city inside Blackrock Mountain. It has many sections, and a full clear takes several hours. Many groups skip parts."],
 	door = L["Go into Blackrock Mountain, climb down the big chain, go through Forgewright's Tomb and down another chain, then through the Grinding Quarry. Go left to the Masonry. The portal is in the far corner."],
 	tips = { L["Do not wander off. The city is huge and easy to get lost in."], L["The Dark Iron Highway gates need a Shadowforge Key or a rogue with high lockpicking."] },
 	steps = {
@@ -85,7 +85,7 @@ T.DungeonGuides[230] = {
 		{ boss = "Warder Stilgiss", where = L["In the Black Vault, with his hound."], tip = L["Kill his hound first and use no frost damage on him."] },
 		{ boss = "The Vault", where = L["In the Black Vault. Opening all twelve relic coffer doors brings out this fight."], tip = L["Needs the coffer keys, so most groups skip it."], optional = true },
 		{ boss = "Pyromancer Loregrain", where = L["Kneeling before the monument in the Shrine of Thaurissan."], tip = L["Kill his fire totem when it appears."] },
-		{ boss = "General Angerforge", where = L["In the West Garrison."], tip = L["Kill his helpers with area damage."] },
+		{ boss = "General Angerforge", where = L["In the West Garrison."], tip = L["Kill his helpers with attacks that hit many at once."] },
 		{ boss = "Golem Lord Argelmach", where = L["In the Manufactory, the machine hall."], tip = L["Kill the two golems beside him first."] },
 		{ boss = "Ribbly Screwspigot", where = L["In the Grim Guzzler, the dwarf bar. He fights if you threaten him in talk."], tip = L["Most patrons in the bar are neutral. Do not use area attacks near them."], optional = true },
 		{ boss = "Hurley Blackbreath", where = L["Appears when the three beer kegs in the bar are smashed."], tip = L["Do not hit the friendly drinkers."], optional = true },
@@ -93,14 +93,14 @@ T.DungeonGuides[230] = {
 		{ boss = "Phalanx", where = L["Appears after you buy Dark Iron Ale mugs and hand them to Private Rocknot."], tip = L["Fight him in a corner."], optional = true },
 		{ boss = "Ambassador Flamelash", where = L["In the Chamber of Enchantment."], tip = L["Kill his fire spirits before they reach him."] },
 		{ boss = "The Seven", where = L["In the Summoners' Tomb: seven dwarf spirits, one after another."], tip = L["Pull each one back to the middle and manage mana."] },
-		{ boss = "Magmus", where = L["At the back of the Iron Hall."], tip = L["Tank him in a corner and stack behind him, out of the fire."] },
+		{ boss = "Magmus", where = L["At the back of the Iron Hall."], tip = L["Tank him in a corner and stand together behind him, out of the fire."] },
 		{ boss = "Princess Moira Bronzebeard", where = L["In the Imperial Seat, with the Emperor."], tip = L["Killing her gives loot. Saving her is for a quest. Ask your group."], optional = true },
 		{ boss = "Emperor Dagran Thaurissan", where = L["On the throne in the Imperial Seat. He is the last boss."], tip = L["He is the last boss of the dungeon."] },
 	},
 }
 
 T.DungeonGuides[229] = {
-	summary = L["One doorway leads into two dungeons: Lower Blackrock Spire for five players and Upper Blackrock Spire for ten. Levels 55 and up. Lower is the best first target."],
+	summary = L["One doorway leads into two dungeons: Lower Blackrock Spire for five players and Upper Blackrock Spire for ten. Lower is the best first target."],
 	door = L["Inside Blackrock Mountain, on its east side. Take the door by the meeting stone and climb the path, or jump down from the balcony where the gnome Bodley stands, which skips the monsters."],
 	tips = { L["Upper Spire must be unlocked. We could not confirm how in Forever, so ask your group."], L["Rare bosses here do not always show up. Do not wait for them."] },
 	steps = {
@@ -124,7 +124,7 @@ T.DungeonGuides[229] = {
 }
 
 T.DungeonGuides[289] = {
-	summary = L["A spooky school of necromancers on Caer Darrow in the Western Plaguelands, for levels 58 to 60."],
+	summary = L["A spooky school of necromancers on Caer Darrow in the Western Plaguelands."],
 	door = L["On Caer Darrow, the island in the Western Plaguelands. The door to the portal needs the Skeleton Key, from a long quest chain."],
 	tips = { L["Bring the key. The door is locked."], L["Rattlegore drops the Viewing Room key you need to go deeper. Marduk and Vectus need a quest first."] },
 	steps = {
@@ -132,13 +132,13 @@ T.DungeonGuides[289] = {
 		{ boss = "Kirtonos", where = L["Called out on the patio with a quest item (Blood of Innocents)."], tip = L["Tank him against a wall."], optional = true },
 		{ boss = "Jandice Barov", where = L["In the lower rooms of the first part."], tip = L["Kill the real one, not the copies. Guides call her optional."], optional = true },
 		{ boss = "Rattlegore", where = L["In the basement of the Great Ossuary."], tip = L["Pull only one helper at a time. He drops the Viewing Room key."] },
-		{ boss = "Marduk Blackpool", where = L["In the Viewing Room. A party member needs a related quest to start him."], tip = L["Keep ranged players out of his aura."], optional = true },
+		{ boss = "Marduk Blackpool", where = L["In the Viewing Room. A party member needs a related quest to start him."], tip = L["Players who fight from afar should stay out of his aura."], optional = true },
 		{ boss = "Vectus", where = L["In the Viewing Room. A party member needs a related quest to start him."], tip = L["Spread out for his fire spells."], optional = true },
 		{ boss = "Ras Frostwhisperer", where = L["In the Alchemy Lab."], tip = L["Clear the guards first. Interrupt his fear."] },
 		{ boss = "Kormok", where = L["Called out near Ras Frostwhisper with a quest item (a brazier)."], tip = L["Kill the skeletons he calls."], optional = true },
 		{ text = L["Go down to the Barov Family Vault with its six rooms."] },
 		{ boss = "Lady Illucia Barov", where = L["Lower left room."], tip = L["Break mind control quickly."] },
-		{ boss = "Lord Alexei Barov", where = L["Lower middle room."], tip = L["Crowd control the helpers and kill him first."] },
+		{ boss = "Lord Alexei Barov", where = L["Lower middle room."], tip = L["Keep his helpers out of the fight (sleep, stun or trap them) and kill him first."] },
 		{ boss = "The Ravenian", where = L["Lower right room."], tip = L["Clear the whole room before you pull."] },
 		{ boss = "Lorekeeper Polkelt", where = L["Upper left room."], tip = L["Stay away from his blasts."] },
 		{ boss = "Doctor Theolen Krastinov", where = L["Upper middle room."], tip = L["Kill him fast before he enrages."] },
@@ -148,7 +148,7 @@ T.DungeonGuides[289] = {
 }
 
 T.DungeonGuides[329] = {
-	summary = L["A burning city in the Eastern Plaguelands with two parts, Living and Undead. For levels 58 and up. The two parts are joined."],
+	summary = L["A burning city in the Eastern Plaguelands with two parts, Living and Undead. The two parts are joined."],
 	door = L["North-west corner of the Eastern Plaguelands, across the long stone bridge, into the Living part. The Eastwall Gate, a cave a little east, leads to the Undead part and needs a key."],
 	tips = { L["The Key to the City comes from the Living part. It opens many locked gates and the Eastwall Gate."], L["Stay together. Big packs come from every side."] },
 	steps = {
@@ -160,7 +160,7 @@ T.DungeonGuides[329] = {
 		{ boss = "Balnazzar", where = L["In the Slaughterhouse at the end of the living part."], tip = L["He summons helpers and tries to control players."] },
 		{ boss = "Crimson Hammersmith", where = L["In the Living part. Mostly wanted for a smithing quest."], tip = L["Skip him if you have no quest for him."], optional = true },
 		{ boss = "Ezra Grimm", where = L["A rare boss in the Living part. Not in every guide."], tip = L["Skip him if your group is weak."], optional = true },
-		{ boss = "Hearthsinger Forresten", where = L["A rare boss in the Living part. He does not always show up."], tip = L["Do not stand in his cone."], optional = true },
+		{ boss = "Hearthsinger Forresten", where = L["A rare boss in the Living part. He does not always show up."], tip = L["Do not stand in front of him."], optional = true },
 		{ boss = "Skul", where = L["A rare boss in the Living part. He does not always show up."], tip = L["Skip him unless you want his drops."], optional = true },
 		{ boss = "Malor the Zealous", where = L["Called out for a quest in the Living part."], tip = L["Only needed for quests."], optional = true },
 		{ boss = "Postmaster Malown", where = L["Called out by a mail quest in the Living part."], tip = L["Only needed for quests."], optional = true },
@@ -177,7 +177,7 @@ T.DungeonGuides[329] = {
 }
 
 T.DungeonGuides[429] = {
-	summary = L["Dire Maul is a ruined elf city in Feralas with three parts: East, West and North, all for level 55 and up. All three are in this one dungeon."],
+	summary = L["Dire Maul is a ruined elf city in Feralas with three parts: East, West and North. All three are in this one dungeon."],
 	door = L["In Feralas, in the ruins. The East door needs no key. West and North need the Crescent Key, which comes from the East part."],
 	tips = { L["Do East first. It has the key for the others."], L["Once one player opens the West or North door, a torch just inside lets the others in."] },
 	steps = {
@@ -200,7 +200,7 @@ T.DungeonGuides[429] = {
 		{ boss = "Stomper Kreeg", where = L["In the North part, a drunk ogre at a table."], tip = L["Skip him unless you want his buff drinks."], optional = true },
 		{ boss = "Guard Fengus", where = L["In the North part."], tip = L["Pull one ogre guard at a time."] },
 		{ boss = "Guard Slip'kik", where = L["In the North part."], tip = L["Pull one ogre guard at a time."] },
-		{ boss = "Captain Kromcrush", where = L["In the North part, near the throne room."], tip = L["Keep ranged players away."] },
+		{ boss = "Captain Kromcrush", where = L["In the North part, near the throne room."], tip = L["Players who fight from afar should keep their distance."] },
 		{ boss = "Cho'Rush the Observer", where = L["In the North part, by the throne room."], tip = L["Ask your group for the plan."] },
 		{ boss = "King Gordok", where = L["On the throne at the back of the keep. He is the last boss."], tip = L["Killing the other ogre bosses first earns a tribute buff. Ask your group."] },
 	},
@@ -209,7 +209,7 @@ T.DungeonGuides[429] = {
 -- Raids: shorter, boss order with one tip for a first timer.
 
 T.DungeonGuides[409] = {
-	summary = L["A fire raid for 40 players deep in Blackrock Mountain. It ends with Ragnaros. Plan on a long evening."],
+	summary = L["A fire raid for 40 players deep in Blackrock Mountain. It ends with Ragnaros. Plan on a long evening. Not yet announced for Forever."],
 	door = L["Deep inside Blackrock Depths, past the lava lake. Reach it through the Blackrock Mountain entrance in the Burning Steppes or Searing Gorge."],
 	tips = { L["Raids are for large groups. Join a guild run."], L["Bring fire resistance gear if your guild has some."] },
 	steps = {
@@ -217,7 +217,7 @@ T.DungeonGuides[409] = {
 		{ boss = "Lucifron", where = L["One of the first bosses inside."], tip = L["Ask your raid leader for the plan. Cure curses if you can."] },
 		{ boss = "Magmadar", where = L["Near the start, a giant hound."], tip = L["Bring fear protection."] },
 		{ boss = "Gehennas", where = L["Further in."], tip = L["Cure his curse on the group."] },
-		{ boss = "Garr", where = L["Further in."], tip = L["Kill the adds or pull them away."] },
+		{ boss = "Garr", where = L["Further in."], tip = L["Kill his helpers or pull them away."] },
 		{ boss = "Shazzrah", where = L["Further in."], tip = L["He jumps to random players. Cure his curse."] },
 		{ boss = "Baron Geddon", where = L["Further in."], tip = L["Run away from the player who becomes a bomb."] },
 		{ boss = "Sulfuron Harbinger", where = L["Further in."], tip = L["Kill his healers first."] },
@@ -239,7 +239,7 @@ T.DungeonGuides[249] = {
 }
 
 T.DungeonGuides[469] = {
-	summary = L["A big dragon raid for 40 players at the top of Blackrock Spire. It ends with Nefarian."],
+	summary = L["A big dragon raid for 40 players at the top of Blackrock Spire. It ends with Nefarian. Not yet announced for Forever."],
 	door = L["Go through Upper Blackrock Spire to the raid door. You need an attunement quest to enter."],
 	tips = { L["Do the attunement quest before raid night."], L["Bring fire and shadow resistance gear if you have some."] },
 	steps = {
@@ -249,14 +249,14 @@ T.DungeonGuides[469] = {
 		{ boss = "Broodlord Lashlayer", where = L["After the first bosses."], tip = L["Tank him with his back to a wall."] },
 		{ boss = "Firemaw", where = L["In the area of the dragon bosses."], tip = L["Keep the tank at full health."] },
 		{ boss = "Ebonroc", where = L["In the area of the dragon bosses."], tip = L["Heal the tank through the curse."] },
-		{ boss = "Flamegor", where = L["In the area of the dragon bosses."], tip = L["Interrupt his enrage if you can."] },
+		{ boss = "Flamegor", where = L["In the area of the dragon bosses."], tip = L["A hunter's Tranquilizing Shot removes his frenzy."] },
 		{ boss = "Chromaggus", where = L["In a side hall."], tip = L["Cure whatever he casts on the group."] },
 		{ boss = "Nefarian", where = L["The last boss, at the top."], tip = L["When he calls skeletons, kill them quickly."] },
 	},
 }
 
 T.DungeonGuides[309] = {
-	summary = L["A troll raid for 20 players in the jungle of Stranglethorn Vale. It ends with Hakkar."],
+	summary = L["A troll raid for 20 players in the jungle of Stranglethorn Vale. It ends with Hakkar. Not yet announced for Forever."],
 	door = L["In the north of Stranglethorn Vale. Walk up the path from the village into the stone gate."],
 	tips = { L["You can kill the troll priests in many orders. Ask your raid leader for the plan."] },
 	steps = {
@@ -275,7 +275,7 @@ T.DungeonGuides[309] = {
 }
 
 T.DungeonGuides[509] = {
-	summary = L["A bug raid for 20 players in the Silithus sand dunes. It ends with Ossirian."],
+	summary = L["A bug raid for 20 players in the Silithus sand dunes. It ends with Ossirian. Not yet announced for Forever."],
 	door = L["In the far south of Silithus, outside the big gate to the Ahn'Qiraj temple. Ask the raid leader if the door is open."],
 	tips = { L["Do not stand in damage on the ground. Move out of it."] },
 	steps = {
@@ -290,7 +290,7 @@ T.DungeonGuides[509] = {
 }
 
 T.DungeonGuides[531] = {
-	summary = L["A giant raid for 40 players in Silithus under the Temple of Ahn'Qiraj. It ends with C'Thun."],
+	summary = L["A giant raid for 40 players in Silithus under the Temple of Ahn'Qiraj. It ends with C'Thun. Not yet announced for Forever."],
 	door = L["In the far south of Silithus, at the big gate to the Ahn'Qiraj temple. Ask the raid leader if the door is open."],
 	tips = { L["Ask your raid leader for the plan before each boss."] },
 	steps = {
@@ -308,7 +308,7 @@ T.DungeonGuides[531] = {
 }
 
 T.DungeonGuides[533] = {
-	summary = L["A huge undead raid for 40 players in a floating fortress above the Eastern Plaguelands. It has four wings and ends with Kel'Thuzad."],
+	summary = L["A huge undead raid for 40 players in a floating fortress above the Eastern Plaguelands. It has four wings and ends with Kel'Thuzad. Not yet announced for Forever."],
 	door = L["The floating fortress hangs over the Eastern Plaguelands. The raid door is on the ground below it."],
 	tips = { L["Each wing is a separate part. You can try them in any order."] },
 	steps = {
@@ -326,7 +326,7 @@ T.DungeonGuides[533] = {
 		{ boss = "The Four Horsemen", where = L["In the Military Wing."], tip = L["Move between the four riders on a plan."] },
 		{ text = L["Then the Construct Wing."] },
 		{ boss = "Patchwerk", where = L["In the Construct Wing."], tip = L["The tank needs the best healer."] },
-		{ boss = "Grobbulus", where = L["In the Construct Wing."], tip = L["Do not clump when he sprays."] },
+		{ boss = "Grobbulus", where = L["In the Construct Wing."], tip = L["Spread out when he sprays. Do not stand close together."] },
 		{ boss = "Gluth", where = L["In the Construct Wing."], tip = L["Kill the zombies he calls."] },
 		{ boss = "Thaddius", where = L["At the end of the Construct Wing."], tip = L["Learn which side to stand on."] },
 		{ text = L["Last come the frost dragon and the lich."] },

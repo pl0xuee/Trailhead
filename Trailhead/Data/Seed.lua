@@ -103,8 +103,6 @@ b|H|1458|650|443|Ophelia Montague|
 b|H|1458|659|458|William Montague|
 b|H|1458|661|426|Randolph Montague|
 b|H|1458|666|442|Mortimer Montague|
-f|H|1411|507|134|Frezza|Zeppelin Master
-f|H|1411|508|129|Snurk Bucksquick|Zeppelin Master
 f|H|1413|445|591|Omusa Thunderhorn|Wind Rider Master
 f|H|1413|515|303|Devrak|Wind Rider Master
 f||1413|631|372|Bragok|Flight Master
@@ -112,7 +110,6 @@ f|A|1417|458|462|Cedrik Prose|
 f|H|1417|733|328|Urda|Wind Rider Master
 f|H|1418|40|448|Gorrik|
 f|A|1419|656|244|Alexandra Constantine|
-f|H|1420|608|587|Zapetta|Zeppelin Master
 f|H|1421|455|425|Karos Razok|Bat Handler
 f|A|1422|428|850|Bibilfaz Featherwhistle|
 f||1423|183|245|William Kielar|
@@ -131,7 +128,6 @@ f|A|1432|338|508|Thorgrum Borrelson|
 f|A|1433|255|594|Ariena Stormfeather|
 f|H|1434|269|770|Gringer|Wind Rider Master
 f|A|1434|277|778|Gyll|Gryphon Master
-f|H|1434|314|298|Nez'raz|Zeppelin Master
 f|H|1434|326|292|Thysta|
 f|H|1435|460|546|Breyk|
 f|A|1436|566|526|Thor|

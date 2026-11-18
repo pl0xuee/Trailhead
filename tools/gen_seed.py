@@ -33,8 +33,12 @@ SAME_SPOT = 0.006
 MAX_SPREAD_POINTS = 4  # more than this many scattered spawn points = a patrol or a mob
 
 # Forever.lua titles that say what a row is when its services column does not.
-FLIGHT_TITLES = ("wind rider master", "bat handler", "gryphon master", "zeppelin master", "hippogryph master",
+FLIGHT_TITLES = ("wind rider master", "bat handler", "gryphon master", "hippogryph master",
                  "flight master", "flightmaster", "gryphon keeper", "wyvern master", "bat master")
+# Zeppelin masters send you onto a zeppelin between continents, not along a flight path: filed as
+# flight masters they came first in "Find nearby: Flight" at Orgrimmar, Brill and Grom'gol. They are
+# left out of the built-in list (Find it has no name-only category to put them in).
+NOT_FLIGHT = ("zeppelin master",)
 
 
 def read_csv(name):
@@ -492,7 +496,7 @@ for cat, label in VENDOR_KINDS:
 # These are listed under another service, or are not shops a beginner uses.
 MOUNT_VENDORS = {"Ogunaro Wolfrunner", "Zjolnir", "Harb Clawhoof", "Zachariah Post", "Katie Hunter", "Veron Amberstill",
                  "Milli Featherwhistle", "Lelanai", "Genn Fairweather", "Unger Statforth"}  # Known.lua lists these
-NOT_SHOPS = ("innkeeper", "stable master", "banker", "auctioneer", "battlemaster", "spirit healer") + FLIGHT_TITLES
+NOT_SHOPS = ("innkeeper", "stable master", "banker", "auctioneer", "battlemaster", "spirit healer") + FLIGHT_TITLES + NOT_FLIGHT
 EVENT_WORDS = ("smokywood", "darkcaller", "winter veil", "hallow", "brewfest", "lunar festival", "midsummer",
                "noblegarden", "harvest festival", "love is in the air", "pilgrim", "children's week", "fireworks")
 # Neutral towns serve both sides, whatever the old data says about each NPC.
@@ -516,6 +520,8 @@ for nid, npc in units.items():
                        (("auctioneer",), "auction"), (FLIGHT_TITLES, "flight")):
         if title in words:
             wanted.add(cat)
+    if title in NOT_FLIGHT:
+        wanted.discard("flight")
     if "vendor" in wanted:
         # Trainers and mount breeders (Known.lua has those) are not general shops.
         if "trainer" in title or re.search(r"breeder|handler|riding|mount", title) or npc.name in MOUNT_VENDORS:
